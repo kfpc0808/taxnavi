@@ -517,7 +517,33 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
     <p class="modal-subtitle" id="modalSubtitle">TaxNavi에 오신 것을 환영합니다</p>
     <div class="modal-tabs"><button class="modal-tab active" id="tabLogin" onclick="switchTab('login')">로그인</button><button class="modal-tab" id="tabSignup" onclick="switchTab('signup')">회원가입</button></div>
     <div id="loginForm"><div class="form-group"><label>이메일</label><input type="email" placeholder="email@example.com"></div><div class="form-group"><label>비밀번호</label><input type="password" placeholder="비밀번호를 입력하세요"></div><button class="btn-submit" onclick="handleAuth()">로그인</button></div>
-    <div id="signupForm" style="display:none"><div class="form-group"><label>이름</label><input type="text" placeholder="홍길동"></div><div class="form-group"><label>이메일</label><input type="email" placeholder="email@example.com"></div><div class="form-group"><label>비밀번호</label><input type="password" placeholder="8자 이상 입력하세요"></div><div class="form-group"><label>비밀번호 확인</label><input type="password" placeholder="비밀번호를 다시 입력하세요"></div><button class="btn-submit" onclick="handleAuth()">회원가입</button></div>
+    <div id="signupForm" style="display:none">
+      <div class="form-group"><label>이름</label><input type="text" id="su-name" placeholder="홍길동"></div>
+      <div class="form-group"><label>이메일</label><input type="email" id="su-email" placeholder="email@example.com"></div>
+      <div class="form-group">
+        <label>연락처</label>
+        <div style="display:flex;gap:4px;align-items:center">
+          <input id="su-ph1" value="010" style="width:54px;text-align:center" readonly>
+          <span style="color:var(--text-light)">-</span>
+          <input id="su-ph2" inputmode="numeric" maxlength="4" style="width:64px;text-align:center" placeholder="0000">
+          <span style="color:var(--text-light)">-</span>
+          <input id="su-ph3" inputmode="numeric" maxlength="4" style="width:64px;text-align:center" placeholder="0000">
+        </div>
+      </div>
+      <div class="form-group" style="background:#F0F7FF;padding:12px 14px;border-radius:10px;border:1px solid #D0E3FF">
+        <label style="font-weight:700;color:#1565C0;font-size:12.5px">📱 연락처 인증</label>
+        <div style="display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap">
+          <button type="button" id="su-sms-send" onclick="doSendSMS()" style="padding:8px 14px;background:var(--primary);color:white;border-radius:8px;font-size:12.5px;font-weight:700;white-space:nowrap;border:none;cursor:pointer">인증번호 발송</button>
+          <input id="su-sms-code" inputmode="numeric" maxlength="6" placeholder="인증번호" style="width:90px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;text-align:center">
+          <button type="button" onclick="doVerifySMS()" style="padding:8px 14px;background:var(--success);color:white;border-radius:8px;font-size:12.5px;font-weight:700;white-space:nowrap;border:none;cursor:pointer">확인</button>
+        </div>
+        <div id="su-sms-status" style="font-size:12px;margin-top:6px;color:var(--text-light)"></div>
+        <input type="hidden" id="su-sms-verified" value="N">
+      </div>
+      <div class="form-group"><label>비밀번호</label><input type="password" id="su-pw" placeholder="8자 이상 입력하세요"></div>
+      <div class="form-group"><label>비밀번호 확인</label><input type="password" id="su-pw2" placeholder="비밀번호를 다시 입력하세요"></div>
+      <button class="btn-submit" onclick="handleAuth()">회원가입</button>
+    </div>
     <div class="modal-divider">또는</div>
     <button class="btn-jarvia-login" onclick="handleJarviaLogin()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="#E8A838"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#E8A838" stroke-width="2"/></svg>JARVIA 계정으로 로그인 (프로 무료)</button>
     <div class="modal-footer" id="modalFooter">계정이 없으신가요? <a href="#" onclick="switchTab('signup');return false;">회원가입</a></div>
@@ -566,9 +592,9 @@ function switchTab(t){
 }
 function handleAuth(){
   const isLogin = document.getElementById('loginForm').style.display !== 'none';
-  const inputs = (isLogin ? document.getElementById('loginForm') : document.getElementById('signupForm')).querySelectorAll('input');
   
   if (isLogin) {
+    const inputs = document.getElementById('loginForm').querySelectorAll('input');
     const email = inputs[0].value.trim();
     const pw = inputs[1].value;
     if (!email || !pw) { showToast('이메일과 비밀번호를 입력하세요'); return; }
@@ -576,22 +602,111 @@ function handleAuth(){
       .then(() => { closeModal(); showToast('환영합니다! 로그인되었습니다.'); })
       .catch(err => showToast('로그인 실패: ' + (err.code === 'auth/invalid-credential' ? '이메일 또는 비밀번호를 확인하세요' : err.message)));
   } else {
-    const name = inputs[0].value.trim();
-    const email = inputs[1].value.trim();
-    const pw = inputs[2].value;
-    const pw2 = inputs[3].value;
-    if (!name || !email || !pw) { showToast('모든 필드를 입력하세요'); return; }
+    // 회원가입 — SMS 인증 필수
+    const name = document.getElementById('su-name').value.trim();
+    const email = document.getElementById('su-email').value.trim();
+    const ph2 = document.getElementById('su-ph2').value.trim();
+    const ph3 = document.getElementById('su-ph3').value.trim();
+    const pw = document.getElementById('su-pw').value;
+    const pw2 = document.getElementById('su-pw2').value;
+    const verified = document.getElementById('su-sms-verified').value;
+    
+    if (!name) { showToast('이름을 입력하세요'); return; }
+    if (!email) { showToast('이메일을 입력하세요'); return; }
+    if (!ph2 || !ph3) { showToast('연락처를 입력하세요'); return; }
+    if (verified !== 'Y') { showToast('연락처 인증을 완료해주세요'); return; }
+    if (!pw || pw.length < 8) { showToast('비밀번호는 8자 이상이어야 합니다'); return; }
     if (pw !== pw2) { showToast('비밀번호가 일치하지 않습니다'); return; }
-    if (pw.length < 8) { showToast('비밀번호는 8자 이상이어야 합니다'); return; }
+    
+    const phone = '010-' + ph2 + '-' + ph3;
+    
     firebase.auth().createUserWithEmailAndPassword(email, pw)
-      .then(cred => cred.user.updateProfile({ displayName: name }))
+      .then(cred => cred.user.updateProfile({ displayName: name }).then(() => cred.user))
+      .then(user => {
+        // taxnavi-db에 사용자 정보 저장 (Cloud Run 서버에 요청)
+        return user.getIdToken().then(token => {
+          fetch(API_BASE_URL + '/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ name, phone, email })
+          }).catch(e => console.log('register save:', e.message));
+        });
+      })
       .then(() => { closeModal(); showToast('회원가입 완료! 환영합니다.'); })
       .catch(err => showToast('가입 실패: ' + (err.code === 'auth/email-already-in-use' ? '이미 가입된 이메일입니다' : err.message)));
   }
 }
+
+// ─── SMS 인증 ───
+async function doSendSMS() {
+  const ph2 = document.getElementById('su-ph2').value.trim();
+  const ph3 = document.getElementById('su-ph3').value.trim();
+  if (!ph2 || !ph3 || ph2.length < 3 || ph3.length < 4) { showToast('연락처를 정확히 입력하세요'); return; }
+  
+  const phone = '010-' + ph2 + '-' + ph3;
+  const btn = document.getElementById('su-sms-send');
+  const status = document.getElementById('su-sms-status');
+  btn.disabled = true; btn.textContent = '발송 중...';
+  
+  try {
+    const resp = await fetch(API_BASE_URL + '/api/send-sms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || '발송 실패');
+    
+    status.textContent = '✅ 인증번호가 발송되었습니다. (5분 이내 입력)';
+    status.style.color = '#22C55E';
+    
+    // 재발송 타이머
+    let sec = 60;
+    btn.textContent = '재발송 (' + sec + 's)';
+    const timer = setInterval(() => {
+      sec--;
+      btn.textContent = '재발송 (' + sec + 's)';
+      if (sec <= 0) { clearInterval(timer); btn.disabled = false; btn.textContent = '인증번호 재발송'; }
+    }, 1000);
+  } catch (err) {
+    status.textContent = '❌ ' + err.message;
+    status.style.color = '#EF4444';
+    btn.disabled = false; btn.textContent = '인증번호 발송';
+  }
+}
+
+async function doVerifySMS() {
+  const ph2 = document.getElementById('su-ph2').value.trim();
+  const ph3 = document.getElementById('su-ph3').value.trim();
+  const code = document.getElementById('su-sms-code').value.trim();
+  if (!code) { showToast('인증번호를 입력하세요'); return; }
+  
+  const phone = '010-' + ph2 + '-' + ph3;
+  const status = document.getElementById('su-sms-status');
+  
+  try {
+    const resp = await fetch(API_BASE_URL + '/api/verify-sms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, code })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || '인증 실패');
+    
+    document.getElementById('su-sms-verified').value = 'Y';
+    status.textContent = '✅ 인증이 완료되었습니다.';
+    status.style.color = '#22C55E';
+    document.getElementById('su-sms-code').disabled = true;
+    document.getElementById('su-sms-send').disabled = true;
+    document.getElementById('su-sms-send').textContent = '인증완료 ✓';
+    document.getElementById('su-sms-send').style.background = '#22C55E';
+  } catch (err) {
+    status.textContent = '❌ ' + err.message;
+    status.style.color = '#EF4444';
+  }
+}
+
 function handleJarviaLogin(){
-  // JARVIA SSO: JARVIA 로그인 페이지로 리다이렉트 (Firebase Auth 공유)
-  // 실제 구현 시 커스텀 토큰 교환 방식 사용
   showToast('JARVIA 계정 연동은 준비 중입니다. 이메일로 가입해주세요.');
 }
 
