@@ -475,7 +475,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>대량 검색 API 제공</li>
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>전담 매니저 배정</li>
         </ul>
-        <button class="btn-price btn-price-outline" onclick="alert('도입 상담: contact@taxnavi.kr')">도입 문의</button>
+        <button class="btn-price btn-price-outline" onclick="alert('도입 상담은 문의하기를 이용해주세요.')">도입 문의</button>
       </div>
     </div>
     <div class="jarvia-notice">
@@ -508,7 +508,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       </div>
       <div class="footer-links-group">
         <div class="footer-col"><h4>서비스</h4><a href="#features">검색 대상 사이트</a><a href="#features">AI 통합검색</a><a href="#pricing">요금제</a></div>
-        <div class="footer-col"><h4>지원</h4><a href="#faq">자주 묻는 질문</a><a href="/cdn-cgi/l/email-protection#1e75786e7d2e262e265e79737f7772307d7173">문의하기</a><a href="#">이용약관</a><a href="#">개인정보처리방침</a></div>
+        <div class="footer-col"><h4>지원</h4><a href="#faq">자주 묻는 질문</a><a href="#" id="footerContact" onclick="window.open('mai'+'lto:'+'kfpc0808'+'@'+'gmail.com');return false;">문의하기</a><a href="#">이용약관</a><a href="#">개인정보처리방침</a></div>
         <div class="footer-col"><h4>파트너</h4><a href="https://jarvaai.web.app" target="_blank">JARVIA</a><a href="#">단체 도입 문의</a></div>
       </div>
     </div>
@@ -577,7 +577,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 
 <div class="toast" id="toast"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/></svg><span id="toastMessage">복사되었습니다</span></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw'},courtCase:{name:'대법원 법고을',color:'#DC2626',badge:'badge-courtCase'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA'}};
 
 try{document.querySelectorAll('.anim').forEach(el=>new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})},{threshold:.05}).observe(el))}catch(e){document.querySelectorAll('.anim').forEach(el=>{el.style.opacity='1';el.style.transform='translateY(0)'})}
@@ -814,12 +814,9 @@ async function handleSearch(){
       return;
     }
   } catch(apiErr) {
-    console.log('[API] 백엔드 미연결, 데모 모드:', apiErr.message);
+    ov.classList.remove('active');
+    showToast('검색 서비스에 일시적 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
   }
-  
-  // API 실패 시 → 데모 결과 (개발/테스트용)
-  ov.classList.remove('active');
-  showSearchingAnimation(q);
 }
 function quickSearch(el){document.getElementById('searchInput').value=el.textContent+' 관련 판례와 세법해석';handleSearch();window.scrollTo({top:0,behavior:'smooth'})}
 
@@ -878,78 +875,6 @@ function filterReal(site,btn){
   cards.forEach(c=>{c.style.display=(site==='all'||c.getAttribute('data-site')===site)?'block':'none'});
 }
 
-function showSearchingAnimation(query){
-  const ov=document.getElementById('searchingOverlay'),st=document.getElementById('searchingStatus'),si=document.getElementById('searchingSites');
-  document.getElementById('resultsSection').classList.remove('active');
-  ov.classList.add('active');st.textContent='AI가 질문을 분석하고 있습니다...';si.innerHTML='';
-  setTimeout(()=>{
-    const sel=selectSites(query);
-    st.textContent=sel.length+'개 사이트에서 검색 중...';
-    si.innerHTML=sel.map(s=>'<span class="site-progress searching" id="sp-'+s+'"><span>⏳</span>'+SITES[s].name+'</span>').join('');
-    sel.forEach((s,i)=>{setTimeout(()=>{const e=document.getElementById('sp-'+s);if(e){e.classList.remove('searching');e.classList.add('done');e.firstElementChild.textContent='✓'}},800+i*600)});
-    setTimeout(()=>{ov.classList.remove('active');showResults(query,sel)},800+sel.length*600+500);
-  },1200);
-}
-
-function selectSites(q){
-  q=q.toLowerCase();const s=['taxlaw'];
-  if(q.includes('판례')||q.includes('판결')||q.includes('소송'))s.push('courtCase');
-  if(q.includes('심판')||q.includes('불복')||q.includes('경정'))s.push('taxTribunal');
-  if(q.includes('보험')||q.includes('금융')||q.includes('감독'))s.push('fssLaw');
-  if(q.includes('법령')||q.includes('법률')||q.includes('민법'))s.push('lawGoKr');
-  if(q.includes('상담')||q.includes('절차')||q.includes('신고'))s.push('hometaxQA');
-  ['courtCase','taxTribunal','hometaxQA'].forEach(d=>{if(s.length<3&&!s.includes(d))s.push(d)});
-  return s;
-}
-
-function showResults(query,sites){
-  const sec=document.getElementById('resultsSection'),con=document.getElementById('resultsContainer'),tabs=document.getElementById('resultsTabs');
-  document.getElementById('resultQuery').textContent='"'+query+'"';
-  const all=genDemo(query,sites);
-  document.getElementById('resultCount').textContent=all.length;
-  const counts={};all.forEach(r=>{counts[r.site]=(counts[r.site]||0)+1});
-  tabs.innerHTML='<button class="results-tab active" onclick="filterR(\'all\',this)">전체 <span class="cnt">'+all.length+'</span></button>';
-  Object.entries(counts).forEach(([k,v])=>{tabs.innerHTML+='<button class="results-tab" onclick="filterR(\''+k+'\',this)">'+SITES[k].name+' <span class="cnt">'+v+'</span></button>'});
-  renderR(con,all);sec.classList.add('active');sec.scrollIntoView({behavior:'smooth',block:'start'});
-  window._all=all;
-}
-
-function filterR(site,btn){document.querySelectorAll('.results-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderR(document.getElementById('resultsContainer'),site==='all'?window._all:window._all.filter(r=>r.site===site))}
-
-function renderR(con,results){
-  con.innerHTML='';
-  results.forEach((r,i)=>{
-    const d=document.createElement('div');d.className='result-card';d.style.animationDelay=(i*.08)+'s';
-    d.innerHTML=`<div class="result-card-top"><span class="result-title">${r.title}</span><span class="result-badge ${SITES[r.site].badge}">${r.cat}</span></div><div class="result-meta"><span>📅 ${r.date}</span><span>📂 ${r.docNo}</span></div><div class="result-summary"><h4>AI 요약</h4>${r.summary}</div><div class="result-footer"><span class="result-source-tag"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${SITES[r.site].color}"></span>${SITES[r.site].name}</span><button class="btn-copy-item" onclick="copyR(this)"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>복사</button></div>`;
-    con.appendChild(d);
-  });
-}
-
-function genDemo(query,sites){
-  const r=[],kw=query.replace(/관련.*/,'').trim();
-  if(sites.includes('taxlaw')){
-    r.push({site:'taxlaw',cat:'세법해석례',title:kw+' 관련 질의회신 — 사전증여재산을 양도한 경우 상속재산에 가산하여야 하는 금액',date:'2025.06.21',docNo:'서면-2024-상속증여-0859',summary:'국세청은 상속개시일 전 10년 이내에 피상속인이 상속인에게 증여한 재산은 상속세 과세가액에 산입하여야 한다고 회신하였습니다. 다만, 해당 증여재산을 상속개시 전에 양도한 경우에는 증여 당시의 가액이 아닌 양도 후 잔존하는 가액을 기준으로 산입합니다.'});
-    r.push({site:'taxlaw',cat:'상담사례',title:'사전증여재산만 취득한 손자에게 상속세 납세의무가 있는지 여부',date:'2025.03.15',docNo:'상담사례 #28401',summary:'피상속인이 사망 전 손자에게 증여한 재산이 있는 경우, 해당 손자가 민법상 상속인이 아니더라도 상속세 및 증여세법에 따라 상속세 연대납세의무가 발생할 수 있습니다.'});
-  }
-  if(sites.includes('courtCase')){
-    r.push({site:'courtCase',cat:'대법원 판례',title:'2026.1.15. 선고 2025두34823 판결 [증여세부과처분취소]',date:'2026.01.15',docNo:'대법원 2025두34823',summary:'대법원은 실질과세 원칙에 따라 거래의 실질을 기준으로 판단하여야 한다고 판시하였습니다. 차명계좌를 통한 자금이동이 있었더라도 실질적인 경제적 이익의 이전이 있었다면 증여로 보아야 합니다.'});
-    r.push({site:'courtCase',cat:'주요판결',title:'서울고등법원 2025.11.28. 선고 2025누18678 판결 [상속세부과처분취소]',date:'2025.11.28',docNo:'서울고법 2025누18678',summary:'상속인이 피상속인 처분재산의 사용처를 구체적으로 소명하지 못한 경우 추정상속재산으로 과세할 수 있다고 판시하였습니다.'});
-  }
-  if(sites.includes('taxTribunal')){
-    r.push({site:'taxTribunal',cat:'심판결정 (경정)',title:'쟁점부동산 취득자금의 증여 해당 여부',date:'2025.09.10',docNo:'조심-2025-서-4567 (상증)',summary:'조세심판원은 청구인이 자금출처를 소명한 부분에 대해 경정 결정하였습니다. 소명되지 않은 금액에 대해서는 증여추정 규정의 적용이 적법하다고 판단하였습니다.'});
-    r.push({site:'taxTribunal',cat:'심판결정 (기각)',title:kw+' 관련 가산세 부과 처분의 적법성',date:'2025.07.22',docNo:'조심-2025-중-2891',summary:'상속재산 신고 시 사전증여재산을 누락한 것에 대한 무신고가산세 부과 처분이 적법하다고 결정하였습니다.'});
-  }
-  if(sites.includes('hometaxQA')){
-    r.push({site:'hometaxQA',cat:'세법상담정보',title:'상속세 신고 시 사전증여재산 가산 방법',date:'2025.12.01',docNo:'국세상담센터',summary:'상속개시일 전 10년 이내(상속인 외의 자는 5년 이내) 피상속인이 증여한 재산가액은 상속세 과세가액에 가산합니다. 이미 납부한 증여세는 상속세 산출세액에서 공제됩니다.'});
-  }
-  if(sites.includes('fssLaw')){
-    r.push({site:'fssLaw',cat:'금융법규',title:'보험업법 시행령 제42조의2 (보험계약 관련 규정)',date:'2025.08.15',docNo:'금융감독원 법규',summary:'보험계약과 관련된 세법상 쟁점에 대해 보험업법 시행령에서 정한 기준을 적용하여야 한다는 해석을 제시하고 있습니다.'});
-  }
-  if(sites.includes('lawGoKr')){
-    r.push({site:'lawGoKr',cat:'법령',title:'상속세 및 증여세법 제13조 (상속세 과세가액)',date:'2026.01.01',docNo:'법률 제XXXXX호',summary:'상속재산의 가액에 상속개시 전 10년 이내에 피상속인이 상속인에게 증여한 재산가액과 5년 이내에 상속인이 아닌 자에게 증여한 재산가액을 가산하여 상속세 과세가액을 계산합니다.'});
-  }
-  return r;
-}
 
 function copyR(btn){
   const c=btn.closest('.result-card'),t=c.querySelector('.result-title').textContent,m=c.querySelector('.result-meta').textContent.trim(),s=c.querySelector('.result-summary').textContent.replace('AI 요약','').trim(),src=c.querySelector('.result-source-tag').textContent.trim();
@@ -965,4 +890,9 @@ function copyAllResults(){
   navigator.clipboard.writeText(a.trim()).then(()=>showToast('전체 검색 결과가 복사되었습니다'));
 }
 
-function toggleMobileMenu(){const l=document.querySelector('.nav-links');if(l.style.display==='flex'){l.style.display='none'}else{l.style.display='flex';l.style.flexDirection='column';l.style.position='absolute';l.style.top='64px';l.style.left='0';l.style.right='0';l.style.background='white';l.style.padding='16px';l.style.borderBottom='1px solid #E2E8F0';l.style.boxShadow='0 4px 12px rgba(0,0,0,.08)';l.style.z
+function toggleMobileMenu(){const l=document.querySelector('.nav-links');if(l.style.display==='flex'){l.style.display='none'}else{l.style.display='flex';l.style.flexDirection='column';l.style.position='absolute';l.style.top='64px';l.style.left='0';l.style.right='0';l.style.background='white';l.style.padding='16px';l.style.borderBottom='1px solid #E2E8F0';l.style.boxShadow='0 4px 12px rgba(0,0,0,.08)';l.style.zIndex='99'}}
+
+document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+</script>
+</body>
+</html>
