@@ -501,7 +501,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       </div>
       <div class="footer-links-group">
         <div class="footer-col"><h4>서비스</h4><a href="#features">검색 대상 사이트</a><a href="#features">AI 통합검색</a><a href="#pricing">요금제</a></div>
-        <div class="footer-col"><h4>지원</h4><a href="#faq">자주 묻는 질문</a><a href="/cdn-cgi/l/email-protection#ee8d81809a8f8d9aae9a8f96808f9887c0859c">문의하기</a><a href="#">이용약관</a><a href="#">개인정보처리방침</a></div>
+        <div class="footer-col"><h4>지원</h4><a href="#faq">자주 묻는 질문</a><a href="mailto:kfpc0808@gmail.com">문의하기</a><a href="#">이용약관</a><a href="#">개인정보처리방침</a></div>
         <div class="footer-col"><h4>파트너</h4><a href="https://jarvaai.web.app" target="_blank">JARVIA</a><a href="#">기관 도입 문의</a></div>
       </div>
     </div>
@@ -570,10 +570,9 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 
 <div class="toast" id="toast"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/></svg><span id="toastMessage">복사되었습니다</span></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw'},courtCase:{name:'대법원 법고을',color:'#DC2626',badge:'badge-courtCase'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA'}};
 
-new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1}).observe(document.querySelectorAll?null:null);
 document.querySelectorAll('.anim').forEach(el=>new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1}).observe(el));
 
 window.addEventListener('scroll',()=>{document.getElementById('header').classList.toggle('scrolled',window.scrollY>10)});
