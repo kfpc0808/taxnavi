@@ -17,8 +17,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<!-- INNOPAY PG SDK (v2) -->
-<script type="text/javascript" src="https://pg.innopay.co.kr/tpay/js/v1/innopay.js"></script>
 <script>
 // ★★★ Firebase Console → Project Settings → General → Web App에서 복사하여 교체하세요 ★★★
 const firebaseConfig = {
@@ -36,9 +34,6 @@ const db = firebase.firestore();
 
 // ★★★ Cloud Run 배포 후 URL 교체 ★★★
 const API_BASE_URL = 'https://taxnavi-backend-1012609333373.asia-northeast3.run.app';
-
-// ★★★ INNOPAY 승인 Cloud Function URL ★★★
-const INNOPAY_APPROVE_URL = 'https://asia-northeast3-kfpc-company-support-project.cloudfunctions.net/innopayApprove';
 </script>
 <style>
 :root {
@@ -85,6 +80,11 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .btn-login:hover{border-color:var(--primary)!important;color:var(--primary)!important;background:#F0F6FF!important}
 .btn-start{padding:8px 18px!important;background:var(--primary)!important;color:white!important;font-weight:600!important;border-radius:var(--radius)!important}
 .btn-start:hover{background:var(--primary-light)!important;transform:translateY(-1px);box-shadow:0 4px 12px rgba(27,58,92,.3)}
+.btn-charge{padding:8px 16px!important;background:linear-gradient(135deg,#E8A838,#C78A1E)!important;color:white!important;font-weight:700!important;border-radius:var(--radius)!important;font-size:13px!important;display:none;gap:4px}
+.btn-charge:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,168,56,.4)}
+.btn-mypage{padding:8px 16px!important;background:var(--bg)!important;border:1.5px solid var(--border)!important;color:var(--text)!important;font-weight:600!important;border-radius:var(--radius)!important;font-size:13px!important;display:none}
+.btn-mypage:hover{border-color:var(--primary)!important;color:var(--primary)!important;background:#F0F6FF!important}
+.header-balance{font-size:12px;color:var(--accent-dark);font-weight:700;padding:4px 10px;background:#FFF9EE;border-radius:var(--radius-full);border:1px solid #F0D97A;display:none;white-space:nowrap}
 .mobile-menu-btn{display:none;width:40px;height:40px;align-items:center;justify-content:center;border-radius:8px}
 .hamburger{width:20px;height:14px;position:relative}
 .hamburger span{display:block;width:100%;height:2px;background:var(--text);border-radius:2px;position:absolute;transition:var(--transition)}
@@ -338,6 +338,9 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <a href="#faq">FAQ</a>
       <a href="#" class="btn-login" onclick="openModal('login');return false;">로그인</a>
       <a href="#" class="btn-start" onclick="openModal('signup');return false;">무료 체험</a>
+      <span class="header-balance" id="headerBalance">💰 0 P</span>
+      <a href="mypage.html#tab-balance" class="btn-charge" id="btnCharge">💰 충전</a>
+      <a href="mypage.html" class="btn-mypage" id="btnMypage">👤 마이페이지</a>
     </div>
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><div class="hamburger"><span></span><span></span><span></span></div></button>
   </nav>
@@ -449,7 +452,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
           <li class="disabled"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>AI 핵심 요약</li>
           <li class="disabled"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>6개 사이트 통합검색</li>
         </ul>
-        <button class="btn-price btn-price-outline" onclick="handlePlanSelect('free', 0, '무료 체험')">무료로 시작</button>
+        <button class="btn-price btn-price-outline" onclick="openModal('signup')">무료로 시작</button>
       </div>
       <div class="price-card">
         <div class="price-name">베이직</div><div class="price-desc">국세법령정보시스템 중심 검색</div>
@@ -460,7 +463,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>AI 핵심 요약</li>
           <li class="disabled"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>6개 사이트 통합검색</li>
         </ul>
-        <button class="btn-price btn-price-outline" onclick="handlePlanSelect('basic', 30000, '베이직')">베이직 시작</button>
+        <button class="btn-price btn-price-outline" onclick="openModal('signup')">베이직 시작</button>
       </div>
       <div class="price-card featured">
         <div class="price-name">프로</div><div class="price-desc">6개 사이트 통합검색 + AI 요약</div>
@@ -471,7 +474,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>AI 핵심 요약</li>
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>쟁점별 분석 리포트</li>
         </ul>
-        <button class="btn-price btn-price-primary" onclick="handlePlanSelect('pro', 50000, '프로')">프로 시작하기</button>
+        <button class="btn-price btn-price-primary" onclick="openModal('signup')">프로 시작하기</button>
       </div>
       <div class="price-card">
         <div class="price-name">기관</div><div class="price-desc">세무법인·회계법인 맞춤</div>
@@ -583,68 +586,6 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 </div>
 
 <div class="toast" id="toast"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/></svg><span id="toastMessage">복사되었습니다</span></div>
-
-<!-- ═══════ Payment Confirmation Modal ═══════ -->
-<div class="modal-overlay" id="paymentModal">
-  <div class="modal" style="max-width:460px">
-    <button class="modal-close" onclick="closePaymentModal()"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-    <h2 style="font-size:20px">💳 요금제 결제</h2>
-    <p class="modal-subtitle">선택하신 요금제를 확인해주세요</p>
-    <div style="background:linear-gradient(135deg,var(--primary),var(--primary-light));padding:24px;border-radius:var(--radius-lg);color:white;text-align:center;margin-bottom:20px">
-      <p style="font-size:13px;opacity:.85;margin-bottom:6px">선택 요금제</p>
-      <p id="payPlanName" style="font-size:22px;font-weight:900;margin-bottom:4px">프로</p>
-      <p id="payPlanAmount" style="font-size:32px;font-weight:900">50,000<span style="font-size:14px;font-weight:500">원/월</span></p>
-    </div>
-    <div style="background:var(--bg);padding:16px;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:20px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;color:var(--text-secondary)">결제 금액</span><span id="payAmountText" style="font-size:15px;font-weight:700;color:var(--primary)">50,000원</span></div>
-      <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-secondary)">결제 수단</span><span style="font-size:13px;font-weight:600">신용카드</span></div>
-    </div>
-    <div style="font-size:11.5px;color:var(--text-light);line-height:1.7;margin-bottom:20px;padding:12px;background:#FFFBF0;border:1px solid #F0D97A;border-radius:var(--radius)">
-      ※ VAT 별도 · 결제일로부터 30일간 이용 가능<br>
-      ※ 결제 후 즉시 해당 등급이 적용됩니다<br>
-      ※ 환불은 고객센터를 통해 요청해주세요
-    </div>
-    <button id="paySubmitBtn" class="btn-submit" onclick="doPayment()" style="margin-top:0">💳 결제하기</button>
-  </div>
-</div>
-
-<!-- ═══════ Payment Complete Modal ═══════ -->
-<div class="modal-overlay" id="payCompleteModal">
-  <div class="modal" style="max-width:420px">
-    <button class="modal-close" onclick="closePayCompleteModal()"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-    <div style="text-align:center;padding:20px 0 10px">
-      <div style="font-size:52px;margin-bottom:12px">✅</div>
-      <h2 style="font-size:20px;font-weight:800;margin-bottom:6px">결제 완료!</h2>
-      <p style="font-size:14px;color:var(--text-secondary)">요금제가 성공적으로 적용되었습니다</p>
-    </div>
-    <div style="background:var(--bg);padding:16px;border-radius:var(--radius);border:1px solid var(--border);margin:16px 0 20px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;color:var(--text-secondary)">요금제</span><span id="completePlanName" style="font-weight:700;color:var(--primary)">프로</span></div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;color:var(--text-secondary)">결제 금액</span><span id="completePayAmount" style="font-weight:700">50,000원</span></div>
-      <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--text-secondary)">적용 등급</span><span id="completeTier" style="font-weight:700;color:var(--success)">프로</span></div>
-    </div>
-    <button class="btn-submit" onclick="closePayCompleteModal()" style="margin-top:0">확인</button>
-  </div>
-</div>
-
-<!-- ═══════ Email Input Modal (결제 전 이메일 미등록 시) ═══════ -->
-<div class="modal-overlay" id="emailInputModal">
-  <div class="modal" style="max-width:420px">
-    <button class="modal-close" onclick="closeEmailModal()"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-    <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:40px;margin-bottom:8px">📧</div>
-      <h2 style="font-size:18px;font-weight:800;margin-bottom:6px">이메일 주소 입력</h2>
-      <p style="font-size:13px;color:var(--text-secondary)">결제 영수증 수신을 위해 이메일을 입력해주세요</p>
-    </div>
-    <div class="form-group">
-      <input type="email" id="payEmailInput" placeholder="example@email.com" style="text-align:center;font-size:15px">
-      <p id="payEmailError" style="color:#EF4444;font-size:12px;margin-top:4px;display:none">올바른 이메일 형식을 입력해주세요</p>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn-submit" onclick="closeEmailModal()" style="flex:1;background:var(--bg);color:var(--text);border:1.5px solid var(--border);margin-top:0">취소</button>
-      <button class="btn-submit" onclick="confirmEmailAndPay()" style="flex:2;margin-top:0">확인 후 결제 진행</button>
-    </div>
-  </div>
-</div>
 
 <script>
 const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw'},courtCase:{name:'대법원 법고을',color:'#DC2626',badge:'badge-courtCase'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA'}};
@@ -810,11 +751,17 @@ firebase.auth().onAuthStateChanged(async user => {
   currentUser = user;
   const loginBtn = document.querySelector('.btn-login');
   const startBtn = document.querySelector('.btn-start');
+  const chargeBtn = document.getElementById('btnCharge');
+  const mypageBtn = document.getElementById('btnMypage');
+  const balanceEl = document.getElementById('headerBalance');
   if (user) {
     // admin 계정 → 최고관리자 표시 + 클릭 시 admin 페이지
     if (user.email === 'admin@taxnavi.kr') {
       if (loginBtn) { loginBtn.textContent = '최고관리자'; loginBtn.style.background='#DC2626'; loginBtn.style.color='white'; loginBtn.style.borderColor='#DC2626'; loginBtn.onclick = () => { window.location.href = '/admin.html'; }; }
       if (startBtn) { startBtn.textContent = '관리자페이지'; startBtn.onclick = () => { window.location.href = '/admin.html'; }; }
+      if (chargeBtn) chargeBtn.style.display = 'none';
+      if (mypageBtn) mypageBtn.style.display = 'none';
+      if (balanceEl) balanceEl.style.display = 'none';
     } else {
       // 일반 회원 → 이름(등급) 표시
       const tierMap = {free:'무료',basic:'베이직',pro:'프로',enterprise:'기관'};
@@ -826,10 +773,28 @@ firebase.auth().onAuthStateChanged(async user => {
       } catch(e){}
       if (loginBtn) { loginBtn.textContent = label; loginBtn.onclick = () => { if(confirm('로그아웃 하시겠습니까?')) firebase.auth().signOut(); }; }
       if (startBtn) { startBtn.textContent = '검색하기'; startBtn.onclick = () => { document.getElementById('searchInput').focus(); return false; }; }
+      // 충전/마이페이지 버튼 표시
+      if (chargeBtn) chargeBtn.style.display = 'inline-flex';
+      if (mypageBtn) mypageBtn.style.display = 'inline-flex';
+      // 보유 포인트 표시
+      try {
+        const uDoc = await db.collection('taxnavi_users').doc(user.uid).get();
+        if (uDoc.exists && balanceEl) {
+          const pts = uDoc.data().points || 0;
+          balanceEl.textContent = '💰 ' + pts.toLocaleString() + ' P';
+          balanceEl.style.display = 'inline-flex';
+        } else if (balanceEl) {
+          balanceEl.textContent = '💰 0 P';
+          balanceEl.style.display = 'inline-flex';
+        }
+      } catch(e) { console.log('balance load:', e.message); if (balanceEl) { balanceEl.textContent = '💰 0 P'; balanceEl.style.display = 'inline-flex'; } }
     }
   } else {
     if (loginBtn) { loginBtn.textContent = '로그인'; loginBtn.style.background=''; loginBtn.style.color=''; loginBtn.style.borderColor=''; loginBtn.onclick = () => { openModal('login'); return false; }; }
     if (startBtn) { startBtn.textContent = '무료 체험'; startBtn.onclick = () => { openModal('signup'); return false; }; }
+    if (chargeBtn) chargeBtn.style.display = 'none';
+    if (mypageBtn) mypageBtn.style.display = 'none';
+    if (balanceEl) balanceEl.style.display = 'none';
   }
 });
 
@@ -962,351 +927,6 @@ function copyAllResults(){
 function toggleMobileMenu(){const l=document.querySelector('.nav-links');if(l.style.display==='flex'){l.style.display='none'}else{l.style.display='flex';l.style.flexDirection='column';l.style.position='absolute';l.style.top='64px';l.style.left='0';l.style.right='0';l.style.background='white';l.style.padding='16px';l.style.borderBottom='1px solid #E2E8F0';l.style.boxShadow='0 4px 12px rgba(0,0,0,.08)';l.style.zIndex='99'}}
 
 document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
-document.getElementById('paymentModal').addEventListener('click',function(e){if(e.target===this)closePaymentModal()});
-document.getElementById('payCompleteModal').addEventListener('click',function(e){if(e.target===this)closePayCompleteModal()});
-document.getElementById('emailInputModal').addEventListener('click',function(e){if(e.target===this)closeEmailModal()});
-
-// ════════════════════════════════════════
-//  결제 시스템 (INNOPAY v2)
-// ════════════════════════════════════════
-let _payPlan = null;       // 선택된 요금제 {tier, amount, name}
-let _pendingCharge = null;  // 결제 진행 중 정보
-let _payUserEmail = '';     // 결제용 이메일
-
-// 요금제 선택 핸들러
-function handlePlanSelect(tier, amount, name) {
-  if (tier === 'free') {
-    // 무료 체험은 회원가입만
-    if (!currentUser) { openModal('signup'); return; }
-    showToast('이미 로그인된 상태입니다. 무료 체험을 이용해보세요!');
-    return;
-  }
-  if (!currentUser) {
-    openModal('login');
-    showToast('결제하려면 먼저 로그인해주세요');
-    return;
-  }
-  _payPlan = { tier: tier, amount: amount, name: name };
-  document.getElementById('payPlanName').textContent = name;
-  document.getElementById('payPlanAmount').innerHTML = amount.toLocaleString() + '<span style="font-size:14px;font-weight:500">원/월</span>';
-  document.getElementById('payAmountText').textContent = amount.toLocaleString() + '원';
-  document.getElementById('paymentModal').classList.add('active');
-}
-
-function closePaymentModal() {
-  document.getElementById('paymentModal').classList.remove('active');
-}
-
-function closePayCompleteModal() {
-  document.getElementById('payCompleteModal').classList.remove('active');
-}
-
-function closeEmailModal() {
-  document.getElementById('emailInputModal').classList.remove('active');
-  document.getElementById('payEmailError').style.display = 'none';
-}
-
-// 이메일 확인 후 결제 진행
-function confirmEmailAndPay() {
-  const input = document.getElementById('payEmailInput');
-  const val = input.value.trim();
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(val)) {
-    document.getElementById('payEmailError').style.display = 'block';
-    input.focus();
-    return;
-  }
-  _payUserEmail = val;
-  closeEmailModal();
-  // 이메일 저장 후 결제 진행
-  _execPayment();
-}
-
-// 결제 실행
-async function doPayment() {
-  if (!_payPlan || !currentUser) return;
-  
-  closePaymentModal();
-  
-  // 이메일 확인 (INNOPAY 필수값)
-  // currentUser.email은 더미이메일(xxx@taxnavi.kr)이므로 실제 이메일을 Firestore에서 조회
-  try {
-    const userDoc = await db.collection('taxnavi_users').doc(currentUser.uid).get();
-    const userData = userDoc.exists ? userDoc.data() : {};
-    _payUserEmail = userData.email || '';
-  } catch(e) {
-    _payUserEmail = '';
-  }
-  
-  if (!_payUserEmail || !_payUserEmail.includes('@') || _payUserEmail.endsWith('@taxnavi.kr')) {
-    // 실제 이메일 미등록 → 입력 팝업
-    document.getElementById('payEmailInput').value = '';
-    document.getElementById('payEmailError').style.display = 'none';
-    document.getElementById('emailInputModal').classList.add('active');
-    document.getElementById('payEmailInput').focus();
-    return;
-  }
-  
-  _execPayment();
-}
-
-async function _execPayment() {
-  if (!_payPlan || !currentUser) return;
-  
-  const btn = document.getElementById('paySubmitBtn');
-  
-  try {
-    const uid = currentUser.uid;
-    const displayName = currentUser.displayName || '회원';
-    const moid = 'TAXNAVI' + Date.now() + Math.random().toString(36).substr(2, 9);
-    
-    if (typeof innopay === 'undefined') {
-      showToast('결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-      return;
-    }
-    
-    // 결제 정보 저장 (모바일 리다이렉트 대응)
-    window._pendingCharge = {
-      moid: moid,
-      paid: _payPlan.amount,
-      tier: _payPlan.tier,
-      planName: _payPlan.name,
-      userId: uid,
-      ts: Date.now()
-    };
-    try { localStorage.setItem('_pendingCharge', JSON.stringify(window._pendingCharge)); } catch(e) {}
-    
-    // Firestore에 pending 기록 저장
-    try {
-      await db.collection('pending_charges').doc(moid).set({
-        moid: moid,
-        userId: uid,
-        paid: _payPlan.amount,
-        tier: _payPlan.tier,
-        planName: _payPlan.name,
-        service: 'taxnavi',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    } catch(e) { console.warn('pending_charges 저장 실패:', e); }
-    
-    // 이메일 Firestore 저장
-    if (_payUserEmail && !_payUserEmail.endsWith('@taxnavi.kr')) {
-      try {
-        await db.collection('taxnavi_users').doc(uid).set({ email: _payUserEmail }, { merge: true });
-      } catch(e) {}
-    }
-    
-    // INNOPAY v2 결제창 호출
-    innopay.goPay({
-      payMethod: 'CARD',
-      mid: 'pgkfpcen5m',
-      moid: moid,
-      goodsName: 'TaxNavi ' + _payPlan.name + ' 요금제 (월)',
-      amt: 0,
-      taxFreeAmt: _payPlan.amount,
-      goodsCnt: 1,
-      buyerName: displayName,
-      buyerEmail: _payUserEmail,
-      buyerTel: '01000000000',
-      returnUrl: window.location.origin + window.location.pathname
-    });
-    
-  } catch(err) {
-    showToast('결제 요청 실패: ' + err.message);
-  }
-}
-
-// ════════════════════════════════════════
-//  결제 성공 후 처리 (TID 검증 + 등급 적용)
-// ════════════════════════════════════════
-async function chargeAfterPayment(payData) {
-  const tid = String(payData.tid || '').trim();
-  if (!tid) {
-    console.warn('⛔ TID 없음 → 적립 차단');
-    showToast('결제 확인이 필요합니다. 고객센터에 문의해주세요.');
-    window._pendingCharge = null;
-    try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
-    return;
-  }
-  
-  let pending = window._pendingCharge;
-  if (!pending) { try { const s = localStorage.getItem('_pendingCharge'); if(s) pending = JSON.parse(s); } catch(e) {} }
-  if (!pending) {
-    showToast('결제 정보 오류. 고객센터에 문의해주세요.');
-    return;
-  }
-  
-  try {
-    // 중복 적립 방지: 동일 TID 존재 여부 확인
-    const dupSnap = await db.collection('payments').where('tid', '==', tid).limit(1).get();
-    if (!dupSnap.empty) {
-      console.warn('⛔ 이미 처리된 TID:', tid);
-      showToast('이미 처리된 결제입니다.');
-      window._pendingCharge = null;
-      try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
-      return;
-    }
-    
-    const userId = pending.userId;
-    const paidAmount = pending.paid;
-    const tier = pending.tier;
-    const planName = pending.planName;
-    
-    // 1) 결제 기록 저장
-    const pid = db.collection('payments').doc().id;
-    await db.collection('payments').doc(pid).set({
-      paymentId: pid,
-      userId: userId,
-      paidAmount: paidAmount,
-      provider: 'INNOPAY',
-      status: 'paid',
-      tid: tid,
-      moid: payData.moid || pending.moid,
-      authCode: payData.authCode || '',
-      cardNum: payData.cardNum || '',
-      cardName: payData.cardName || '',
-      service: 'taxnavi',
-      tier: tier,
-      planName: planName,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    // 2) 사용자 등급 업데이트
-    const now = new Date();
-    const expiry = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30일 후
-    await db.collection('taxnavi_users').doc(userId).set({
-      tier: tier,
-      tierPaidAt: firebase.firestore.FieldValue.serverTimestamp(),
-      tierExpiresAt: firebase.firestore.Timestamp.fromDate(expiry),
-      lastPaymentId: pid,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-    
-    // 3) 완료 모달 표시
-    document.getElementById('completePlanName').textContent = planName;
-    document.getElementById('completePayAmount').textContent = paidAmount.toLocaleString() + '원';
-    document.getElementById('completeTier').textContent = planName;
-    document.getElementById('payCompleteModal').classList.add('active');
-    
-    window._pendingCharge = null;
-    try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
-    
-  } catch(err) {
-    console.error('❌ 결제 처리 오류:', err);
-    showToast('결제는 완료되었으나 등급 적용 중 오류 발생. 고객센터에 문의해주세요.');
-  }
-}
-
-// ════════════════════════════════════════
-//  페이지 로드 시 결제 결과 확인 (v2 returnUrl 처리)
-// ════════════════════════════════════════
-async function checkPaymentResult() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const paymentToken = urlParams.get('paymentToken');
-  const tid = urlParams.get('tid');
-  const chargeResult = urlParams.get('charge');
-  
-  // 서버 승인 완료 후 리다이렉트된 경우
-  if (chargeResult === 'success') {
-    const plan = urlParams.get('plan') || '';
-    window.history.replaceState({}, document.title, window.location.pathname);
-    showToast('✅ ' + (plan || '') + ' 요금제 결제 완료!');
-    try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
-    return;
-  }
-  if (chargeResult === 'fail') {
-    const msg = urlParams.get('msg') || '결제 처리 실패';
-    window.history.replaceState({}, document.title, window.location.pathname);
-    showToast('❌ 결제 오류: ' + decodeURIComponent(msg));
-    try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
-    return;
-  }
-  
-  // v2 인증 완료 → 서버에 승인 요청
-  if (paymentToken && tid) {
-    if (window._paymentProcessing) return;
-    window._paymentProcessing = true;
-    console.log('💳 v2 인증 완료, 서버 승인 요청...', { tid: tid });
-    window.history.replaceState({}, document.title, window.location.pathname);
-    
-    // localStorage에서 결제 정보 복구
-    let pending = window._pendingCharge;
-    if (!pending) { try { const s = localStorage.getItem('_pendingCharge'); if(s) pending = JSON.parse(s); } catch(e) {} }
-    try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
-    window._pendingCharge = null;
-    
-    try {
-      const resp = await fetch(INNOPAY_APPROVE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paymentToken: paymentToken,
-          tid: tid,
-          moid: urlParams.get('moid') || '',
-          mid: urlParams.get('mid') || 'pgkfpcen5m',
-          amt: parseInt(urlParams.get('amt') || '0'),
-          taxFreeAmt: parseInt(urlParams.get('taxFreeAmt') || '0'),
-          userId: pending ? pending.userId : (currentUser ? currentUser.uid : ''),
-          tier: pending ? pending.tier : '',
-          planName: pending ? pending.planName : '',
-          paid: pending ? pending.paid : 0,
-          service: 'taxnavi'
-        })
-      });
-      const result = await resp.json();
-      if (result.success) {
-        const planName = pending ? pending.planName : (result.planName || '');
-        document.getElementById('completePlanName').textContent = planName;
-        document.getElementById('completePayAmount').textContent = (result.chargeAmount || (pending ? pending.paid : 0)).toLocaleString() + '원';
-        document.getElementById('completeTier').textContent = planName;
-        document.getElementById('payCompleteModal').classList.add('active');
-      } else {
-        showToast('❌ 결제 승인 실패: ' + (result.error || '알 수 없는 오류'));
-      }
-    } catch(err) {
-      console.error('❌ 승인 요청 오류:', err);
-      showToast('결제 승인 요청 중 오류가 발생했습니다. 고객센터에 문의해주세요.');
-    } finally {
-      window._paymentProcessing = false;
-    }
-    return;
-  }
-  
-  // localStorage 미처리 결제 확인
-  if (window._paymentProcessing) return;
-  try {
-    const s = localStorage.getItem('_pendingCharge');
-    if (!s) return;
-    const pending = JSON.parse(s);
-    if (!pending.ts || Date.now() - pending.ts > 60000) {
-      localStorage.removeItem('_pendingCharge');
-      return;
-    }
-    console.warn('💳 미처리 pending 발견:', pending.moid);
-    showToast('이전 결제 처리 중 문제가 있었습니다. 결제가 진행되었다면 고객센터에 문의해 주세요.');
-    localStorage.removeItem('_pendingCharge');
-  } catch(e) {}
-}
-
-// 모바일 결제 후 앱 전환/복귀 대응
-let _lastPayCheck = 0;
-['focus', 'pageshow', 'visibilitychange'].forEach(function(ev) {
-  window.addEventListener(ev, function() {
-    if (ev === 'visibilitychange' && document.visibilityState !== 'visible') return;
-    if (Date.now() - _lastPayCheck < 3000) return;
-    _lastPayCheck = Date.now();
-    const s = localStorage.getItem('_pendingCharge');
-    if (s && window.location.search.includes('paymentToken')) {
-      checkPaymentResult();
-    }
-  });
-});
-
-// DOMContentLoaded에서 결제 결과 체크 추가
-document.addEventListener('DOMContentLoaded', function() {
-  checkPaymentResult();
-});
 </script>
 </body>
 </html>

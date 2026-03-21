@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Page - TaxNavi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- INNOPAY PG SDK (v2) -->
+    <script type="text/javascript" src="https://pg.innopay.co.kr/tpay/js/v1/innopay.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1B3A5C;
+            --primary-light: #2A5A8C;
+            --accent: #E8A838;
+            --accent-hover: #C78A1E;
+            --bg-cream: #FAFBFD;
+            --bg-white: #ffffff;
+            --text-dark: #1a202c;
+            --text-gray: #5A6577;
+            --text-light: #8A95A5;
+            --border: #E2E8F0;
+            --shadow: rgba(27, 58, 92, 0.08);
+            --success: #22C55E;
+            --warning: #d69e2e;
+            --danger: #e53e3e;
+            --info: #3182ce;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000; padding: 0 20px;
+        }
+        .header-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center; height: 60px;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .back-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px;
+            background: none; cursor: pointer; font-size: 18px; transition: all 0.2s;
+            text-decoration: none; color: var(--text-dark);
+        }
+        .back-btn:hover { background: var(--bg-cream); }
+        .page-title { font-size: 18px; font-weight: 700; color: var(--primary); }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600;
+            text-decoration: none; transition: all 0.2s; cursor: pointer; border: none;
+        }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-outline { background: transparent; color: var(--text-gray); border: 1.5px solid var(--border); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #16a34a; }
+        .btn-sm { padding: 8px 14px; font-size: 13px; }
+        .btn-lg { padding: 14px 28px; font-size: 16px; }
+
+        .main { padding: 80px 20px 40px; max-width: 1200px; margin: 0 auto; }
+
+        .tab-nav {
+            display: flex; gap: 8px; margin-bottom: 24px;
+            border-bottom: 1px solid var(--border); padding-bottom: 0;
+        }
+        .tab-btn {
+            padding: 12px 20px; background: none; border: none;
+            font-size: 14px; font-weight: 600; color: var(--text-gray);
+            cursor: pointer; border-bottom: 3px solid transparent;
+            margin-bottom: -1px; transition: all 0.2s;
+        }
+        .tab-btn:hover { color: var(--primary); }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card {
+            background: var(--bg-white); border-radius: 12px; padding: 20px;
+            border: 1px solid var(--border); text-align: center;
+        }
+        .stat-card.highlight {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white; border: none;
+        }
+        .stat-icon { font-size: 28px; margin-bottom: 8px; }
+        .stat-value { font-size: 28px; font-weight: 900; color: var(--primary); margin-bottom: 4px; }
+        .stat-card.highlight .stat-value { color: white; }
+        .stat-label { font-size: 13px; color: var(--text-gray); }
+        .stat-card.highlight .stat-label { color: rgba(255,255,255,0.8); }
+
+        .section-card {
+            background: var(--bg-white); border-radius: 12px;
+            border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden;
+        }
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--bg-cream);
+        }
+        .section-title {
+            font-size: 16px; font-weight: 700; color: var(--primary);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-content { padding: 20px; }
+
+        .charge-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+        .charge-option {
+            padding: 20px 16px; background: var(--bg-cream); border: 2px solid var(--border);
+            border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .charge-option:hover { border-color: var(--primary); }
+        .charge-option.selected {
+            border-color: var(--accent); background: var(--bg-white);
+            box-shadow: 0 4px 12px rgba(232, 168, 56, 0.2);
+        }
+        .charge-option.popular { position: relative; }
+        .charge-option.popular::before {
+            content: '인기'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: white; font-size: 11px; font-weight: 600;
+            padding: 2px 10px; border-radius: 100px;
+        }
+        .charge-amount { font-size: 20px; font-weight: 900; color: var(--primary); margin-bottom: 4px; }
+        .charge-bonus { font-size: 12px; color: var(--text-gray); font-weight: 500; }
+        .charge-btn-wrap { text-align: center; }
+
+        .transaction-list { display: flex; flex-direction: column; }
+        .transaction-item {
+            display: flex; align-items: center; gap: 16px;
+            padding: 16px 0; border-bottom: 1px solid var(--border);
+        }
+        .transaction-item:last-child { border-bottom: none; }
+        .transaction-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+        .transaction-icon.charge { background: #d1fae5; }
+        .transaction-icon.search { background: #dbeafe; }
+        .transaction-icon.summary { background: #fef3c7; }
+        .transaction-icon.analyze { background: #dbeafe; }
+        .transaction-icon.generate { background: #fef3c7; }
+        .transaction-info { flex: 1; min-width: 0; }
+        .transaction-title { font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 2px; }
+        .transaction-detail { font-size: 12px; color: var(--text-light); }
+        .transaction-amount { text-align: right; }
+        .transaction-amount-value { font-size: 15px; font-weight: 700; }
+        .transaction-amount-value.plus { color: var(--success); }
+        .transaction-amount-value.minus { color: var(--danger); }
+        .transaction-balance { font-size: 12px; color: var(--text-light); }
+
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .filter-select {
+            padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 13px; font-family: inherit; background: var(--bg-white); cursor: pointer;
+        }
+        .filter-select:focus { outline: none; border-color: var(--accent); }
+
+        .profile-form { max-width: 500px; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 8px; }
+        .form-input {
+            width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px;
+            font-size: 14px; font-family: inherit; transition: border-color 0.2s;
+        }
+        .form-input:focus { outline: none; border-color: var(--accent); }
+        .form-input:disabled { background: var(--bg-cream); color: var(--text-gray); }
+        .form-hint { font-size: 12px; color: var(--text-light); margin-top: 6px; }
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+        .setting-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 0; border-bottom: 1px solid var(--border);
+        }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-info h4 { font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+        .setting-info p { font-size: 13px; color: var(--text-light); }
+
+        .toggle-switch { position: relative; width: 48px; height: 26px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--border); transition: 0.3s; border-radius: 26px;
+        }
+        .toggle-slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px;
+            left: 3px; bottom: 3px; background-color: white; transition: 0.3s; border-radius: 50%;
+        }
+        .toggle-switch input:checked + .toggle-slider { background-color: var(--accent); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
+        .empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 16px; color: var(--text-dark); margin-bottom: 8px; }
+        .empty-state p { font-size: 14px; margin-bottom: 20px; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center;
+            z-index: 2000; padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--bg-white); border-radius: 16px; max-width: 480px; width: 100%; overflow: hidden;
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 24px; border-bottom: 1px solid var(--border);
+        }
+        .modal-title { font-size: 18px; font-weight: 700; color: var(--primary); }
+        .modal-close {
+            width: 32px; height: 32px; background: none; border: none;
+            font-size: 20px; cursor: pointer; color: var(--text-gray); border-radius: 6px;
+        }
+        .modal-close:hover { background: var(--bg-cream); }
+        .modal-body { padding: 24px; }
+        .modal-footer {
+            padding: 16px 24px; border-top: 1px solid var(--border);
+            display: flex; justify-content: flex-end; gap: 12px;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .charge-options { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .tab-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .tab-btn { white-space: nowrap; padding: 12px 16px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .charge-options { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .filter-bar { flex-direction: column; }
+            .filter-select { width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .stat-card { padding: 16px; }
+            .stat-value { font-size: 22px; }
+            .transaction-item { flex-wrap: wrap; }
+            .transaction-amount {
+                width: 100%; text-align: left; margin-top: 8px;
+                padding-top: 8px; border-top: 1px dashed var(--border);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <div class="header-left">
+                <a href="index.html" class="back-btn">←</a>
+                <h1 class="page-title">👤 <span id="headerUserName">My Page</span></h1>
+            </div>
+            <div class="header-right">
+                <a href="index.html" class="btn btn-outline btn-sm">🏠 홈</a>
+                <a href="#" class="btn btn-outline btn-sm" style="color: #e53e3e;" onclick="logout()">🚪 로그아웃</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="stats-grid">
+            <div class="stat-card highlight">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="currentBalance">0 P</div>
+                <div class="stat-label">보유 포인트</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔍</div>
+                <div class="stat-value" id="freeSearchCount">0건</div>
+                <div class="stat-label" id="freeSearchLabel">무료 검색 (잔여)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="tierBadge">무료</div>
+                <div class="stat-label">회원 등급</div>
+            </div>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="showTab('balance')">💰 잔액/충전</button>
+            <button class="tab-btn" onclick="showTab('usage')">📊 사용 내역</button>
+            <button class="tab-btn" onclick="showTab('profile')">👤 내 정보</button>
+            <button class="tab-btn" onclick="showTab('inquiry')">📮 문의하기</button>
+            <button class="tab-btn" onclick="showTab('settings')">⚙️ 설정</button>
+        </div>
+
+        <!-- Tab: 잔액/충전 -->
+        <div class="tab-content active" id="tab-balance">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">💳 포인트 충전</h2>
+                    <button class="btn btn-sm btn-outline" onclick="refreshPoints()">🔄 새로고침</button>
+                </div>
+                <div class="section-content">
+                    <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; color: white; text-align: center;">
+                        <p style="margin: 0 0 8px 0; font-size: 14px; opacity: 0.9;">현재 보유 포인트</p>
+                        <p id="balanceDisplay" style="margin: 0; font-size: 32px; font-weight: 900;">0 P</p>
+                    </div>
+                    
+                    <div style="background: var(--bg-cream); padding: 16px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--border);">
+                        <p style="margin: 0 0 12px 0; font-size: 14px; font-weight: 600; color: var(--text-dark);">🎁 무료 사용 현황</p>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 100px; background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <p style="margin: 0; font-size: 12px; color: var(--text-gray);">AI 검색</p>
+                                <p id="freeSearchStatus" style="margin: 4px 0 0 0; font-size: 16px; font-weight: 700; color: var(--success);">0/0건</p>
+                            </div>
+                        </div>
+                        <p id="memberTypeLabel" style="margin: 10px 0 0 0; font-size: 11px; color: var(--text-light); text-align: center;"></p>
+                    </div>
+                    
+                    <p style="margin: 0 0 12px 0; font-size: 14px; font-weight: 600; color: var(--text-dark);">💳 충전 금액 선택</p>
+                    <div class="charge-options" id="chargeOptionsContainer">
+                        <div style="text-align: center; color: var(--text-light); padding: 20px;">충전 옵션 로딩 중...</div>
+                    </div>
+                    
+                    <div id="selectedAmountDisplay" style="display: none; background: rgba(232, 168, 56, 0.1); padding: 16px; border-radius: 10px; margin: 20px 0; border: 1px solid var(--accent);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--text-gray);">충전 금액</span>
+                            <span id="selectedAmountText" style="font-size: 20px; font-weight: 700; color: var(--accent);">0원</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                            <span style="color: var(--text-gray);">적립 포인트</span>
+                            <span id="selectedPointsText" style="font-size: 20px; font-weight: 700; color: var(--primary);">+0 P</span>
+                        </div>
+                    </div>
+                    
+                    <div class="charge-btn-wrap">
+                        <button id="chargeSubmitBtn" class="btn btn-primary btn-lg" onclick="doCharge()" disabled style="width: 100%; opacity: 0.5;">
+                            💳 충전하기
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 20px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border);">
+                        <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 16px 20px; color: white;">
+                            <p style="margin: 0; font-size: 15px; font-weight: 700;">📌 이용 요금 안내</p>
+                            <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.85;">1P = 1원 | 충전 포인트 유효기간 1년</p>
+                        </div>
+                        <div style="padding: 16px 20px; background: white; border-bottom: 1px solid var(--border);">
+                            <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: 700; color: var(--primary);">🔍 AI 통합검색</p>
+                            <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-cream); padding: 10px 14px; border-radius: 8px;">
+                                <span style="font-size: 13px; color: var(--text-gray);">AI 통합검색 (6개 사이트)</span>
+                                <span style="font-size: 14px; font-weight: 700; color: var(--primary);">1,000P/건</span>
+                            </div>
+                        </div>
+                        <div style="padding: 16px 20px; background: white; border-bottom: 1px solid var(--border);">
+                            <p style="margin: 0 0 12px 0; font-size: 13px; font-weight: 700; color: var(--primary);">👥 회원 유형별 혜택</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                <div style="background: linear-gradient(135deg, #ebf8ff 0%, #f0fff4 100%); padding: 14px; border-radius: 10px; border: 1px solid #bee3f8;">
+                                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                                        <span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">베이직</span>
+                                        <span style="font-size: 11px; color: var(--text-gray);">월 30,000원</span>
+                                    </div>
+                                    <div style="font-size: 11.5px; color: var(--text-dark); line-height: 1.9;">
+                                        • AI 검색 월 <b>50회</b><br>
+                                        • 국세법령정보시스템 검색<br>
+                                        • AI 핵심 요약<br>
+                                        • 초과 시 충전 포인트 차감
+                                    </div>
+                                </div>
+                                <div style="background: linear-gradient(135deg, #fffaf0 0%, #fff5f5 100%); padding: 14px; border-radius: 10px; border: 1px solid #feebc8;">
+                                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                                        <span style="background: var(--accent); color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">프로</span>
+                                        <span style="font-size: 11px; color: var(--text-gray);">월 50,000원</span>
+                                    </div>
+                                    <div style="font-size: 11.5px; color: var(--text-dark); line-height: 1.9;">
+                                        • AI 검색 월 <b>120회</b><br>
+                                        • <b>6개 사이트</b> 통합검색<br>
+                                        • AI 핵심 요약 + 분석 리포트<br>
+                                        • 초과 시 충전 포인트 차감
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="background: var(--bg-cream); padding: 10px 14px; border-radius: 8px; font-size: 11px; color: var(--text-light); line-height: 1.7;">
+                                ※ 무료 체험: 첫 달 5회, 이후 월 2회 검색 가능<br>
+                                ※ 월간 한도 초과 시 건당 1,000원 (충전 포인트에서 차감)<br>
+                                ※ 충전 포인트는 1년간 유효합니다.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">📋 충전 내역</h2>
+                </div>
+                <div class="section-content">
+                    <div class="transaction-list" id="chargeHistory"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: 사용 내역 -->
+        <div class="tab-content" id="tab-usage">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">📊 사용 내역</h2>
+                </div>
+                <div class="section-content">
+                    <div class="filter-bar">
+                        <select class="filter-select" id="filterType" onchange="filterUsage()">
+                            <option value="all">전체</option>
+                            <option value="search">AI 검색</option>
+                            <option value="charge">포인트 충전</option>
+                        </select>
+                        <select class="filter-select" id="filterPeriod" onchange="filterUsage()">
+                            <option value="all">전체 기간</option>
+                            <option value="week">최근 1주</option>
+                            <option value="month">최근 1개월</option>
+                            <option value="3month">최근 3개월</option>
+                        </select>
+                    </div>
+                    <div class="transaction-list" id="usageHistory"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: 내 정보 -->
+        <div class="tab-content" id="tab-profile">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">👤 기본 정보</h2>
+                </div>
+                <div class="section-content">
+                    <div class="profile-form">
+                        <div class="form-group">
+                            <label class="form-label">아이디</label>
+                            <input type="text" class="form-input" id="profileLoginId" disabled>
+                            <p class="form-hint">아이디는 변경할 수 없습니다.</p>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">이름</label>
+                                <input type="text" class="form-input" id="profileName">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">연락처</label>
+                                <input type="tel" class="form-input" id="profilePhone">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">이메일</label>
+                            <input type="email" class="form-input" id="profileEmail">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveProfile()">저장하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: 문의하기 -->
+        <div class="tab-content" id="tab-inquiry">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">📮 문의하기</h2>
+                </div>
+                <div class="section-content">
+                    <p style="color: var(--text-gray); margin-bottom: 20px;">서비스 이용 중 궁금한 점이나 건의사항을 남겨주세요.</p>
+                    <div class="form-group">
+                        <label class="form-label">문의 유형 <span style="color: var(--danger);">*</span></label>
+                        <select class="form-input" id="inquiryType">
+                            <option value="">선택해주세요</option>
+                            <option value="서비스문의">서비스 문의</option>
+                            <option value="결제문의">결제/포인트 문의</option>
+                            <option value="기술문의">기술 문의</option>
+                            <option value="건의사항">건의사항</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">제목 <span style="color: var(--danger);">*</span></label>
+                        <input type="text" class="form-input" id="inquiryTitle" placeholder="문의 제목을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">내용 <span style="color: var(--danger);">*</span></label>
+                        <textarea class="form-input" id="inquiryContent" style="min-height: 150px; resize: vertical;" placeholder="문의 내용을 상세히 입력해주세요."></textarea>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button class="btn btn-primary" style="flex: 1;" onclick="submitInquiry()">📤 문의 등록</button>
+                    </div>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">📋 내 문의 내역</h2>
+                </div>
+                <div class="section-content">
+                    <div id="inquiryList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: 설정 -->
+        <div class="tab-content" id="tab-settings">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">🔔 알림 설정</h2>
+                </div>
+                <div class="section-content">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>이메일 알림</h4>
+                            <p>충전 완료, 한도 초과 알림 등을 이메일로 받습니다.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">⚠️ 계정 관리</h2>
+                </div>
+                <div class="section-content">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>로그아웃</h4>
+                            <p>현재 기기에서 로그아웃합니다.</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="logout()">로그아웃</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>회원 탈퇴</h4>
+                            <p>계정과 모든 데이터가 삭제됩니다.</p>
+                        </div>
+                        <button class="btn btn-sm" style="background: var(--danger); color: white;" onclick="deleteAccount()">회원 탈퇴</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Charge Complete Modal -->
+    <div class="modal-overlay" id="chargeCompleteModal">
+        <div class="modal">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--success), #16a34a); color: white;">
+                <h3 class="modal-title" style="color: white;">✅ 충전 완료!</h3>
+                <button class="modal-close" onclick="closeChargeCompleteModal()" style="color: white;">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="background: var(--bg-cream); padding: 16px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="color: var(--text-gray);">충전 금액</span>
+                        <span id="completeAmount" style="font-weight: 600;">0원</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="color: var(--text-gray);">적립 포인트</span>
+                        <span id="completePoints" style="color: var(--success); font-weight: 600;">+0 P</span>
+                    </div>
+                    <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-weight: 600;">현재 잔액</span>
+                            <span id="completeBalance" style="color: var(--accent); font-weight: 700; font-size: 18px;">0 P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeChargeCompleteModal()" style="width: 100%;">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase 설정 (TaxNavi 프로젝트)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCf7CsUTgfIWY-RW_mvTJOhczDtk1xM9sA",
+            authDomain: "kfpc-company-support-project.firebaseapp.com",
+            databaseURL: "https://kfpc-company-support-project-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "kfpc-company-support-project",
+            storageBucket: "kfpc-company-support-project.firebasestorage.app",
+            messagingSenderId: "1012609333373",
+            appId: "1:1012609333373:web:0ebceb27e5d2f12b56d914",
+            measurementId: "G-LEH0W7Y4F8"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ★★★ INNOPAY 승인 Cloud Function URL (참고파일과 동일 — 필요 시 교체) ★★★
+        const INNOPAY_APPROVE_URL = 'https://asia-northeast3-finmastertest.cloudfunctions.net/innopayApprove';
+
+        // 상태 관리
+        let selectedChargeAmount = 0;
+        let _selOpt = null;
+        let _pendingCharge = null;
+        let currentUserId = null;
+        let userData = {
+            balance: 0,
+            freeSearchUsed: 0,
+            freeSearchLimit: 0,
+            tier: 'free',
+            name: '',
+            email: '',
+            phone: '',
+            loginId: ''
+        };
+        let chargeHistory = [];
+        let usageHistory = [];
+        let inquiryHistory = [];
+
+        // 탭 전환
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+
+        // ════════════════════════════════════════
+        //  충전 옵션 선택
+        // ════════════════════════════════════════
+        function selectCharge(element, optionId, paid, credit) {
+            document.querySelectorAll('.charge-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            _selOpt = { id: optionId, paid: paid, credit: credit };
+            selectedChargeAmount = paid;
+            updateChargeUI();
+        }
+
+        function updateChargeUI() {
+            const displayDiv = document.getElementById('selectedAmountDisplay');
+            const submitBtn = document.getElementById('chargeSubmitBtn');
+            
+            if (_selOpt && _selOpt.paid > 0) {
+                displayDiv.style.display = 'block';
+                document.getElementById('selectedAmountText').textContent = _selOpt.paid.toLocaleString() + '원';
+                document.getElementById('selectedPointsText').textContent = '+' + _selOpt.credit.toLocaleString() + ' P';
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.innerHTML = '💳 ' + _selOpt.paid.toLocaleString() + '원 충전하기';
+            } else {
+                displayDiv.style.display = 'none';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.5';
+                submitBtn.innerHTML = '💳 충전하기';
+            }
+        }
+
+        function refreshPoints() {
+            window.location.reload();
+        }
+
+        function updatePointsDisplay() {
+            document.getElementById('currentBalance').textContent = userData.balance.toLocaleString() + ' P';
+            document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString() + ' P';
+            
+            const tierMap = { free: '무료', basic: '베이직', pro: '프로', enterprise: '기관' };
+            document.getElementById('tierBadge').textContent = tierMap[userData.tier] || '무료';
+            
+            if (userData.freeSearchLimit > 0) {
+                document.getElementById('freeSearchCount').textContent = Math.max(0, userData.freeSearchLimit - userData.freeSearchUsed) + '건';
+                document.getElementById('freeSearchStatus').textContent = userData.freeSearchUsed + '/' + userData.freeSearchLimit + '건 사용';
+                document.getElementById('freeSearchStatus').style.color = (userData.freeSearchUsed < userData.freeSearchLimit) ? 'var(--success)' : 'var(--danger)';
+            } else {
+                document.getElementById('freeSearchCount').textContent = '-';
+                document.getElementById('freeSearchStatus').textContent = '해당없음';
+                document.getElementById('freeSearchStatus').style.color = 'var(--text-light)';
+            }
+            
+            const memberLabel = document.getElementById('memberTypeLabel');
+            if (memberLabel) {
+                const t = userData.tier;
+                if (t === 'pro') memberLabel.textContent = '⭐ 프로 회원 · 월 120회 AI 검색';
+                else if (t === 'basic') memberLabel.textContent = '📋 베이직 회원 · 월 50회 AI 검색';
+                else memberLabel.textContent = '🆓 무료 체험 · 월 2회 AI 검색';
+            }
+        }
+
+        // ════════════════════════════════════════
+        //  충전 옵션 Firebase에서 동적 로드 (참고파일 100% 동일)
+        // ════════════════════════════════════════
+        async function loadChargeOptions() {
+            const container = document.getElementById('chargeOptionsContainer');
+            try {
+                const snap = await db.collection('charge_options')
+                    .where('isActive', '==', true)
+                    .orderBy('sortOrder')
+                    .get();
+                const opts = [];
+                snap.forEach(doc => opts.push(doc.data()));
+                
+                if (!opts.length) {
+                    container.innerHTML = '<div style="text-align:center; color:var(--text-light); padding:20px;">충전 옵션이 없습니다.</div>';
+                    return;
+                }
+                container.innerHTML = opts.map(o => {
+                    const bonus = o.chargeAmount > o.paidAmount
+                        ? '<div class="charge-bonus">+' + (o.chargeAmount - o.paidAmount).toLocaleString() + '원 보너스!</div>'
+                        : '<div class="charge-bonus">' + (o.label || o.chargeAmount.toLocaleString() + ' P') + '</div>';
+                    return '<div class="charge-option" onclick="selectCharge(this,\'' + o.optionId + '\',' + o.paidAmount + ',' + o.chargeAmount + ')">'
+                        + '<div class="charge-amount">' + o.paidAmount.toLocaleString() + '원</div>'
+                        + bonus + '</div>';
+                }).join('');
+                _selOpt = null;
+                document.getElementById('chargeSubmitBtn').disabled = true;
+            } catch (e) {
+                console.error('charge_options 로드 오류:', e);
+                // 인덱스 오류 시 폴백: 정렬 없이 로드
+                try {
+                    const snap2 = await db.collection('charge_options').get();
+                    const opts2 = [];
+                    snap2.forEach(doc => {
+                        const d = doc.data();
+                        if (d.isActive) opts2.push(d);
+                    });
+                    opts2.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+                    if (!opts2.length) {
+                        container.innerHTML = '<div style="text-align:center; color:var(--text-light); padding:20px;">충전 옵션이 없습니다.</div>';
+                        return;
+                    }
+                    container.innerHTML = opts2.map(o => {
+                        const bonus = o.chargeAmount > o.paidAmount
+                            ? '<div class="charge-bonus">+' + (o.chargeAmount - o.paidAmount).toLocaleString() + '원 보너스!</div>'
+                            : '<div class="charge-bonus">' + (o.label || o.chargeAmount.toLocaleString() + ' P') + '</div>';
+                        return '<div class="charge-option" onclick="selectCharge(this,\'' + o.optionId + '\',' + o.paidAmount + ',' + o.chargeAmount + ')">'
+                            + '<div class="charge-amount">' + o.paidAmount.toLocaleString() + '원</div>'
+                            + bonus + '</div>';
+                    }).join('');
+                } catch (e2) {
+                    container.innerHTML = '<div style="text-align:center; color:var(--danger); padding:20px;">충전 옵션 로드 실패</div>';
+                }
+            }
+        }
+
+        // ════════════════════════════════════════
+        //  이메일 입력 팝업 (참고파일 100% 동일 — Promise 기반 동적 생성)
+        // ════════════════════════════════════════
+        function showEmailInputPopup() {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center;';
+                overlay.innerHTML = '<div style="background:#fff;border-radius:12px;padding:2rem;max-width:420px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.2);">'
+                    + '<div style="text-align:center;margin-bottom:1.5rem;">'
+                    + '<div style="font-size:2.5rem;margin-bottom:0.5rem;">📧</div>'
+                    + '<h3 style="margin:0 0 0.5rem 0;font-size:1.1rem;color:#333;">이메일 주소 입력</h3>'
+                    + '<p style="margin:0;font-size:0.85rem;color:#888;line-height:1.5;">결제 영수증 수신을 위해<br>이메일 주소를 입력해주세요.</p>'
+                    + '</div>'
+                    + '<input type="email" id="_emailPopupInput" placeholder="example@email.com" style="width:100%;padding:0.8rem 1rem;border:2px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor=\'#1B3A5C\'" onblur="this.style.borderColor=\'#ddd\'">'
+                    + '<p id="_emailPopupError" style="color:#e53935;font-size:0.8rem;margin:0.3rem 0 0 0.2rem;display:none;">올바른 이메일 형식을 입력해주세요.</p>'
+                    + '<div style="display:flex;gap:0.5rem;margin-top:1.2rem;">'
+                    + '<button id="_emailCancelBtn" style="flex:1;padding:0.7rem;border:1px solid #ddd;background:#fff;border-radius:8px;font-size:0.95rem;cursor:pointer;color:#666;">취소</button>'
+                    + '<button id="_emailConfirmBtn" style="flex:2;padding:0.7rem;border:none;background:#1B3A5C;color:#fff;border-radius:8px;font-size:0.95rem;cursor:pointer;font-weight:600;">확인 후 결제 진행</button>'
+                    + '</div></div>';
+                document.body.appendChild(overlay);
+
+                const input = document.getElementById('_emailPopupInput');
+                const errorMsg = document.getElementById('_emailPopupError');
+                input.focus();
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                document.getElementById('_emailConfirmBtn').onclick = function() {
+                    const val = input.value.trim();
+                    if (!emailRegex.test(val)) {
+                        errorMsg.style.display = 'block';
+                        input.style.borderColor = '#e53935';
+                        input.focus();
+                        return;
+                    }
+                    document.body.removeChild(overlay);
+                    resolve(val);
+                };
+
+                document.getElementById('_emailCancelBtn').onclick = function() {
+                    document.body.removeChild(overlay);
+                    resolve(null);
+                };
+
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('_emailConfirmBtn').click(); }
+                    if (e.key === 'Escape') { document.getElementById('_emailCancelBtn').click(); }
+                });
+            });
+        }
+
+        // ════════════════════════════════════════
+        //  INNOPAY v2 결제 호출 (참고파일 100% 동일 구조)
+        // ════════════════════════════════════════
+        async function doCharge() {
+            if (!_selOpt) return;
+            const btn = document.getElementById('chargeSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = '결제창 호출중...';
+            try {
+                if (!currentUserId) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // 이메일 미등록 시 입력 요청 (INNOPAY 필수값)
+                if (!userData.email || !userData.email.trim()) {
+                    btn.disabled = false;
+                    btn.textContent = '💳 충전하기';
+                    const inputEmail = await showEmailInputPopup();
+                    if (!inputEmail) return;
+                    try {
+                        await db.collection('taxnavi_users').doc(currentUserId).set({ email: inputEmail }, { merge: true });
+                        userData.email = inputEmail;
+                    } catch(e) {
+                        alert('이메일 저장에 실패했습니다. 다시 시도해주세요.');
+                        return;
+                    }
+                    btn.disabled = true;
+                    btn.textContent = '결제창 호출중...';
+                }
+                
+                const moid = 'TAXNAVI' + Date.now() + Math.random().toString(36).substr(2, 9);
+                
+                if (typeof innopay === 'undefined') {
+                    alert('결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+                    return;
+                }
+                
+                // 결제 정보를 전역 + localStorage에 저장 (모바일 리다이렉트 대응)
+                window._pendingCharge = { moid: moid, paid: _selOpt.paid, credit: _selOpt.credit, optionId: _selOpt.id, userId: currentUserId, ts: Date.now() };
+                try { localStorage.setItem('_pendingCharge', JSON.stringify(window._pendingCharge)); } catch(e) {}
+                
+                // Firestore에 pending 기록 저장
+                try {
+                    await db.collection('pending_charges').doc(moid).set({
+                        moid: moid,
+                        userId: currentUserId,
+                        paid: _selOpt.paid,
+                        credit: _selOpt.credit,
+                        optionId: _selOpt.id,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch(e) { console.warn('pending_charges 저장 실패:', e); }
+                
+                // INNOPAY v2 결제창 호출 (면세: amt=0, taxFreeAmt=실결제금액)
+                innopay.goPay({
+                    payMethod: 'CARD',
+                    mid: 'pgkfpcen5m',
+                    moid: moid,
+                    goodsName: 'TaxNavi 포인트 충전 ' + _selOpt.credit.toLocaleString() + 'P',
+                    amt: 0,
+                    taxFreeAmt: _selOpt.paid,
+                    goodsCnt: 1,
+                    buyerName: userData.name || 'Guest',
+                    buyerEmail: userData.email,
+                    buyerTel: (userData.phone || '01000000000').replace(/-/g, ''),
+                    returnUrl: window.location.origin + window.location.pathname
+                });
+            } catch(err) {
+                alert('결제 요청 실패: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💳 충전하기';
+            }
+        }
+
+        // ════════════════════════════════════════
+        //  결제 성공 후 크레딧 적립 (참고파일 100% 동일 — TID 검증 + 중복 방지)
+        // ════════════════════════════════════════
+        async function chargeAfterPayment(payData) {
+            const tid = String(payData.tid || '').trim();
+            if (!tid) {
+                console.warn('⛔ TID 없음 → 적립 차단');
+                alert('결제 확인이 필요합니다. 고객센터에 문의해주세요.');
+                window._pendingCharge = null;
+                try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
+                return;
+            }
+            let pending = window._pendingCharge;
+            if (!pending) { try { const s = localStorage.getItem('_pendingCharge'); if(s) pending = JSON.parse(s); } catch(e) {} }
+            if (!pending) {
+                alert('결제 정보 오류. 고객센터에 문의해주세요.');
+                return;
+            }
+            try {
+                // 중복 적립 방지
+                const dupSnap = await db.collection('payments').where('tid', '==', tid).limit(1).get();
+                if (!dupSnap.empty) {
+                    console.warn('⛔ 이미 적립된 TID:', tid);
+                    alert('이미 처리된 결제입니다.');
+                    window._pendingCharge = null;
+                    try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
+                    return;
+                }
+                
+                const chargeAmount = pending.credit;
+                const paidAmount = pending.paid;
+                const userId = pending.userId;
+                
+                // 1) 결제 기록 저장
+                const pid = db.collection('payments').doc().id;
+                await db.collection('payments').doc(pid).set({
+                    paymentId: pid,
+                    userId: userId,
+                    paidAmount: paidAmount,
+                    chargeAmount: chargeAmount,
+                    provider: 'INNOPAY',
+                    status: 'paid',
+                    tid: tid,
+                    moid: payData.moid || pending.moid,
+                    authCode: payData.authCode || '',
+                    cardNum: payData.cardNum || '',
+                    cardName: payData.cardName || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // 2) 잔액 증가 (FieldValue.increment — 원자적)
+                await db.collection('taxnavi_users').doc(userId).set({
+                    points: firebase.firestore.FieldValue.increment(chargeAmount),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                
+                // 3) 트랜잭션 기록 저장
+                const txDocId = db.collection('transactions').doc().id;
+                await db.collection('transactions').doc(txDocId).set({
+                    txId: txDocId,
+                    userId: userId,
+                    type: 'charge',
+                    amount: chargeAmount,
+                    refType: 'payment',
+                    refId: pid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // 4) 로컬 상태 업데이트
+                userData.balance += chargeAmount;
+                updatePointsDisplay();
+                showChargeCompleteModal(paidAmount, userData.balance);
+                
+                window._pendingCharge = null;
+                try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
+                
+            } catch(err) {
+                console.error('❌ 포인트 적립 오류:', err);
+                alert('결제는 완료되었으나 포인트 적립 중 오류 발생.\n고객센터에 문의해주세요.');
+            }
+        }
+
+        // ════════════════════════════════════════
+        //  페이지 로드 시 결제 결과 확인 (참고파일 100% 동일 — v2 returnUrl 처리)
+        // ════════════════════════════════════════
+        async function checkPaymentResult() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentToken = urlParams.get('paymentToken');
+            const tid = urlParams.get('tid');
+            const chargeResult = urlParams.get('charge');
+            
+            if (chargeResult === 'success') {
+                const amt = urlParams.get('amount') || '';
+                window.history.replaceState({}, document.title, window.location.pathname);
+                alert('✅ ' + (amt ? parseInt(amt).toLocaleString() + '원 ' : '') + '충전 완료!');
+                try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
+                return;
+            }
+            if (chargeResult === 'fail') {
+                const msg = urlParams.get('msg') || '결제 처리 실패';
+                window.history.replaceState({}, document.title, window.location.pathname);
+                alert('❌ 결제 오류: ' + decodeURIComponent(msg));
+                try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
+                return;
+            }
+            
+            // v2 인증 완료 → 서버에 승인 요청
+            if (paymentToken && tid) {
+                if (window._paymentProcessing) return;
+                window._paymentProcessing = true;
+                console.log('💳 v2 인증 완료, 서버 승인 요청...', { tid: tid });
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                let pending = window._pendingCharge;
+                if (!pending) { try { const s = localStorage.getItem('_pendingCharge'); if(s) pending = JSON.parse(s); } catch(e) {} }
+                try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
+                window._pendingCharge = null;
+                
+                try {
+                    const resp = await fetch(INNOPAY_APPROVE_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            paymentToken: paymentToken,
+                            tid: tid,
+                            moid: urlParams.get('moid') || '',
+                            mid: urlParams.get('mid') || 'pgkfpcen5m',
+                            amt: parseInt(urlParams.get('amt') || '0'),
+                            taxFreeAmt: parseInt(urlParams.get('taxFreeAmt') || '0'),
+                            userId: pending ? pending.userId : (currentUserId || ''),
+                            credit: pending ? pending.credit : 0,
+                            paid: pending ? pending.paid : 0
+                        })
+                    });
+                    const result = await resp.json();
+                    if (result.success) {
+                        userData.balance = result.newBalance;
+                        updatePointsDisplay();
+                        alert('✅ ' + result.chargeAmount.toLocaleString() + '원 충전 완료!\n잔액: ' + result.newBalance.toLocaleString() + ' P');
+                    } else {
+                        alert('❌ 결제 승인 실패: ' + (result.error || '알 수 없는 오류'));
+                    }
+                } catch(err) {
+                    console.error('❌ 승인 요청 오류:', err);
+                    alert('결제 승인 요청 중 오류가 발생했습니다.\n고객센터에 문의해주세요.');
+                } finally {
+                    window._paymentProcessing = false;
+                }
+                return;
+            }
+            
+            // localStorage 미처리 결제
+            if (window._paymentProcessing) return;
+            try {
+                const s = localStorage.getItem('_pendingCharge');
+                if (!s) return;
+                const pending = JSON.parse(s);
+                if (!pending.ts || Date.now() - pending.ts > 60000) {
+                    localStorage.removeItem('_pendingCharge');
+                    return;
+                }
+                console.warn('💳 미처리 pending 발견:', pending.moid);
+                alert('이전 결제 처리 중 문제가 있었습니다.\n결제가 진행되었다면 고객센터에 문의해 주세요.');
+                localStorage.removeItem('_pendingCharge');
+            } catch(e) {}
+        }
+
+        // 모바일 결제 후 앱 전환/복귀 대응 (참고파일 100% 동일)
+        let _lastPayCheck = 0;
+        ['focus', 'pageshow', 'visibilitychange'].forEach(function(ev) {
+            window.addEventListener(ev, function() {
+                if (ev === 'visibilitychange' && document.visibilityState !== 'visible') return;
+                if (Date.now() - _lastPayCheck < 3000) return;
+                _lastPayCheck = Date.now();
+                const s = localStorage.getItem('_pendingCharge');
+                if (s && window.location.search.includes('paymentToken')) {
+                    checkPaymentResult();
+                }
+            });
+        });
+
+        // 충전 완료 모달
+        function showChargeCompleteModal(amount, newBalance) {
+            document.getElementById('completeAmount').textContent = amount.toLocaleString() + '원';
+            document.getElementById('completePoints').textContent = '+' + amount.toLocaleString() + ' P';
+            document.getElementById('completeBalance').textContent = newBalance.toLocaleString() + ' P';
+            document.getElementById('chargeCompleteModal').classList.add('active');
+        }
+        function closeChargeCompleteModal() {
+            document.getElementById('chargeCompleteModal').classList.remove('active');
+            selectedChargeAmount = 0;
+            document.querySelectorAll('.charge-option').forEach(opt => opt.classList.remove('selected'));
+            updateChargeUI();
+        }
+
+        // 충전 내역 렌더링
+        function renderChargeHistory() {
+            const container = document.getElementById('chargeHistory');
+            if (chargeHistory.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💳</div><h3>충전 내역이 없습니다</h3></div>';
+                return;
+            }
+            container.innerHTML = chargeHistory.map(item => '<div class="transaction-item">'
+                + '<div class="transaction-icon charge">💰</div>'
+                + '<div class="transaction-info">'
+                + '<div class="transaction-title">포인트 충전</div>'
+                + '<div class="transaction-detail">' + item.date + ' · ' + item.method + '</div>'
+                + '</div>'
+                + '<div class="transaction-amount">'
+                + '<div class="transaction-amount-value plus">+' + item.amount.toLocaleString() + ' P</div>'
+                + '<div class="transaction-balance">결제 ' + item.paidAmount.toLocaleString() + '원</div>'
+                + '</div></div>').join('');
+        }
+
+        // 사용 내역 렌더링
+        function renderUsageHistory() {
+            const container = document.getElementById('usageHistory');
+            if (usageHistory.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><h3>사용 내역이 없습니다</h3></div>';
+                return;
+            }
+            container.innerHTML = usageHistory.map(item => '<div class="transaction-item">'
+                + '<div class="transaction-icon ' + item.type + '">'
+                + (item.type === 'charge' ? '💰' : item.type === 'search' ? '🔍' : '📊')
+                + '</div>'
+                + '<div class="transaction-info">'
+                + '<div class="transaction-title">' + item.title + '</div>'
+                + '<div class="transaction-detail">' + item.date + ' · ' + item.detail + '</div>'
+                + '</div>'
+                + '<div class="transaction-amount">'
+                + '<div class="transaction-amount-value ' + (item.amount > 0 ? 'plus' : item.amount < 0 ? 'minus' : '') + '">'
+                + (item.amount > 0 ? '+' : '') + (item.amount === 0 ? '무료' : item.amount.toLocaleString() + ' P')
+                + '</div></div></div>').join('');
+        }
+
+        // 프로필 저장
+        async function saveProfile() {
+            if (!currentUserId) { alert('로그인이 필요합니다.'); return; }
+            const newName = document.getElementById('profileName').value.trim();
+            const newPhone = document.getElementById('profilePhone').value.trim();
+            const newEmail = document.getElementById('profileEmail').value.trim();
+            
+            try {
+                await db.collection('taxnavi_users').doc(currentUserId).set({
+                    name: newName,
+                    phone: newPhone,
+                    email: newEmail,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                
+                userData.name = newName;
+                userData.phone = newPhone;
+                userData.email = newEmail;
+                alert('✅ 정보가 저장되었습니다.');
+            } catch (error) {
+                console.error('프로필 저장 오류:', error);
+                alert('저장 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 필터링
+        function filterUsage() {
+            // 향후 필터 로직 구현
+        }
+
+        // 로그아웃
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                firebase.auth().signOut().then(() => {
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+
+        // 회원 탈퇴
+        function deleteAccount() {
+            if (confirm('정말 탈퇴하시겠습니까?\n모든 데이터가 삭제되며 복구할 수 없습니다.')) {
+                if (confirm('잔여 포인트 ' + userData.balance.toLocaleString() + 'P가 소멸됩니다.\n그래도 탈퇴하시겠습니까?')) {
+                    alert('회원 탈퇴가 완료되었습니다.');
+                    firebase.auth().signOut().then(() => {
+                        window.location.href = 'index.html';
+                    });
+                }
+            }
+        }
+
+        // 문의 등록
+        async function submitInquiry() {
+            if (!currentUserId) { alert('로그인이 필요합니다.'); return; }
+            const type = document.getElementById('inquiryType').value;
+            const title = document.getElementById('inquiryTitle').value.trim();
+            const content = document.getElementById('inquiryContent').value.trim();
+
+            if (!type) { alert('문의 유형을 선택해주세요.'); return; }
+            if (!title) { alert('제목을 입력해주세요.'); return; }
+            if (!content) { alert('내용을 입력해주세요.'); return; }
+
+            try {
+                await db.collection('suggestions').add({
+                    userId: currentUserId,
+                    userName: userData.name,
+                    type: type,
+                    title: title,
+                    content: content,
+                    status: '대기',
+                    service: 'taxnavi',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert('✅ 문의가 등록되었습니다.\n\n빠른 시일 내에 답변 드리겠습니다.');
+                document.getElementById('inquiryType').value = '';
+                document.getElementById('inquiryTitle').value = '';
+                document.getElementById('inquiryContent').value = '';
+            } catch(err) {
+                console.error('문의 등록 오류:', err);
+                alert('문의 등록 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 문의 내역 렌더링
+        function renderInquiryHistory() {
+            const list = document.getElementById('inquiryList');
+            if (inquiryHistory.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">문의 내역이 없습니다.</p>';
+                return;
+            }
+            list.innerHTML = inquiryHistory.map(item => {
+                const statusColor = item.status === '답변완료' ? 'var(--success)' : 'var(--accent)';
+                return '<div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border);">'
+                    + '<div>'
+                    + '<span style="background: var(--bg-cream); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: var(--text-gray); margin-right: 8px;">' + item.type + '</span>'
+                    + '<span style="font-weight: 600;">' + item.title + '</span>'
+                    + '<span style="font-size: 12px; color: var(--text-light); margin-left: 12px;">' + item.date + '</span>'
+                    + '</div>'
+                    + '<span style="background: ' + statusColor + '15; color: ' + statusColor + '; padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 600;">' + item.status + '</span>'
+                    + '</div>';
+            }).join('');
+        }
+
+        // 모달 외부 클릭
+        document.getElementById('chargeCompleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeChargeCompleteModal();
+        });
+
+        // ════════════════════════════════════════
+        //  초기화 (Firebase Auth 기반)
+        // ════════════════════════════════════════
+        firebase.auth().onAuthStateChanged(async function(user) {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            currentUserId = user.uid;
+            
+            try {
+                const userDoc = await db.collection('taxnavi_users').doc(user.uid).get();
+                const data = userDoc.exists ? userDoc.data() : {};
+                
+                userData.name = data.name || user.displayName || '';
+                userData.email = data.email || '';
+                userData.phone = data.phone || '';
+                userData.balance = data.points || 0;
+                userData.tier = data.tier || 'free';
+                userData.freeSearchUsed = data.freeSearchUsed || 0;
+                userData.loginId = (user.email || '').replace('@taxnavi.kr', '');
+                
+                // 등급별 무료 검색 한도
+                const tierLimits = { free: 2, basic: 50, pro: 120, enterprise: 999 };
+                userData.freeSearchLimit = tierLimits[userData.tier] || 2;
+                
+                // 프로필 폼 채우기
+                document.getElementById('profileLoginId').value = userData.loginId;
+                document.getElementById('profileName').value = userData.name;
+                document.getElementById('profileEmail').value = userData.email;
+                document.getElementById('profilePhone').value = userData.phone;
+                
+                if (userData.name) {
+                    document.getElementById('headerUserName').textContent = userData.name + '님의 My Page';
+                }
+                
+            } catch (error) {
+                console.error('사용자 정보 로드 오류:', error);
+                userData.name = user.displayName || '';
+            }
+            
+            // payments에서 충전 내역 로드 (최근 50건)
+            try {
+                const paySnapshot = await db.collection('payments')
+                    .where('userId', '==', currentUserId)
+                    .where('status', '==', 'paid')
+                    .orderBy('createdAt', 'desc')
+                    .limit(50)
+                    .get();
+                
+                chargeHistory = [];
+                paySnapshot.forEach(doc => {
+                    const d = doc.data();
+                    const createdAt = d.createdAt ? d.createdAt.toDate() : new Date();
+                    chargeHistory.push({
+                        date: createdAt.toLocaleDateString('ko-KR'),
+                        method: d.cardName || '카드결제',
+                        amount: d.chargeAmount || 0,
+                        paidAmount: d.paidAmount || 0
+                    });
+                });
+            } catch (chargeErr) {
+                console.error('충전 내역 로드 오류:', chargeErr);
+            }
+            
+            // usageLog에서 사용 내역 로드 (최근 50건)
+            try {
+                const usageSnapshot = await db.collection('usageLog')
+                    .where('userId', '==', currentUserId)
+                    .orderBy('createdAt', 'desc')
+                    .limit(50)
+                    .get();
+                
+                const typeLabel = { search: 'AI 통합검색', summary: 'AI 요약' };
+                const typeIcon = { search: 'search', summary: 'summary' };
+                
+                usageHistory = [];
+                usageSnapshot.forEach(doc => {
+                    const d = doc.data();
+                    const createdAt = d.createdAt ? d.createdAt.toDate() : new Date();
+                    const pointUsed = d.pointUsed || 0;
+                    usageHistory.push({
+                        type: typeIcon[d.type] || 'search',
+                        title: typeLabel[d.type] || d.type || 'AI 검색',
+                        date: createdAt.toLocaleDateString('ko-KR'),
+                        detail: d.query ? d.query.substring(0, 30) + '...' : '-',
+                        amount: pointUsed > 0 ? -pointUsed : 0
+                    });
+                });
+            } catch (usageErr) {
+                console.error('사용 내역 로드 오류:', usageErr);
+            }
+            
+            // suggestions에서 문의 내역 로드
+            try {
+                const sugSnapshot = await db.collection('suggestions')
+                    .where('userId', '==', currentUserId)
+                    .orderBy('createdAt', 'desc')
+                    .limit(10)
+                    .get();
+                
+                inquiryHistory = [];
+                sugSnapshot.forEach(doc => {
+                    const d = doc.data();
+                    const createdAt = d.createdAt ? d.createdAt.toDate() : new Date();
+                    inquiryHistory.push({
+                        id: doc.id,
+                        type: d.type || '일반문의',
+                        title: d.title || '',
+                        date: createdAt.toLocaleDateString('ko-KR'),
+                        status: d.status || '대기'
+                    });
+                });
+            } catch (sugErr) {
+                console.error('문의 내역 로드 오류:', sugErr);
+            }
+            
+            renderChargeHistory();
+            renderUsageHistory();
+            renderInquiryHistory();
+            updatePointsDisplay();
+            loadChargeOptions();
+            checkPaymentResult();
+            
+            // URL 해시로 탭 자동 전환
+            const hash = window.location.hash;
+            if (hash) {
+                const tabId = hash.replace('#tab-', '');
+                const tabBtn = document.querySelector('.tab-btn');
+                if (tabBtn) {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    const targetTab = document.getElementById('tab-' + tabId);
+                    if (targetTab) {
+                        targetTab.classList.add('active');
+                        // 해당 탭 버튼 활성화
+                        document.querySelectorAll('.tab-btn').forEach(b => {
+                            if (b.textContent.includes(tabId === 'balance' ? '잔액' : tabId === 'usage' ? '사용' : tabId === 'profile' ? '내 정보' : tabId === 'inquiry' ? '문의' : '설정')) {
+                                b.classList.add('active');
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
