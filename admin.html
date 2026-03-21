@@ -103,10 +103,9 @@ tbody tr:hover{background:#FAFBFD}
 <!-- Auth Wall -->
 <div id="authWall" class="auth-wall">
   <h2>🔒 관리자 로그인</h2>
-  <p>관리자 권한이 있는 계정으로 로그인하세요</p>
-  <button onclick="doAdminLogin()">Google 로그인</button>
+  <p>관리자 계정으로 로그인하세요</p>
   <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-    <input id="al-email" placeholder="이메일" style="padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;width:200px">
+    <input id="al-id" placeholder="아이디" style="padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;width:160px">
     <input id="al-pw" type="password" placeholder="비밀번호" style="padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;width:160px">
     <button onclick="doEmailLogin()" style="padding:10px 20px;background:#1B3A5C;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">로그인</button>
   </div>
@@ -182,35 +181,32 @@ tbody tr:hover{background:#FAFBFD}
 let token = null;
 
 // ── Auth ──
-const ADMIN_EMAILS = ['polarislkh@gmail.com','kfpc0808@gmail.com'];
+const ADMIN_EMAILS = ['admin@taxnavi.kr'];
 
 firebase.auth().onAuthStateChanged(async user => {
   if (user && ADMIN_EMAILS.includes(user.email)) {
     token = await user.getIdToken();
     document.getElementById('authWall').style.display = 'none';
     document.getElementById('adminContent').style.display = 'block';
-    document.getElementById('adminEmail').textContent = user.email;
+    document.getElementById('adminEmail').textContent = 'admin';
     loadDashboard();
   } else {
     document.getElementById('authWall').style.display = 'flex';
     document.getElementById('adminContent').style.display = 'none';
     if (user && !ADMIN_EMAILS.includes(user.email)) {
-      document.getElementById('authErr').textContent = '관리자 권한이 없는 계정입니다: ' + user.email;
+      document.getElementById('authErr').textContent = '관리자 권한이 없는 계정입니다.';
       firebase.auth().signOut();
     }
   }
 });
 
 function doEmailLogin() {
-  const email = document.getElementById('al-email').value.trim();
+  const loginId = document.getElementById('al-id').value.trim();
   const pw = document.getElementById('al-pw').value;
-  firebase.auth().signInWithEmailAndPassword(email, pw)
-    .catch(err => document.getElementById('authErr').textContent = '로그인 실패: ' + err.message);
-}
-function doAdminLogin() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider)
-    .catch(err => document.getElementById('authErr').textContent = err.message);
+  if (!loginId || !pw) { document.getElementById('authErr').textContent = '아이디와 비밀번호를 입력하세요'; return; }
+  const dummyEmail = loginId + '@taxnavi.kr';
+  firebase.auth().signInWithEmailAndPassword(dummyEmail, pw)
+    .catch(err => document.getElementById('authErr').textContent = '로그인 실패: 아이디 또는 비밀번호를 확인하세요');
 }
 
 // ── Tabs ──
