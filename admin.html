@@ -123,6 +123,7 @@ tbody tr:hover{background:#FAFBFD}
         <li onclick="showTab('users')">👥 <span>회원 관리</span></li>
         <li onclick="showTab('searchLogs')">🔍 <span>검색 로그</span></li>
         <li onclick="showTab('loginLogs')">🔑 <span>로그인 로그</span></li>
+        <li onclick="showTab('suggestions')">📮 <span>문의 관리</span></li>
       </ul>
     </aside>
     <div class="main">
@@ -178,6 +179,19 @@ tbody tr:hover{background:#FAFBFD}
         </div>
       </div>
     </div>
+
+    <!-- SUGGESTIONS -->
+    <div id="sec-suggestions" class="section">
+      <div class="panel">
+        <div class="panel-header"><h3>문의 관리</h3><span class="badge" id="sugCount">0건</span></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>시간</th><th>이름</th><th>유형</th><th>제목</th><th>내용</th><th>상태</th><th>관리</th></tr></thead>
+            <tbody id="suggestionsTable"><tr><td colspan="7" class="loading">로딩 중...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
   </div>
 </div>
@@ -224,6 +238,7 @@ function showTab(name) {
   if (name === 'users') loadUsers();
   if (name === 'searchLogs') loadSearchLogs();
   if (name === 'loginLogs') loadLoginLogs();
+  if (name === 'suggestions') loadSuggestions();
 }
 
 // ── API Call Helper ──
@@ -302,8 +317,17 @@ async function loadUsers() {
 
 async function updateTier(uid, tier) {
   try {
-    await apiPost('/api/admin/update-user', { uid, tier });
-    alert('등급 변경 완료: ' + tier);
+    const body = { uid, tier };
+    if (tier === 'enterprise') {
+      const limitStr = prompt('기관 월간 검색 한도를 입력하세요 (숫자):', '120');
+      if (limitStr === null) return;
+      const limit = parseInt(limitStr);
+      if (isNaN(limit) || limit < 1) { alert('올바른 숫자를 입력하세요'); return; }
+      body.monthlyLimit = limit;
+    }
+    await apiPost('/api/admin/update-user', body);
+    alert('등급 변경 완료: ' + tier + (body.monthlyLimit ? ' (월 ' + body.monthlyLimit + '건)' : ''));
+    loadUsers();
   } catch (err) { alert('실패: ' + err.message); }
 }
 
@@ -344,6 +368,37 @@ async function loadLoginLogs() {
   } catch (err) {
     document.getElementById('loginLogsTable').innerHTML = '<tr><td colspan="3" class="loading">오류: '+err.message+'</td></tr>';
   }
+}
+
+// ── Suggestions (문의 관리) ──
+async function loadSuggestions() {
+  try {
+    const d = await api('/api/admin/suggestions?limit=50');
+    document.getElementById('sugCount').textContent = d.count + '건';
+    const tb = document.getElementById('suggestionsTable');
+    if (!d.suggestions.length) { tb.innerHTML = '<tr><td colspan="7" class="loading">문의가 없습니다</td></tr>'; return; }
+    tb.innerHTML = d.suggestions.map(s => `<tr>
+      <td style="white-space:nowrap">${s.createdAt ? fmtTime(s.createdAt) : '-'}</td>
+      <td>${s.userName||'-'}</td>
+      <td>${s.type||'-'}</td>
+      <td><strong>${s.title||'-'}</strong></td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(s.content||'').replace(/"/g,'&quot;')}">${s.content||'-'}</td>
+      <td><span class="tier-badge ${s.status==='답변완료'?'tier-enterprise':'tier-free'}">${s.status}</span></td>
+      <td><button onclick="replyToSuggestion('${s.id}','${(s.title||'').replace(/'/g,'\\&#39;')}')" style="padding:4px 10px;background:#1B3A5C;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer">${s.status==='답변완료'?'수정':'답변'}</button></td>
+    </tr>`).join('');
+  } catch (err) {
+    document.getElementById('suggestionsTable').innerHTML = '<tr><td colspan="7" class="loading">오류: '+err.message+'</td></tr>';
+  }
+}
+
+async function replyToSuggestion(id, title) {
+  const reply = prompt('답변 내용을 입력하세요 (' + title + '):');
+  if (reply === null) return;
+  try {
+    await apiPost('/api/admin/update-suggestion', { id, status: '답변완료', reply });
+    alert('답변 완료');
+    loadSuggestions();
+  } catch (err) { alert('실패: ' + err.message); }
 }
 
 // ── Helpers ──

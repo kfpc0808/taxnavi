@@ -822,7 +822,7 @@
                     const inputEmail = await showEmailInputPopup();
                     if (!inputEmail) return;
                     try {
-                        await db.collection('taxnavi_users').doc(currentUserId).set({ email: inputEmail }, { merge: true });
+                        await db.collection('users').doc(currentUserId).set({ email: inputEmail }, { merge: true });
                         userData.email = inputEmail;
                     } catch(e) {
                         alert('이메일 저장에 실패했습니다. 다시 시도해주세요.');
@@ -929,7 +929,7 @@
                 });
                 
                 // 2) 잔액 증가 (FieldValue.increment — 원자적)
-                await db.collection('taxnavi_users').doc(userId).set({
+                await db.collection('users').doc(userId).set({
                     points: firebase.firestore.FieldValue.increment(chargeAmount),
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
@@ -1121,7 +1121,7 @@
             const newEmail = document.getElementById('profileEmail').value.trim();
             
             try {
-                await db.collection('taxnavi_users').doc(currentUserId).set({
+                await db.collection('users').doc(currentUserId).set({
                     name: newName,
                     phone: newPhone,
                     email: newEmail,
@@ -1233,7 +1233,7 @@
             currentUserId = user.uid;
             
             try {
-                const userDoc = await db.collection('taxnavi_users').doc(user.uid).get();
+                const userDoc = await db.collection('users').doc(user.uid).get();
                 const data = userDoc.exists ? userDoc.data() : {};
                 
                 userData.name = data.name || user.displayName || '';
