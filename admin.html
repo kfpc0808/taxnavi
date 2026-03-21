@@ -97,7 +97,7 @@ tbody tr:hover{background:#FAFBFD}
   <div class="nav-logo">Tax<span>Navi</span> Admin</div>
   <div class="nav-user">
     <span id="adminEmail"></span>
-    <button onclick="firebase.auth().signOut()">로그아웃</button>
+    <button onclick="firebase.auth().signOut().then(()=>location.href='/')">로그아웃</button>
     <button onclick="location.href='/'">사이트 보기</button>
   </div>
 </nav>
@@ -196,12 +196,10 @@ firebase.auth().onAuthStateChanged(async user => {
     document.getElementById('adminEmail').textContent = 'admin';
     loadDashboard();
   } else {
-    document.getElementById('authWall').style.display = 'flex';
-    document.getElementById('adminContent').style.display = 'none';
     if (user && !ADMIN_EMAILS.includes(user.email)) {
-      document.getElementById('authErr').textContent = '관리자 권한이 없는 계정입니다.';
       firebase.auth().signOut();
     }
+    window.location.href = '/';
   }
 });
 
