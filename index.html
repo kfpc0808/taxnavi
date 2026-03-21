@@ -730,15 +730,29 @@ function handleJarviaLogin(){
 
 // ─── Auth State Listener ───
 let currentUser = null;
-firebase.auth().onAuthStateChanged(user => {
+firebase.auth().onAuthStateChanged(async user => {
   currentUser = user;
   const loginBtn = document.querySelector('.btn-login');
   const startBtn = document.querySelector('.btn-start');
   if (user) {
-    if (loginBtn) { loginBtn.textContent = (user.displayName || '회원'); loginBtn.onclick = () => { if(confirm('로그아웃 하시겠습니까?')) firebase.auth().signOut(); }; }
-    if (startBtn) { startBtn.textContent = '검색하기'; startBtn.onclick = () => { document.getElementById('searchInput').focus(); return false; }; }
+    // admin 계정 → 최고관리자 표시 + 클릭 시 admin 페이지
+    if (user.email === 'admin@taxnavi.kr') {
+      if (loginBtn) { loginBtn.textContent = '최고관리자'; loginBtn.style.background='#DC2626'; loginBtn.style.color='white'; loginBtn.style.borderColor='#DC2626'; loginBtn.onclick = () => { window.location.href = '/admin.html'; }; }
+      if (startBtn) { startBtn.textContent = '관리자페이지'; startBtn.onclick = () => { window.location.href = '/admin.html'; }; }
+    } else {
+      // 일반 회원 → 이름(등급) 표시
+      const tierMap = {free:'무료',basic:'베이직',pro:'프로',enterprise:'기관'};
+      let label = user.displayName || '회원';
+      try {
+        const tk = await user.getIdToken();
+        const resp = await fetch(API_BASE_URL + '/api/usage', { headers:{'Authorization':'Bearer '+tk} });
+        if (resp.ok) { const d = await resp.json(); if(d.tier) label = (user.displayName||'회원') + '(' + (tierMap[d.tier]||d.tier) + ')'; }
+      } catch(e){}
+      if (loginBtn) { loginBtn.textContent = label; loginBtn.onclick = () => { if(confirm('로그아웃 하시겠습니까?')) firebase.auth().signOut(); }; }
+      if (startBtn) { startBtn.textContent = '검색하기'; startBtn.onclick = () => { document.getElementById('searchInput').focus(); return false; }; }
+    }
   } else {
-    if (loginBtn) { loginBtn.textContent = '로그인'; loginBtn.onclick = () => { openModal('login'); return false; }; }
+    if (loginBtn) { loginBtn.textContent = '로그인'; loginBtn.style.background=''; loginBtn.style.color=''; loginBtn.style.borderColor=''; loginBtn.onclick = () => { openModal('login'); return false; }; }
     if (startBtn) { startBtn.textContent = '무료 체험'; startBtn.onclick = () => { openModal('signup'); return false; }; }
   }
 });
