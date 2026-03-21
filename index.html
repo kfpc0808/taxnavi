@@ -13,6 +13,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+// ★★★ Firebase Console → Project Settings → General → Web App에서 복사하여 교체하세요 ★★★
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "kfpc-company-support-project.firebaseapp.com",
+  projectId: "kfpc-company-support-project",
+  storageBucket: "kfpc-company-support-project.firebasestorage.app",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+
+// ★★★ Cloud Run 배포 후 URL 교체 ★★★
+const API_BASE_URL = 'https://taxnavi-backend-XXXXX-an.a.run.app';
+</script>
 <style>
 :root {
   --primary:#1B3A5C; --primary-light:#2A5A8C; --primary-dark:#0F2640;
@@ -481,7 +499,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       </div>
       <div class="footer-links-group">
         <div class="footer-col"><h4>서비스</h4><a href="#features">검색 대상 사이트</a><a href="#features">AI 통합검색</a><a href="#pricing">요금제</a></div>
-        <div class="footer-col"><h4>지원</h4><a href="#faq">자주 묻는 질문</a><a href="mailto:contact@taxnavi.kr">문의하기</a><a href="#">이용약관</a><a href="#">개인정보처리방침</a></div>
+        <div class="footer-col"><h4>지원</h4><a href="#faq">자주 묻는 질문</a><a href="/cdn-cgi/l/email-protection#ee8d81809a8f8d9aae9a8f96808f9887c0859c">문의하기</a><a href="#">이용약관</a><a href="#">개인정보처리방침</a></div>
         <div class="footer-col"><h4>파트너</h4><a href="https://jarvaai.web.app" target="_blank">JARVIA</a><a href="#">기관 도입 문의</a></div>
       </div>
     </div>
@@ -524,7 +542,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 
 <div class="toast" id="toast"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/></svg><span id="toastMessage">복사되었습니다</span></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw'},courtCase:{name:'대법원 법고을',color:'#DC2626',badge:'badge-courtCase'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA'}};
 
 new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1}).observe(document.querySelectorAll?null:null);
@@ -546,16 +564,166 @@ function switchTab(t){
   document.getElementById('modalSubtitle').textContent=l?'TaxNavi에 오신 것을 환영합니다':'30초 만에 가입하고 시작하세요';
   document.getElementById('modalFooter').innerHTML=l?'계정이 없으신가요? <a href="#" onclick="switchTab(\'signup\');return false;">회원가입</a>':'이미 계정이 있으신가요? <a href="#" onclick="switchTab(\'login\');return false;">로그인</a>';
 }
-function handleAuth(){closeModal();showToast('환영합니다! TaxNavi에 로그인되었습니다.')}
-function handleJarviaLogin(){closeModal();showToast('JARVIA 계정으로 로그인 — 프로 등급 적용!')}
+function handleAuth(){
+  const isLogin = document.getElementById('loginForm').style.display !== 'none';
+  const inputs = (isLogin ? document.getElementById('loginForm') : document.getElementById('signupForm')).querySelectorAll('input');
+  
+  if (isLogin) {
+    const email = inputs[0].value.trim();
+    const pw = inputs[1].value;
+    if (!email || !pw) { showToast('이메일과 비밀번호를 입력하세요'); return; }
+    firebase.auth().signInWithEmailAndPassword(email, pw)
+      .then(() => { closeModal(); showToast('환영합니다! 로그인되었습니다.'); })
+      .catch(err => showToast('로그인 실패: ' + (err.code === 'auth/invalid-credential' ? '이메일 또는 비밀번호를 확인하세요' : err.message)));
+  } else {
+    const name = inputs[0].value.trim();
+    const email = inputs[1].value.trim();
+    const pw = inputs[2].value;
+    const pw2 = inputs[3].value;
+    if (!name || !email || !pw) { showToast('모든 필드를 입력하세요'); return; }
+    if (pw !== pw2) { showToast('비밀번호가 일치하지 않습니다'); return; }
+    if (pw.length < 8) { showToast('비밀번호는 8자 이상이어야 합니다'); return; }
+    firebase.auth().createUserWithEmailAndPassword(email, pw)
+      .then(cred => cred.user.updateProfile({ displayName: name }))
+      .then(() => { closeModal(); showToast('회원가입 완료! 환영합니다.'); })
+      .catch(err => showToast('가입 실패: ' + (err.code === 'auth/email-already-in-use' ? '이미 가입된 이메일입니다' : err.message)));
+  }
+}
+function handleJarviaLogin(){
+  // JARVIA SSO: JARVIA 로그인 페이지로 리다이렉트 (Firebase Auth 공유)
+  // 실제 구현 시 커스텀 토큰 교환 방식 사용
+  showToast('JARVIA 계정 연동은 준비 중입니다. 이메일로 가입해주세요.');
+}
+
+// ─── Auth State Listener ───
+let currentUser = null;
+firebase.auth().onAuthStateChanged(user => {
+  currentUser = user;
+  const loginBtn = document.querySelector('.btn-login');
+  const startBtn = document.querySelector('.btn-start');
+  if (user) {
+    if (loginBtn) { loginBtn.textContent = (user.displayName || '회원'); loginBtn.onclick = () => { if(confirm('로그아웃 하시겠습니까?')) firebase.auth().signOut(); }; }
+    if (startBtn) { startBtn.textContent = '검색하기'; startBtn.onclick = () => { document.getElementById('searchInput').focus(); return false; }; }
+  } else {
+    if (loginBtn) { loginBtn.textContent = '로그인'; loginBtn.onclick = () => { openModal('login'); return false; }; }
+    if (startBtn) { startBtn.textContent = '무료 체험'; startBtn.onclick = () => { openModal('signup'); return false; }; }
+  }
+});
 
 document.addEventListener('DOMContentLoaded',()=>{if(!localStorage.getItem('taxnavi_visited')){setTimeout(()=>{document.getElementById('welcomePopup').classList.add('active');localStorage.setItem('taxnavi_visited','1')},1500)}});
 function closePopup(){document.getElementById('welcomePopup').classList.remove('active')}
 
 function showToast(m){const t=document.getElementById('toast');document.getElementById('toastMessage').textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
 
-function handleSearch(){const q=document.getElementById('searchInput').value.trim();if(!q){document.getElementById('searchInput').focus();return}showSearchingAnimation(q)}
+async function handleSearch(){
+  const q=document.getElementById('searchInput').value.trim();
+  if(!q){document.getElementById('searchInput').focus();return}
+  
+  // 로그인 체크
+  if(!currentUser){
+    openModal('login');
+    showToast('검색하려면 로그인이 필요합니다');
+    return;
+  }
+  
+  // 실제 API 호출 시도
+  const ov=document.getElementById('searchingOverlay'),st=document.getElementById('searchingStatus'),si=document.getElementById('searchingSites');
+  document.getElementById('resultsSection').classList.remove('active');
+  ov.classList.add('active');st.textContent='AI가 질문을 분석하고 있습니다...';si.innerHTML='';
+  
+  try {
+    const token = await currentUser.getIdToken();
+    const resp = await fetch(API_BASE_URL + '/api/search', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({question:q})
+    });
+    
+    if(resp.status===429){
+      ov.classList.remove('active');
+      const d=await resp.json();
+      showToast('일일 검색 한도('+d.limit+'회)를 초과했습니다. 요금제를 업그레이드하세요.');
+      return;
+    }
+    if(resp.status===401){
+      ov.classList.remove('active');
+      openModal('login');
+      showToast('로그인이 만료되었습니다. 다시 로그인해주세요.');
+      return;
+    }
+    
+    const data = await resp.json();
+    ov.classList.remove('active');
+    
+    if(data.success && data.searchResults && data.searchResults.length > 0){
+      showRealResults(q, data);
+      return;
+    }
+  } catch(apiErr) {
+    console.log('[API] 백엔드 미연결, 데모 모드:', apiErr.message);
+  }
+  
+  // API 실패 시 → 데모 결과 (개발/테스트용)
+  ov.classList.remove('active');
+  showSearchingAnimation(q);
+}
 function quickSearch(el){document.getElementById('searchInput').value=el.textContent+' 관련 판례와 세법해석';handleSearch();window.scrollTo({top:0,behavior:'smooth'})}
+
+// ─── Real API Results ───
+function showRealResults(query, data){
+  const sec=document.getElementById('resultsSection'),con=document.getElementById('resultsContainer'),tabs=document.getElementById('resultsTabs');
+  document.getElementById('resultQuery').textContent='"'+query+'"';
+  document.getElementById('resultCount').textContent=data.searchResults.length;
+  
+  // Tabs by site
+  const counts={};
+  data.searchResults.forEach(r=>{counts[r.site]=(counts[r.site]||0)+1});
+  tabs.innerHTML='<button class="results-tab active" onclick="filterReal(\'all\',this)">전체 <span class="cnt">'+data.searchResults.length+'</span></button>';
+  Object.entries(counts).forEach(([k,v])=>{
+    const nm=SITES[k]?SITES[k].name:k;
+    tabs.innerHTML+='<button class="results-tab" onclick="filterReal(\''+k+'\',this)">'+nm+' <span class="cnt">'+v+'</span></button>';
+  });
+  
+  // AI Answer (if available)
+  con.innerHTML='';
+  if(data.answer){
+    const ansDiv=document.createElement('div');
+    ansDiv.className='result-card';
+    ansDiv.style.borderLeft='4px solid var(--accent)';
+    ansDiv.style.background='linear-gradient(135deg,#FFFBF0,#FFF9EE)';
+    // Simple markdown → HTML
+    let html=data.answer.replace(/## (.*)/g,'<h3 style="font-size:16px;font-weight:700;color:var(--primary);margin:16px 0 8px">$1</h3>')
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/^- (.*)/gm,'<li style="margin-left:16px;margin-bottom:4px">$1</li>')
+      .replace(/\n\n/g,'<br><br>')
+      .replace(/\n/g,'<br>');
+    ansDiv.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:20px">🤖</span><strong style="font-size:15px;color:var(--primary)">AI 종합 답변</strong></div><div style="font-size:14px;line-height:1.9;color:var(--text-secondary)">'+html+'</div><div class="result-footer"><span></span><button class="btn-copy-item" onclick="copyR(this)"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>복사</button></div>';
+    con.appendChild(ansDiv);
+  }
+  
+  // Individual results
+  data.searchResults.forEach((r,i)=>{
+    const siteInfo=SITES[r.site]||{name:r.source||r.site,color:'#666',badge:'badge-taxlaw'};
+    const d=document.createElement('div');d.className='result-card';d.style.animationDelay=(i*.06)+'s';
+    d.setAttribute('data-site',r.site);
+    d.innerHTML='<div class="result-card-top"><span class="result-title">'+r.title+'</span><span class="result-badge '+siteInfo.badge+'">'+(r.category||'')+'</span></div><div class="result-meta"><span>📅 '+(r.date||'-')+'</span><span>📂 '+(r.docNo||'-')+'</span></div>'+(r.preview?'<div class="result-summary"><h4>미리보기</h4>'+r.preview+'</div>':'')+'<div class="result-footer"><span class="result-source-tag"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+siteInfo.color+'"></span>'+siteInfo.name+'</span><button class="btn-copy-item" onclick="copyR(this)"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>복사</button></div>';
+    con.appendChild(d);
+  });
+  
+  sec.classList.add('active');sec.scrollIntoView({behavior:'smooth',block:'start'});
+  window._realResults=data.searchResults;
+  const c=document.getElementById('searchCount');c.textContent=(parseInt(c.textContent.replace(/,/g,''))+1).toLocaleString();
+  
+  // Meta info
+  if(data.meta) console.log('[TaxNavi]',data.meta.totalTime+'s',data.meta.sitesSearched+'sites',data.meta.resultsFound+'results');
+}
+
+function filterReal(site,btn){
+  document.querySelectorAll('.results-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const cards=document.querySelectorAll('.result-card[data-site]');
+  cards.forEach(c=>{c.style.display=(site==='all'||c.getAttribute('data-site')===site)?'block':'none'});
+}
 
 function showSearchingAnimation(query){
   const ov=document.getElementById('searchingOverlay'),st=document.getElementById('searchingStatus'),si=document.getElementById('searchingSites');
@@ -647,8 +815,4 @@ function copyAllResults(){
 
 function toggleMobileMenu(){const l=document.querySelector('.nav-links');if(l.style.display==='flex'){l.style.display='none'}else{l.style.display='flex';l.style.flexDirection='column';l.style.position='absolute';l.style.top='64px';l.style.left='0';l.style.right='0';l.style.background='white';l.style.padding='16px';l.style.borderBottom='1px solid #E2E8F0';l.style.boxShadow='0 4px 12px rgba(0,0,0,.08)';l.style.zIndex='99'}}
 
-document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
-document.getElementById('welcomePopup').addEventListener('click',function(e){if(e.target===this)closePopup()});
-</script>
-</body>
-</html>
+document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)close
