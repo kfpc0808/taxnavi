@@ -30,6 +30,7 @@ const firebaseConfig = {
   measurementId: "G-LEH0W7Y4F8"
 };
 firebase.initializeApp(firebaseConfig);
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 const db = firebase.firestore();
 
 // ★★★ Cloud Run 배포 후 URL 교체 ★★★
@@ -622,7 +623,8 @@ function handleAuth(){
     
     // loginId → 더미이메일 변환하여 Firebase Auth 로그인
     const dummyEmail = loginId + '@taxnavi.kr';
-    firebase.auth().signInWithEmailAndPassword(dummyEmail, pw)
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => firebase.auth().signInWithEmailAndPassword(dummyEmail, pw))
       .then((cred) => {
         closeModal();
         // admin 계정이면 관리자 페이지로 이동
