@@ -674,6 +674,15 @@
             const tierMap = { free: '무료', basic: '베이직', pro: '프로', enterprise: '기관' };
             document.getElementById('tierBadge').textContent = tierMap[userData.tier] || '무료';
             
+            // 검색 잔여 라벨 (등급별 동적)
+            const searchLabel = document.getElementById('freeSearchLabel');
+            if (searchLabel) {
+                const t = userData.tier;
+                if (t === 'enterprise') searchLabel.textContent = 'AI 검색 (잔여)';
+                else if (t === 'pro' || t === 'basic') searchLabel.textContent = 'AI 검색 (잔여)';
+                else searchLabel.textContent = '무료 검색 (잔여)';
+            }
+            
             if (userData.freeSearchLimit > 0) {
                 document.getElementById('freeSearchCount').textContent = Math.max(0, userData.freeSearchLimit - userData.freeSearchUsed) + '건';
                 document.getElementById('freeSearchStatus').textContent = userData.freeSearchUsed + '/' + userData.freeSearchLimit + '건 사용';
@@ -687,9 +696,10 @@
             const memberLabel = document.getElementById('memberTypeLabel');
             if (memberLabel) {
                 const t = userData.tier;
-                if (t === 'pro') memberLabel.textContent = '⭐ 프로 회원 · 월 120회 AI 검색';
+                if (t === 'enterprise') memberLabel.textContent = '🏢 기관 회원 · 월 ' + userData.freeSearchLimit + '회 AI 검색';
+                else if (t === 'pro') memberLabel.textContent = '⭐ 프로 회원 · 월 120회 AI 검색';
                 else if (t === 'basic') memberLabel.textContent = '📋 베이직 회원 · 월 50회 AI 검색';
-                else memberLabel.textContent = '🆓 무료 체험 · 월 2회 AI 검색';
+                else memberLabel.textContent = '🆓 무료 체험 · 월 ' + (userData.isFirstMonth ? '5' : '2') + '회 AI 검색';
             }
         }
 
@@ -1244,9 +1254,21 @@
                 userData.freeSearchUsed = 0;
                 userData.loginId = (user.email || '').replace('@taxnavi.kr', '');
                 
-                // 등급별 무료 검색 한도
-                const tierLimits = { free: 2, basic: 50, pro: 120, enterprise: 999 };
-                userData.freeSearchLimit = tierLimits[userData.tier] || 2;
+                // 등급별 AI검색 한도
+                let freeLimit = 2;
+                if (user.metadata && user.metadata.creationTime) {
+                    const created = new Date(user.metadata.creationTime);
+                    const now = new Date();
+                    const isFirstMonth = (created.getFullYear() === now.getFullYear() && created.getMonth() === now.getMonth());
+                    freeLimit = isFirstMonth ? 5 : 2;
+                }
+                const tierLimits = { free: freeLimit, basic: 50, pro: 120 };
+                if (userData.tier === 'enterprise') {
+                    userData.freeSearchLimit = data.monthlySearchLimit || 999;
+                } else {
+                    userData.freeSearchLimit = tierLimits[userData.tier] || 2;
+                }
+                userData.isFirstMonth = (userData.tier === 'free' && freeLimit === 5);
                 
                 // 월간 사용량을 usage 컬렉션에서 조회
                 try {
