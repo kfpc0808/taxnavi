@@ -85,6 +85,8 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .btn-mypage{padding:8px 16px!important;background:var(--bg)!important;border:1.5px solid var(--border)!important;color:var(--text)!important;font-weight:600!important;border-radius:var(--radius)!important;font-size:13px!important;display:none}
 .btn-mypage:hover{border-color:var(--primary)!important;color:var(--primary)!important;background:#F0F6FF!important}
 .header-balance{font-size:12px;color:var(--accent-dark);font-weight:700;padding:4px 10px;background:#FFF9EE;border-radius:var(--radius-full);border:1px solid #F0D97A;display:none;white-space:nowrap}
+.btn-logout{padding:6px 12px!important;background:transparent!important;border:1.5px solid #e53e3e!important;color:#e53e3e!important;font-weight:600!important;border-radius:var(--radius)!important;font-size:12px!important;display:none}
+.btn-logout:hover{background:#FEF2F2!important}
 .mobile-menu-btn{display:none;width:40px;height:40px;align-items:center;justify-content:center;border-radius:8px}
 .hamburger{width:20px;height:14px;position:relative}
 .hamburger span{display:block;width:100%;height:2px;background:var(--text);border-radius:2px;position:absolute;transition:var(--transition)}
@@ -341,6 +343,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <span class="header-balance" id="headerBalance">💰 0 P</span>
       <a href="mypage.html#tab-balance" class="btn-charge" id="btnCharge">💰 충전</a>
       <a href="mypage.html" class="btn-mypage" id="btnMypage">👤 마이페이지</a>
+      <a href="#" class="btn-logout" id="btnLogout" onclick="firebase.auth().signOut();return false;">로그아웃</a>
     </div>
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><div class="hamburger"><span></span><span></span><span></span></div></button>
   </nav>
@@ -588,7 +591,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 <div class="toast" id="toast"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/></svg><span id="toastMessage">복사되었습니다</span></div>
 
 <script>
-const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw'},courtCase:{name:'대법원 법고을',color:'#DC2626',badge:'badge-courtCase'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA'}};
+const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw',url:'https://taxlaw.nts.go.kr'},courtCase:{name:'대법원 법고을',color:'#DC2626',badge:'badge-courtCase',url:'https://lx.scourt.go.kr'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal',url:'https://www.tt.go.kr'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw',url:'https://law.fss.or.kr'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr',url:'https://www.law.go.kr'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA',url:'https://call.nts.go.kr'}};
 
 try{document.querySelectorAll('.anim').forEach(el=>new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})},{threshold:.05}).observe(el))}catch(e){document.querySelectorAll('.anim').forEach(el=>{el.style.opacity='1';el.style.transform='translateY(0)'})}
 
@@ -754,6 +757,7 @@ firebase.auth().onAuthStateChanged(async user => {
   const chargeBtn = document.getElementById('btnCharge');
   const mypageBtn = document.getElementById('btnMypage');
   const balanceEl = document.getElementById('headerBalance');
+  const logoutBtn = document.getElementById('btnLogout');
   if (user) {
     // admin 계정 → 최고관리자 표시 + 클릭 시 admin 페이지
     if (user.email === 'admin@taxnavi.kr') {
@@ -762,6 +766,7 @@ firebase.auth().onAuthStateChanged(async user => {
       if (chargeBtn) chargeBtn.style.display = 'none';
       if (mypageBtn) mypageBtn.style.display = 'none';
       if (balanceEl) balanceEl.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'inline-flex';
     } else {
       // 일반 회원 → 이름(등급) 표시
       const tierMap = {free:'무료',basic:'베이직',pro:'프로',enterprise:'기관'};
@@ -771,11 +776,12 @@ firebase.auth().onAuthStateChanged(async user => {
         const resp = await fetch(API_BASE_URL + '/api/usage', { headers:{'Authorization':'Bearer '+tk} });
         if (resp.ok) { const d = await resp.json(); if(d.tier) label = (user.displayName||'회원') + '(' + (tierMap[d.tier]||d.tier) + ')'; }
       } catch(e){}
-      if (loginBtn) { loginBtn.textContent = label; loginBtn.onclick = () => { if(confirm('로그아웃 하시겠습니까?')) firebase.auth().signOut(); }; }
+      if (loginBtn) { loginBtn.textContent = label; loginBtn.onclick = null; loginBtn.style.cursor = 'default'; }
       if (startBtn) { startBtn.textContent = '검색하기'; startBtn.onclick = () => { document.getElementById('searchInput').focus(); return false; }; }
-      // 충전/마이페이지 버튼 표시
+      // 충전/마이페이지/로그아웃 버튼 표시
       if (chargeBtn) chargeBtn.style.display = 'inline-flex';
       if (mypageBtn) mypageBtn.style.display = 'inline-flex';
+      if (logoutBtn) logoutBtn.style.display = 'inline-flex';
       // 보유 포인트 표시
       try {
         const uDoc = await db.collection('users').doc(user.uid).get();
@@ -795,6 +801,7 @@ firebase.auth().onAuthStateChanged(async user => {
     if (chargeBtn) chargeBtn.style.display = 'none';
     if (mypageBtn) mypageBtn.style.display = 'none';
     if (balanceEl) balanceEl.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'none';
   }
 });
 
@@ -830,7 +837,7 @@ async function handleSearch(){
     if(resp.status===429){
       ov.classList.remove('active');
       const d=await resp.json();
-      showToast('일일 검색 한도('+d.limit+'회)를 초과했습니다. 요금제를 업그레이드하세요.');
+      showToast('월간 검색 한도('+d.limit+'회)를 초과했습니다. 포인트를 충전해주세요.');
       return;
     }
     if(resp.status===401){
@@ -874,32 +881,59 @@ function showRealResults(query, data){
   if(data.answer){
     const ansDiv=document.createElement('div');
     ansDiv.className='result-card';
+    ansDiv.setAttribute('data-type','ai-answer');
     ansDiv.style.borderLeft='4px solid var(--accent)';
     ansDiv.style.background='linear-gradient(135deg,#FFFBF0,#FFF9EE)';
-    // Simple markdown → HTML
-    let html=data.answer.replace(/## (.*)/g,'<h3 style="font-size:16px;font-weight:700;color:var(--primary);margin:16px 0 8px">$1</h3>')
-      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-      .replace(/^- (.*)/gm,'<li style="margin-left:16px;margin-bottom:4px">$1</li>')
-      .replace(/\n\n/g,'<br><br>')
+    // Markdown → HTML (개선된 서식)
+    let html=data.answer
+      .replace(/### (.*)/g,'<h4 style="font-size:14px;font-weight:700;color:var(--primary);margin:14px 0 6px;padding-left:8px;border-left:3px solid var(--accent)">$1</h4>')
+      .replace(/## (.*)/g,'<h3 style="font-size:15px;font-weight:800;color:var(--primary);margin:18px 0 8px">$1</h3>')
+      .replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--text)">$1</strong>')
+      .replace(/^- (.*)/gm,'<li style="margin-left:16px;margin-bottom:3px;line-height:1.6">$1</li>')
+      .replace(/^(\d+)\. (.*)/gm,'<div style="margin:4px 0;padding-left:8px;line-height:1.6"><strong style="color:var(--primary)">$1.</strong> $2</div>')
+      .replace(/\n\n/g,'</p><p style="margin:8px 0;line-height:1.65">')
       .replace(/\n/g,'<br>');
-    ansDiv.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:20px">🤖</span><strong style="font-size:15px;color:var(--primary)">AI 종합 답변</strong></div><div style="font-size:14px;line-height:1.9;color:var(--text-secondary)">'+html+'</div><div class="result-footer"><span></span><button class="btn-copy-item" onclick="copyR(this)"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>복사</button></div>';
+    // 참고 문서 번호를 클릭 가능한 앵커로 변환
+    html=html.replace(/(조심-\d{4}-[가-힣]*-\d+|[가-힣]+\d{4}-구합?-\d+|\d{4}[가-힣]+\d+)/g, function(match){
+      return '<a href="#" onclick="scrollToResult(\''+match+'\');return false;" style="color:var(--primary);text-decoration:underline;font-weight:600">'+match+'</a>';
+    });
+    ansDiv.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(232,168,56,0.2)"><span style="font-size:20px">🤖</span><strong style="font-size:15px;color:var(--primary)">AI 종합 답변</strong></div><div style="font-size:13.5px;line-height:1.65;color:var(--text-secondary)"><p style="margin:0 0 8px 0;line-height:1.65">'+html+'</p></div><div class="result-footer" style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)"><span style="font-size:11px;color:var(--text-light)">⚠️ AI 답변은 참고 자료이며 법적 효력이 없습니다</span><button class="btn-copy-item" onclick="copyAiAnswer(this)"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>복사</button></div>';
     con.appendChild(ansDiv);
   }
   
   // Individual results
   data.searchResults.forEach((r,i)=>{
-    const siteInfo=SITES[r.site]||{name:r.source||r.site,color:'#666',badge:'badge-taxlaw'};
+    const siteInfo=SITES[r.site]||{name:r.source||r.site,color:'#666',badge:'badge-taxlaw',url:''};
+    const siteUrl=siteInfo.url||'';
     const d=document.createElement('div');d.className='result-card';d.style.animationDelay=(i*.06)+'s';
     d.setAttribute('data-site',r.site);
-    d.innerHTML='<div class="result-card-top"><span class="result-title">'+r.title+'</span><span class="result-badge '+siteInfo.badge+'">'+(r.category||'')+'</span></div><div class="result-meta"><span>📅 '+(r.date||'-')+'</span><span>📂 '+(r.docNo||'-')+'</span></div>'+(r.preview?'<div class="result-summary"><h4>미리보기</h4>'+r.preview+'</div>':'')+'<div class="result-footer"><span class="result-source-tag"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+siteInfo.color+'"></span>'+siteInfo.name+'</span><button class="btn-copy-item" onclick="copyR(this)"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>복사</button></div>';
+    d.setAttribute('id','result-'+i);
+    // 제목을 클릭 가능한 링크로
+    const titleHtml=siteUrl?'<a href="'+siteUrl+'" target="_blank" class="result-title" style="color:var(--text);text-decoration:none;cursor:pointer" onmouseover="this.style.color=\'var(--primary)\';this.style.textDecoration=\'underline\'" onmouseout="this.style.color=\'var(--text)\';this.style.textDecoration=\'none\'">'+r.title+'</a>':'<span class="result-title">'+r.title+'</span>';
+    // 문서번호를 클릭 가능한 링크로
+    const docNoHtml=r.docNo?(siteUrl?'<a href="'+siteUrl+'" target="_blank" style="color:var(--text-light);text-decoration:none" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">📂 '+r.docNo+'</a>':'<span>📂 '+r.docNo+'</span>'):'<span>📂 -</span>';
+    const previewHtml=r.preview?'<div class="result-summary"><h4>미리보기</h4>'+r.preview+'</div>':'<div class="result-summary" style="color:var(--text-light);font-size:13px;font-style:italic">미리보기 없음 — 원문 사이트에서 확인하세요</div>';
+    d.innerHTML='<div class="result-card-top">'+titleHtml+'<span class="result-badge '+siteInfo.badge+'">'+(r.category||'')+'</span></div><div class="result-meta"><span>📅 '+(r.date||'-')+'</span>'+docNoHtml+'</div>'+previewHtml+'<div class="result-footer"><span class="result-source-tag"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+siteInfo.color+'"></span>'+siteInfo.name+'</span><div style="display:flex;gap:6px">'+(siteUrl?'<a href="'+siteUrl+'" target="_blank" class="btn-copy-item" style="text-decoration:none">🔗 원문</a>':'')+'<button class="btn-copy-item" onclick="copyR(this)"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>복사</button></div></div>';
     con.appendChild(d);
   });
   
   sec.classList.add('active');sec.scrollIntoView({behavior:'smooth',block:'start'});
   window._realResults=data.searchResults;
   
-  // Meta info
   if(data.meta) console.log('[TaxNavi]',data.meta.totalTime+'s',data.meta.sitesSearched+'sites',data.meta.resultsFound+'results');
+}
+
+// AI 답변 내 참고문서 클릭 시 해당 결과로 스크롤
+function scrollToResult(docNo){
+  const cards=document.querySelectorAll('.result-card[data-site]');
+  for(let i=0;i<cards.length;i++){
+    if(cards[i].textContent.includes(docNo)){
+      cards[i].scrollIntoView({behavior:'smooth',block:'center'});
+      cards[i].style.boxShadow='0 0 0 3px var(--accent)';
+      setTimeout(()=>{cards[i].style.boxShadow=''},2000);
+      return;
+    }
+  }
 }
 
 function filterReal(site,btn){
@@ -909,18 +943,32 @@ function filterReal(site,btn){
   cards.forEach(c=>{c.style.display=(site==='all'||c.getAttribute('data-site')===site)?'block':'none'});
 }
 
+// AI 답변 복사 (별도 함수)
+function copyAiAnswer(btn){
+  const c=btn.closest('.result-card');
+  const text=c.innerText.replace('🤖 AI 종합 답변','[AI 종합 답변]').replace('복사','').trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    showToast('AI 답변이 복사되었습니다');
+    btn.innerHTML='<svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/></svg>완료';
+    setTimeout(()=>{btn.innerHTML='<svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>복사'},2000);
+  }).catch(()=>showToast('복사에 실패했습니다. 직접 선택하여 복사해주세요.'));
+}
 
 function copyR(btn){
-  const c=btn.closest('.result-card'),t=c.querySelector('.result-title').textContent,m=c.querySelector('.result-meta').textContent.trim(),s=c.querySelector('.result-summary').textContent.replace('AI 요약','').trim(),src=c.querySelector('.result-source-tag').textContent.trim();
+  const c=btn.closest('.result-card');
+  const t=c.querySelector('.result-title')?c.querySelector('.result-title').textContent:'';
+  const m=c.querySelector('.result-meta')?c.querySelector('.result-meta').textContent.trim():'';
+  const s=c.querySelector('.result-summary')?c.querySelector('.result-summary').textContent.replace('미리보기','').trim():'';
+  const src=c.querySelector('.result-source-tag')?c.querySelector('.result-source-tag').textContent.trim():'';
   navigator.clipboard.writeText('['+src+']\n'+t+'\n'+m+'\n\n'+s).then(()=>{
     showToast('검색 결과가 복사되었습니다');
     btn.innerHTML='<svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/></svg>완료';
     setTimeout(()=>{btn.innerHTML='<svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>복사'},2000);
-  });
+  }).catch(()=>showToast('복사에 실패했습니다. 직접 선택하여 복사해주세요.'));
 }
 function copyAllResults(){
-  const cards=document.querySelectorAll('.result-card');let a='';
-  cards.forEach((c,i)=>{const t=c.querySelector('.result-title').textContent,m=c.querySelector('.result-meta').textContent.trim(),s=c.querySelector('.result-summary').textContent.replace('AI 요약','').trim(),src=c.querySelector('.result-source-tag').textContent.trim();a+='['+(i+1)+'] ['+src+']\n'+t+'\n'+m+'\n'+s+'\n\n'+'─'.repeat(40)+'\n\n'});
+  const cards=document.querySelectorAll('.result-card[data-site]');let a='';
+  cards.forEach((c,i)=>{const t=c.querySelector('.result-title')?c.querySelector('.result-title').textContent:'';const m=c.querySelector('.result-meta')?c.querySelector('.result-meta').textContent.trim():'';const s=c.querySelector('.result-summary')?c.querySelector('.result-summary').textContent.replace('미리보기','').trim():'';const src=c.querySelector('.result-source-tag')?c.querySelector('.result-source-tag').textContent.trim():'';a+='['+(i+1)+'] ['+src+']\n'+t+'\n'+m+'\n'+s+'\n\n'+'─'.repeat(40)+'\n\n'});
   navigator.clipboard.writeText(a.trim()).then(()=>showToast('전체 검색 결과가 복사되었습니다'));
 }
 
