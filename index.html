@@ -877,6 +877,32 @@ function handleJarviaLogin(){
   showToast('JARVIA 계정 연동은 준비 중입니다. 이메일로 가입해주세요.');
 }
 
+// ─── JARVIA 멤버십 자동 로그인 ───
+(async function handleJarviaAutoLogin() {
+  const params = new URLSearchParams(location.search);
+  const autoToken = params.get('autoLogin');
+  if (!autoToken) return;
+  try {
+    // 1) 커스텀 토큰으로 자동 로그인
+    const cred = await firebase.auth().signInWithCustomToken(autoToken);
+    // 2) 백엔드에 JARVIA 회원 등급 설정 (basic)
+    if (cred.user) {
+      const idToken = await cred.user.getIdToken();
+      await fetch(API_BASE_URL + '/api/jarvia-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+        body: JSON.stringify({ tier: 'basic', source: 'jarvia' })
+      });
+    }
+    // 3) URL에서 토큰 제거 (보안)
+    params.delete('autoLogin');
+    const cleanUrl = params.toString() ? location.pathname + '?' + params.toString() : location.pathname;
+    history.replaceState({}, '', cleanUrl);
+  } catch(e) {
+    console.error('[JARVIA 자동로그인 실패]', e.message);
+  }
+})();
+
 // ─── Auth State Listener ───
 let currentUser = null;
 firebase.auth().onAuthStateChanged(async user => {
