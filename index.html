@@ -124,6 +124,31 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .source-chip:hover{border-color:var(--primary);color:var(--primary);background:#F0F6FF}
 .source-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 
+/* NOTICE MARQUEE */
+.notice-marquee{background:var(--primary-dark);color:white;padding:8px 0;font-size:13px;font-weight:500;overflow:hidden;white-space:nowrap;cursor:pointer;position:relative}
+.notice-marquee-inner{display:inline-block;animation:marqueeScroll 20s linear infinite;padding-left:100%}
+.notice-marquee-inner:hover{animation-play-state:paused}
+.notice-marquee-inner span{margin-right:60px}
+@keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+
+/* ADMIN POPUP */
+.admin-popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:1200;align-items:center;justify-content:center;padding:24px}
+.admin-popup-overlay.active{display:flex}
+.admin-popup-box{background:white;border-radius:16px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;position:relative}
+.admin-popup-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:22px;color:#999;cursor:pointer;z-index:1}
+.admin-popup-body{padding:24px}
+.admin-popup-body img{max-width:100%;border-radius:8px;margin-bottom:12px}
+.admin-popup-footer{display:flex;justify-content:space-between;padding:12px 24px;border-top:1px solid #eee;font-size:12px;color:#8A95A5}
+.admin-popup-footer button{background:none;border:none;color:#8A95A5;font-size:12px;cursor:pointer;padding:4px 8px}
+.admin-popup-footer button:hover{color:var(--primary)}
+
+/* TERMS MODAL */
+.terms-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:1300;align-items:center;justify-content:center;padding:24px}
+.terms-modal-overlay.active{display:flex}
+.terms-modal{background:white;border-radius:14px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;padding:28px}
+.terms-modal h3{font-size:18px;font-weight:700;margin-bottom:16px;color:var(--primary)}
+.terms-modal-content{font-size:13px;line-height:1.7;color:var(--text-secondary);max-height:50vh;overflow-y:auto;padding:16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+
 /* SEARCHING OVERLAY */
 .searching-overlay{display:none;max-width:640px;margin:20px auto 0;padding:40px 32px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg)}
 .searching-overlay.active{display:block;animation:scaleIn .3s ease}
@@ -341,6 +366,10 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 </style>
 </head>
 <body>
+
+<div class="notice-marquee" id="noticeMarquee" style="display:none" onclick="openNoticeDetail()">
+  <div class="notice-marquee-inner" id="noticeMarqueeInner"></div>
+</div>
 
 <div class="disclaimer-bar">
   <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#8B6914" stroke-width="2" stroke-linecap="round"/></svg>
@@ -600,6 +629,10 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       </div>
       <div class="form-group"><label>비밀번호 <span style="color:#EF4444">*</span></label><input type="password" id="su-pw" placeholder="8자 이상 입력하세요"></div>
       <div class="form-group"><label>비밀번호 확인 <span style="color:#EF4444">*</span></label><input type="password" id="su-pw2" placeholder="비밀번호를 다시 입력하세요"></div>
+      <div style="margin:8px 0;display:flex;flex-direction:column;gap:6px">
+        <label style="font-size:12.5px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="su-agree-terms" style="width:16px;height:16px;accent-color:var(--primary)"><span><a href="#" onclick="showTermsModal('termsOfService');return false;" style="color:var(--primary);text-decoration:underline">이용약관</a>에 동의합니다 <span style="color:#EF4444">*</span></span></label>
+        <label style="font-size:12.5px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="su-agree-privacy" style="width:16px;height:16px;accent-color:var(--primary)"><span><a href="#" onclick="showTermsModal('privacyPolicy');return false;" style="color:var(--primary);text-decoration:underline">개인정보처리방침</a>에 동의합니다 <span style="color:#EF4444">*</span></span></label>
+      </div>
       <button class="btn-submit" onclick="handleAuth()">회원가입</button>
     </div>
     <div class="modal-divider">또는</div>
@@ -621,6 +654,33 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <button class="btn-popup-start" onclick="closePopup()">시작하기</button>
       <button class="btn-popup-close" onclick="closePopup()">다음에 볼게요</button>
     </div>
+  </div>
+</div>
+
+<div class="admin-popup-overlay" id="adminPopupOverlay">
+  <div class="admin-popup-box">
+    <button class="admin-popup-close" onclick="closeAdminPopup()">&times;</button>
+    <div class="admin-popup-body" id="adminPopupBody"></div>
+    <div class="admin-popup-footer">
+      <button onclick="closeAdminPopupToday()">오늘 하루 안 보기</button>
+      <button onclick="closeAdminPopup()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="terms-modal-overlay" id="termsModalOverlay" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="terms-modal">
+    <h3 id="termsModalTitle">이용약관</h3>
+    <div class="terms-modal-content" id="termsModalContent"></div>
+    <div style="text-align:right;margin-top:16px"><button onclick="document.getElementById('termsModalOverlay').classList.remove('active')" style="padding:8px 24px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">확인</button></div>
+  </div>
+</div>
+
+<div class="terms-modal-overlay" id="noticeDetailOverlay" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="terms-modal">
+    <h3 id="noticeDetailTitle">공지사항</h3>
+    <div class="terms-modal-content" id="noticeDetailContent"></div>
+    <div style="text-align:right;margin-top:16px"><button onclick="document.getElementById('noticeDetailOverlay').classList.remove('active')" style="padding:8px 24px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">확인</button></div>
   </div>
 </div>
 
@@ -688,6 +748,8 @@ function handleAuth(){
     if (verified !== 'Y') { showToast('연락처 인증을 완료해주세요'); return; }
     if (!pw || pw.length < 8) { showToast('비밀번호는 8자 이상이어야 합니다'); return; }
     if (pw !== pw2) { showToast('비밀번호가 일치하지 않습니다'); return; }
+    if (!document.getElementById('su-agree-terms').checked) { showToast('이용약관에 동의해주세요'); return; }
+    if (!document.getElementById('su-agree-privacy').checked) { showToast('개인정보처리방침에 동의해주세요'); return; }
     
     const phone = '010-' + ph2 + '-' + ph3;
     const dummyEmail = loginId + '@taxnavi.kr';
@@ -843,6 +905,83 @@ firebase.auth().onAuthStateChanged(async user => {
 
 document.addEventListener('DOMContentLoaded',()=>{if(!localStorage.getItem('taxnavi_visited')){setTimeout(()=>{document.getElementById('welcomePopup').classList.add('active');localStorage.setItem('taxnavi_visited','1')},1500)}});
 function closePopup(){document.getElementById('welcomePopup').classList.remove('active')}
+
+// ─── Admin Popup (관리자 등록 팝업) ───
+let _adminPopups = [];
+async function loadAdminPopups() {
+  try {
+    const resp = await fetch(API_BASE_URL + '/api/popup-active');
+    if (!resp.ok) return;
+    const d = await resp.json();
+    _adminPopups = d.popups || [];
+    if (_adminPopups.length > 0) {
+      const todayKey = 'taxnavi_popup_hide_' + new Date().toISOString().split('T')[0];
+      if (localStorage.getItem(todayKey)) return;
+      showAdminPopup(0);
+    }
+  } catch(e) {}
+}
+function showAdminPopup(idx) {
+  if (idx >= _adminPopups.length) return;
+  const p = _adminPopups[idx];
+  let html = '';
+  if (p.imageUrl) html += '<a href="'+(p.linkUrl||'#')+'" target="_blank"><img src="'+p.imageUrl+'" alt="'+p.title+'"></a>';
+  if (p.title) html += '<h3 style="font-size:18px;font-weight:700;color:#1B3A5C;margin-bottom:8px">'+p.title+'</h3>';
+  if (p.content) html += '<div style="font-size:14px;line-height:1.7;color:#555">'+p.content+'</div>';
+  if (p.linkUrl && !p.imageUrl) html += '<a href="'+p.linkUrl+'" target="_blank" style="display:inline-block;margin-top:12px;color:#1B3A5C;font-weight:600;text-decoration:underline">자세히 보기 →</a>';
+  document.getElementById('adminPopupBody').innerHTML = html;
+  document.getElementById('adminPopupOverlay').classList.add('active');
+}
+function closeAdminPopup() { document.getElementById('adminPopupOverlay').classList.remove('active'); }
+function closeAdminPopupToday() {
+  const todayKey = 'taxnavi_popup_hide_' + new Date().toISOString().split('T')[0];
+  localStorage.setItem(todayKey, '1');
+  closeAdminPopup();
+}
+
+// ─── Notice Marquee (공지사항 흘러가기) ───
+let _noticeList = [];
+async function loadNoticeMarquee() {
+  try {
+    const resp = await fetch(API_BASE_URL + '/api/notices-active');
+    if (!resp.ok) return;
+    const d = await resp.json();
+    _noticeList = d.notices || [];
+    if (_noticeList.length > 0) {
+      const marquee = document.getElementById('noticeMarquee');
+      const inner = document.getElementById('noticeMarqueeInner');
+      inner.innerHTML = _noticeList.map(n => '<span>📢 ' + n.title + '</span>').join('');
+      marquee.style.display = 'block';
+    }
+  } catch(e) {}
+}
+function openNoticeDetail() {
+  if (_noticeList.length === 0) return;
+  const n = _noticeList[0];
+  document.getElementById('noticeDetailTitle').textContent = n.title || '공지사항';
+  document.getElementById('noticeDetailContent').innerHTML = n.content || '';
+  document.getElementById('noticeDetailOverlay').classList.add('active');
+}
+
+// ─── Terms Modal (약관 보기) ───
+async function showTermsModal(field) {
+  try {
+    const resp = await fetch(API_BASE_URL + '/api/terms');
+    if (!resp.ok) return;
+    const d = await resp.json();
+    const title = field === 'termsOfService' ? '이용약관' : '개인정보처리방침';
+    const content = d[field] || '등록된 내용이 없습니다.';
+    document.getElementById('termsModalTitle').textContent = title;
+    document.getElementById('termsModalContent').innerHTML = content;
+    document.getElementById('termsModalOverlay').classList.add('active');
+  } catch(e) { showToast('약관을 불러올 수 없습니다'); }
+}
+
+// ─── 초기 로드 ───
+document.addEventListener('DOMContentLoaded', () => {
+  loadNoticeMarquee();
+  setTimeout(loadAdminPopups, 2000);
+});
 
 function showToast(m){const t=document.getElementById('toast');document.getElementById('toastMessage').textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
 

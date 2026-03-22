@@ -125,6 +125,9 @@ tbody tr:hover{background:#FAFBFD}
         <li onclick="showTab('searchLogs')">🔍 <span>검색 로그</span></li>
         <li onclick="showTab('loginLogs')">🔑 <span>로그인 로그</span></li>
         <li onclick="showTab('suggestions')">📮 <span>문의 관리</span></li>
+        <li onclick="showTab('terms')">📋 <span>약관 관리</span></li>
+        <li onclick="showTab('popups')">🖼️ <span>팝업 관리</span></li>
+        <li onclick="showTab('notices')">📢 <span>공지 관리</span></li>
       </ul>
     </aside>
     <div class="main">
@@ -181,15 +184,73 @@ tbody tr:hover{background:#FAFBFD}
       </div>
     </div>
 
-    <!-- SUGGESTIONS -->
+    <!-- SUGGESTIONS (보기 전용) -->
     <div id="sec-suggestions" class="section">
       <div class="panel">
         <div class="panel-header"><h3>문의 관리</h3><span class="badge" id="sugCount">0건</span></div>
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>시간</th><th>이름</th><th>유형</th><th>제목</th><th>내용</th><th>상태</th><th>관리</th></tr></thead>
+            <thead><tr><th>시간</th><th>이름</th><th>등급</th><th>연락처</th><th>유형</th><th>제목</th><th>내용</th></tr></thead>
             <tbody id="suggestionsTable"><tr><td colspan="7" class="loading">로딩 중...</td></tr></tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TERMS 약관 관리 -->
+    <div id="sec-terms" class="section">
+      <div class="panel">
+        <div class="panel-header"><h3>이용약관</h3><button onclick="saveTerms('termsOfService')" style="padding:6px 16px;background:#1B3A5C;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">저장</button></div>
+        <div style="padding:16px"><textarea id="termsOfServiceEditor" style="width:100%;min-height:300px;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:13px;line-height:1.7;resize:vertical" placeholder="이용약관 내용을 입력하세요 (HTML 가능)"></textarea></div>
+      </div>
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-header"><h3>개인정보처리방침</h3><button onclick="saveTerms('privacyPolicy')" style="padding:6px 16px;background:#1B3A5C;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">저장</button></div>
+        <div style="padding:16px"><textarea id="privacyPolicyEditor" style="width:100%;min-height:300px;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:13px;line-height:1.7;resize:vertical" placeholder="개인정보처리방침 내용을 입력하세요 (HTML 가능)"></textarea></div>
+      </div>
+    </div>
+
+    <!-- POPUP 팝업 관리 -->
+    <div id="sec-popups" class="section">
+      <div class="panel">
+        <div class="panel-header"><h3>팝업 관리</h3><button onclick="openPopupEditor()" style="padding:6px 16px;background:#1B3A5C;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">+ 새 팝업</button></div>
+        <div id="popupList" style="padding:16px"><p class="loading">로딩 중...</p></div>
+      </div>
+      <div class="panel" id="popupEditorPanel" style="display:none;margin-top:16px">
+        <div class="panel-header"><h3 id="popupEditorTitle">팝업 작성</h3></div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+          <input type="hidden" id="pe-id">
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px"><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">제목 *</label><input id="pe-title" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px" placeholder="팝업 제목"></div>
+            <div style="flex:1;min-width:200px"><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">연동 URL</label><input id="pe-link" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px" placeholder="https://..."></div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">게시 시작일</label><input type="date" id="pe-start" style="padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
+            <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">게시 종료일</label><input type="date" id="pe-end" style="padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
+            <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">활성</label><select id="pe-active" style="padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="true">활성</option><option value="false">비활성</option></select></div>
+          </div>
+          <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">이미지 URL</label><input id="pe-image" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px" placeholder="이미지 URL (https://...)"></div>
+          <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">내용 (HTML 가능)</label><textarea id="pe-content" style="width:100%;min-height:200px;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:13px;line-height:1.7;resize:vertical" placeholder="팝업 내용을 입력하세요"></textarea></div>
+          <div style="display:flex;gap:8px"><button onclick="savePopup()" style="padding:8px 24px;background:#1B3A5C;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer">저장</button><button onclick="document.getElementById('popupEditorPanel').style.display='none'" style="padding:8px 24px;background:#ddd;color:#333;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">취소</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTICES 공지사항 관리 -->
+    <div id="sec-notices" class="section">
+      <div class="panel">
+        <div class="panel-header"><h3>공지사항</h3><button onclick="openNoticeEditor()" style="padding:6px 16px;background:#1B3A5C;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">+ 새 공지</button></div>
+        <div id="noticeList" style="padding:16px"><p class="loading">로딩 중...</p></div>
+      </div>
+      <div class="panel" id="noticeEditorPanel" style="display:none;margin-top:16px">
+        <div class="panel-header"><h3 id="noticeEditorTitle">공지 작성</h3></div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+          <input type="hidden" id="ne-id">
+          <div style="display:flex;gap:12px;align-items:flex-end">
+            <div style="flex:1"><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">제목 *</label><input id="ne-title" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px" placeholder="공지사항 제목"></div>
+            <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">활성</label><select id="ne-active" style="padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="true">활성</option><option value="false">비활성</option></select></div>
+          </div>
+          <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">내용 (HTML 가능)</label><textarea id="ne-content" style="width:100%;min-height:250px;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:13px;line-height:1.7;resize:vertical" placeholder="공지사항 내용을 입력하세요"></textarea></div>
+          <div style="display:flex;gap:8px"><button onclick="saveNotice()" style="padding:8px 24px;background:#1B3A5C;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer">저장</button><button onclick="document.getElementById('noticeEditorPanel').style.display='none'" style="padding:8px 24px;background:#ddd;color:#333;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">취소</button></div>
         </div>
       </div>
     </div>
@@ -240,6 +301,9 @@ function showTab(name) {
   if (name === 'searchLogs') loadSearchLogs();
   if (name === 'loginLogs') loadLoginLogs();
   if (name === 'suggestions') loadSuggestions();
+  if (name === 'terms') loadTerms();
+  if (name === 'popups') loadPopups();
+  if (name === 'notices') loadNotices();
 }
 
 // ── API Call Helper ──
@@ -385,35 +449,169 @@ async function loadLoginLogs() {
   }
 }
 
-// ── Suggestions (문의 관리) ──
+// ── Suggestions (문의 관리 - 보기 전용) ──
 async function loadSuggestions() {
   try {
     const d = await api('/api/admin/suggestions?limit=50');
     document.getElementById('sugCount').textContent = d.count + '건';
     const tb = document.getElementById('suggestionsTable');
     if (!d.suggestions.length) { tb.innerHTML = '<tr><td colspan="7" class="loading">문의가 없습니다</td></tr>'; return; }
+    const tierLabel = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관'};
     tb.innerHTML = d.suggestions.map(s => `<tr>
       <td style="white-space:nowrap">${s.createdAt ? fmtTime(s.createdAt) : '-'}</td>
-      <td>${s.userName||'-'}</td>
+      <td><strong>${s.userName||'-'}</strong></td>
+      <td><span class="tier-badge tier-${s.tier}">${tierLabel[s.tier]||s.tier}</span></td>
+      <td>${s.phone||'-'}</td>
       <td>${s.type||'-'}</td>
       <td><strong>${s.title||'-'}</strong></td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(s.content||'').replace(/"/g,'&quot;')}">${s.content||'-'}</td>
-      <td><span class="tier-badge ${s.status==='답변완료'?'tier-enterprise':'tier-free'}">${s.status}</span></td>
-      <td><button onclick="replyToSuggestion('${s.id}','${(s.title||'').replace(/'/g,'\\&#39;')}')" style="padding:4px 10px;background:#1B3A5C;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer">${s.status==='답변완료'?'수정':'답변'}</button></td>
+      <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer" title="${(s.content||'').replace(/"/g,'&quot;')}" onclick="alert(this.title)">${s.content||'-'}</td>
     </tr>`).join('');
   } catch (err) {
     document.getElementById('suggestionsTable').innerHTML = '<tr><td colspan="7" class="loading">오류: '+err.message+'</td></tr>';
   }
 }
 
-async function replyToSuggestion(id, title) {
-  const reply = prompt('답변 내용을 입력하세요 (' + title + '):');
-  if (reply === null) return;
+// ── Terms (약관 관리) ──
+async function loadTerms() {
   try {
-    await apiPost('/api/admin/update-suggestion', { id, status: '답변완료', reply });
-    alert('답변 완료');
-    loadSuggestions();
-  } catch (err) { alert('실패: ' + err.message); }
+    const d = await fetch(API + '/api/terms').then(r => r.json());
+    document.getElementById('termsOfServiceEditor').value = d.termsOfService || '';
+    document.getElementById('privacyPolicyEditor').value = d.privacyPolicy || '';
+  } catch(e) { alert('약관 로드 실패: ' + e.message); }
+}
+async function saveTerms(field) {
+  const tos = document.getElementById('termsOfServiceEditor').value;
+  const pp = document.getElementById('privacyPolicyEditor').value;
+  try {
+    await apiPost('/api/admin/terms', { termsOfService: tos, privacyPolicy: pp });
+    alert((field === 'termsOfService' ? '이용약관' : '개인정보처리방침') + ' 저장 완료');
+  } catch(e) { alert('저장 실패: ' + e.message); }
+}
+
+// ── Popups (팝업 관리) ──
+async function loadPopups() {
+  try {
+    const d = await api('/api/admin/popups');
+    const el = document.getElementById('popupList');
+    if (!d.popups.length) { el.innerHTML = '<p style="text-align:center;color:#8A95A5;padding:20px">등록된 팝업이 없습니다</p>'; return; }
+    el.innerHTML = d.popups.map(p => `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border:1px solid #eee;border-radius:8px;margin-bottom:8px">
+      <div>
+        <strong>${p.title||'(제목없음)'}</strong>
+        <span style="font-size:12px;color:#8A95A5;margin-left:8px">${p.startDate||'시작일없음'} ~ ${p.endDate||'종료일없음'}</span>
+        <span class="tier-badge ${p.active?'tier-enterprise':'tier-free'}" style="margin-left:8px">${p.active?'활성':'비활성'}</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick='editPopup(${JSON.stringify(p).replace(/'/g,"&#39;")})' style="padding:4px 12px;background:#E8A838;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer">수정</button>
+        <button onclick="deletePopup('${p.id}')" style="padding:4px 12px;background:#EF4444;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer">삭제</button>
+      </div>
+    </div>`).join('');
+  } catch(e) { document.getElementById('popupList').innerHTML = '<p class="loading">오류: '+e.message+'</p>'; }
+}
+function openPopupEditor() {
+  document.getElementById('pe-id').value = '';
+  document.getElementById('pe-title').value = '';
+  document.getElementById('pe-content').value = '';
+  document.getElementById('pe-link').value = '';
+  document.getElementById('pe-image').value = '';
+  document.getElementById('pe-start').value = '';
+  document.getElementById('pe-end').value = '';
+  document.getElementById('pe-active').value = 'true';
+  document.getElementById('popupEditorTitle').textContent = '팝업 작성';
+  document.getElementById('popupEditorPanel').style.display = 'block';
+}
+function editPopup(p) {
+  document.getElementById('pe-id').value = p.id || '';
+  document.getElementById('pe-title').value = p.title || '';
+  document.getElementById('pe-content').value = p.content || '';
+  document.getElementById('pe-link').value = p.linkUrl || '';
+  document.getElementById('pe-image').value = p.imageUrl || '';
+  document.getElementById('pe-start').value = p.startDate || '';
+  document.getElementById('pe-end').value = p.endDate || '';
+  document.getElementById('pe-active').value = p.active ? 'true' : 'false';
+  document.getElementById('popupEditorTitle').textContent = '팝업 수정';
+  document.getElementById('popupEditorPanel').style.display = 'block';
+}
+async function savePopup() {
+  const id = document.getElementById('pe-id').value;
+  const data = {
+    title: document.getElementById('pe-title').value, content: document.getElementById('pe-content').value,
+    linkUrl: document.getElementById('pe-link').value, imageUrl: document.getElementById('pe-image').value,
+    startDate: document.getElementById('pe-start').value, endDate: document.getElementById('pe-end').value,
+    active: document.getElementById('pe-active').value === 'true',
+  };
+  if (id) data.id = id;
+  if (!data.title) { alert('제목을 입력하세요'); return; }
+  try {
+    await apiPost('/api/admin/popups', data);
+    alert('팝업 저장 완료');
+    document.getElementById('popupEditorPanel').style.display = 'none';
+    loadPopups();
+  } catch(e) { alert('저장 실패: ' + e.message); }
+}
+async function deletePopup(id) {
+  if (!confirm('이 팝업을 삭제하시겠습니까?')) return;
+  try {
+    await fetch(API + '/api/admin/popups/' + id, { method:'DELETE', headers:{'Authorization':'Bearer '+token} });
+    loadPopups();
+  } catch(e) { alert('삭제 실패: ' + e.message); }
+}
+
+// ── Notices (공지사항 관리) ──
+async function loadNotices() {
+  try {
+    const d = await api('/api/admin/notices');
+    const el = document.getElementById('noticeList');
+    if (!d.notices.length) { el.innerHTML = '<p style="text-align:center;color:#8A95A5;padding:20px">등록된 공지가 없습니다</p>'; return; }
+    el.innerHTML = d.notices.map(n => `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border:1px solid #eee;border-radius:8px;margin-bottom:8px">
+      <div>
+        <strong>${n.title||'(제목없음)'}</strong>
+        <span style="font-size:12px;color:#8A95A5;margin-left:8px">${n.createdAt ? fmtTime(n.createdAt) : '-'}</span>
+        <span class="tier-badge ${n.active?'tier-enterprise':'tier-free'}" style="margin-left:8px">${n.active?'활성':'비활성'}</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick='editNotice(${JSON.stringify(n).replace(/'/g,"&#39;")})' style="padding:4px 12px;background:#E8A838;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer">수정</button>
+        <button onclick="deleteNotice('${n.id}')" style="padding:4px 12px;background:#EF4444;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer">삭제</button>
+      </div>
+    </div>`).join('');
+  } catch(e) { document.getElementById('noticeList').innerHTML = '<p class="loading">오류: '+e.message+'</p>'; }
+}
+function openNoticeEditor() {
+  document.getElementById('ne-id').value = '';
+  document.getElementById('ne-title').value = '';
+  document.getElementById('ne-content').value = '';
+  document.getElementById('ne-active').value = 'true';
+  document.getElementById('noticeEditorTitle').textContent = '공지 작성';
+  document.getElementById('noticeEditorPanel').style.display = 'block';
+}
+function editNotice(n) {
+  document.getElementById('ne-id').value = n.id || '';
+  document.getElementById('ne-title').value = n.title || '';
+  document.getElementById('ne-content').value = n.content || '';
+  document.getElementById('ne-active').value = n.active ? 'true' : 'false';
+  document.getElementById('noticeEditorTitle').textContent = '공지 수정';
+  document.getElementById('noticeEditorPanel').style.display = 'block';
+}
+async function saveNotice() {
+  const id = document.getElementById('ne-id').value;
+  const data = {
+    title: document.getElementById('ne-title').value, content: document.getElementById('ne-content').value,
+    active: document.getElementById('ne-active').value === 'true',
+  };
+  if (id) data.id = id;
+  if (!data.title) { alert('제목을 입력하세요'); return; }
+  try {
+    await apiPost('/api/admin/notices', data);
+    alert('공지 저장 완료');
+    document.getElementById('noticeEditorPanel').style.display = 'none';
+    loadNotices();
+  } catch(e) { alert('저장 실패: ' + e.message); }
+}
+async function deleteNotice(id) {
+  if (!confirm('이 공지를 삭제하시겠습니까?')) return;
+  try {
+    await fetch(API + '/api/admin/notices/' + id, { method:'DELETE', headers:{'Authorization':'Bearer '+token} });
+    loadNotices();
+  } catch(e) { alert('삭제 실패: ' + e.message); }
 }
 
 // ── 포인트 조정 ──
