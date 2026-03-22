@@ -879,18 +879,9 @@ function handleJarviaLogin(){
   const autoToken = params.get('autoLogin');
   if (!autoToken) return;
   try {
-    // 1) 커스텀 토큰으로 자동 로그인
-    const cred = await firebase.auth().signInWithCustomToken(autoToken);
-    // 2) 백엔드에 JARVIA 회원 등급 설정 (basic)
-    if (cred.user) {
-      const idToken = await cred.user.getIdToken();
-      await fetch(API_BASE_URL + '/api/jarvia-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
-        body: JSON.stringify({ tier: 'basic', source: 'jarvia' })
-      });
-    }
-    // 3) URL에서 토큰 제거 (보안)
+    // 1) 커스텀 토큰으로 자동 로그인 (등급은 /api/jarvia-auth에서 이미 설정됨)
+    await firebase.auth().signInWithCustomToken(autoToken);
+    // 2) URL에서 토큰 제거 (보안)
     params.delete('autoLogin');
     const cleanUrl = params.toString() ? location.pathname + '?' + params.toString() : location.pathname;
     history.replaceState({}, '', cleanUrl);
