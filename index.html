@@ -821,6 +821,36 @@ async function handleSearch(){
     return;
   }
   
+  // ★ 검색 전 잔여 건수 확인 + 차감 안내 팝업
+  try {
+    const tk = await currentUser.getIdToken();
+    const usageResp = await fetch(API_BASE_URL + '/api/usage', { headers:{'Authorization':'Bearer '+tk} });
+    if (usageResp.ok) {
+      const u = await usageResp.json();
+      const remaining = Math.max(0, (u.limit || 0) - (u.used || 0));
+      const tierName = {free:'무료',basic:'베이직',pro:'프로',enterprise:'기관'}[u.tier] || u.tier;
+      let msg;
+      if (remaining > 0) {
+        msg = '🔍 AI 검색 안내\n\n'
+            + '등급: ' + tierName + ' (월 ' + u.limit + '회)\n'
+            + '남은 횟수: ' + remaining + '건\n\n'
+            + '1건이 차감됩니다. 검색하시겠습니까?';
+      } else {
+        // 한도 초과 → 포인트 차감 안내
+        msg = '🔍 AI 검색 안내\n\n'
+            + '등급: ' + tierName + ' (월 ' + u.limit + '회)\n'
+            + '무료 검색 횟수를 모두 사용하셨습니다.\n\n'
+            + '보유 포인트: ' + (u.points || 0).toLocaleString() + 'P\n'
+            + '1,000P가 차감됩니다. 검색하시겠습니까?';
+        if ((u.points || 0) < 1000) {
+          showToast('포인트가 부족합니다. 충전 후 이용해주세요.');
+          return;
+        }
+      }
+      if (!confirm(msg)) return;
+    }
+  } catch(e) { console.log('usage check:', e.message); }
+  
   // 실제 API 호출 시도
   const ov=document.getElementById('searchingOverlay'),st=document.getElementById('searchingStatus'),si=document.getElementById('searchingSites');
   document.getElementById('resultsSection').classList.remove('active');
