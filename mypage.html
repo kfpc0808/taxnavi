@@ -602,6 +602,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const API_BASE = 'https://taxnavi-backend-1012609333373.asia-northeast3.run.app';
 
         // ★★★ INNOPAY 승인 Cloud Function URL (참고파일과 동일 — 필요 시 교체) ★★★
         const INNOPAY_APPROVE_URL = 'https://asia-northeast3-finmastertest.cloudfunctions.net/innopayApprove';
@@ -624,6 +625,23 @@
         let chargeHistory = [];
         let usageHistory = [];
         let inquiryHistory = [];
+
+        // API 호출 헬퍼 (taxnavi-db 접근용)
+        async function apiGet(path) {
+            const token = await firebase.auth().currentUser.getIdToken();
+            const resp = await fetch(API_BASE + path, { headers: { 'Authorization': 'Bearer ' + token } });
+            if (!resp.ok) { const e = await resp.json().catch(()=>({})); throw new Error(e.error || 'API 오류'); }
+            return resp.json();
+        }
+        async function apiPost(path, body) {
+            const token = await firebase.auth().currentUser.getIdToken();
+            const resp = await fetch(API_BASE + path, {
+                method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (!resp.ok) { const e = await resp.json().catch(()=>({})); throw new Error(e.error || 'API 오류'); }
+            return resp.json();
+        }
 
         // 탭 전환
         function showTab(tabId) {
@@ -832,7 +850,7 @@
                     const inputEmail = await showEmailInputPopup();
                     if (!inputEmail) return;
                     try {
-                        await db.collection('users').doc(currentUserId).set({ email: inputEmail }, { merge: true });
+                        await apiPost('/api/update-profile', { email: inputEmail });
                         userData.email = inputEmail;
                     } catch(e) {
                         alert('이메일 저장에 실패했습니다. 다시 시도해주세요.');
@@ -906,58 +924,22 @@
                 return;
             }
             try {
-                // 중복 적립 방지
-                const dupSnap = await db.collection('payments').where('tid', '==', tid).limit(1).get();
-                if (!dupSnap.empty) {
-                    console.warn('⛔ 이미 적립된 TID:', tid);
-                    alert('이미 처리된 결제입니다.');
-                    window._pendingCharge = null;
-                    try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
-                    return;
-                }
-                
                 const chargeAmount = pending.credit;
                 const paidAmount = pending.paid;
-                const userId = pending.userId;
                 
-                // 1) 결제 기록 저장
-                const pid = db.collection('payments').doc().id;
-                await db.collection('payments').doc(pid).set({
-                    paymentId: pid,
-                    userId: userId,
-                    paidAmount: paidAmount,
-                    chargeAmount: chargeAmount,
-                    provider: 'INNOPAY',
-                    status: 'paid',
+                // 백엔드 API로 결제 처리 (taxnavi-db에 기록)
+                const result = await apiPost('/api/charge-complete', {
                     tid: tid,
                     moid: payData.moid || pending.moid,
+                    chargeAmount: chargeAmount,
+                    paidAmount: paidAmount,
                     authCode: payData.authCode || '',
                     cardNum: payData.cardNum || '',
-                    cardName: payData.cardName || '',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    cardName: payData.cardName || ''
                 });
                 
-                // 2) 잔액 증가 (FieldValue.increment — 원자적)
-                await db.collection('users').doc(userId).set({
-                    points: firebase.firestore.FieldValue.increment(chargeAmount),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-                
-                // 3) 트랜잭션 기록 저장
-                const txDocId = db.collection('transactions').doc().id;
-                await db.collection('transactions').doc(txDocId).set({
-                    txId: txDocId,
-                    userId: userId,
-                    type: 'charge',
-                    amount: chargeAmount,
-                    refType: 'payment',
-                    refId: pid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // 4) 로컬 상태 업데이트
-                userData.balance += chargeAmount;
+                // 로컬 상태 업데이트
+                userData.balance = result.points || (userData.balance + chargeAmount);
                 updatePointsDisplay();
                 showChargeCompleteModal(paidAmount, userData.balance);
                 
@@ -966,7 +948,13 @@
                 
             } catch(err) {
                 console.error('❌ 포인트 적립 오류:', err);
-                alert('결제는 완료되었으나 포인트 적립 중 오류 발생.\n고객센터에 문의해주세요.');
+                if (err.message === '이미 처리된 결제입니다') {
+                    alert('이미 처리된 결제입니다.');
+                } else {
+                    alert('결제는 완료되었으나 포인트 적립 중 오류 발생.\n고객센터에 문의해주세요.');
+                }
+                window._pendingCharge = null;
+                try { localStorage.removeItem('_pendingCharge'); } catch(e) {}
             }
         }
 
@@ -1131,12 +1119,7 @@
             const newEmail = document.getElementById('profileEmail').value.trim();
             
             try {
-                await db.collection('users').doc(currentUserId).set({
-                    name: newName,
-                    phone: newPhone,
-                    email: newEmail,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
+                await apiPost('/api/update-profile', { name: newName, phone: newPhone, email: newEmail });
                 
                 userData.name = newName;
                 userData.phone = newPhone;
@@ -1186,16 +1169,7 @@
             if (!content) { alert('내용을 입력해주세요.'); return; }
 
             try {
-                await db.collection('suggestions').add({
-                    userId: currentUserId,
-                    userName: userData.name,
-                    type: type,
-                    title: title,
-                    content: content,
-                    status: '대기',
-                    service: 'taxnavi',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                await apiPost('/api/my/submit-inquiry', { type, title, content });
                 alert('✅ 문의가 등록되었습니다.\n\n빠른 시일 내에 답변 드리겠습니다.');
                 document.getElementById('inquiryType').value = '';
                 document.getElementById('inquiryTitle').value = '';
@@ -1243,41 +1217,18 @@
             currentUserId = user.uid;
             
             try {
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                const data = userDoc.exists ? userDoc.data() : {};
+                // 백엔드 API로 tier/사용량/포인트/프로필 조회 (taxnavi-db)
+                const apiData = await apiGet('/api/usage');
                 
-                userData.name = data.name || user.displayName || '';
-                userData.email = data.email || '';
-                userData.phone = data.phone || '';
-                userData.balance = data.points || 0;
-                userData.tier = data.tier || 'free';
-                userData.freeSearchUsed = 0;
-                userData.loginId = (user.email || '').replace('@taxnavi.kr', '');
-                
-                // 등급별 AI검색 한도
-                let freeLimit = 2;
-                if (user.metadata && user.metadata.creationTime) {
-                    const created = new Date(user.metadata.creationTime);
-                    const now = new Date();
-                    const isFirstMonth = (created.getFullYear() === now.getFullYear() && created.getMonth() === now.getMonth());
-                    freeLimit = isFirstMonth ? 5 : 2;
-                }
-                const tierLimits = { free: freeLimit, basic: 50, pro: 120 };
-                if (userData.tier === 'enterprise') {
-                    userData.freeSearchLimit = data.monthlySearchLimit || 999;
-                } else {
-                    userData.freeSearchLimit = tierLimits[userData.tier] || 2;
-                }
-                userData.isFirstMonth = (userData.tier === 'free' && freeLimit === 5);
-                
-                // 월간 사용량을 usage 컬렉션에서 조회
-                try {
-                    const yearMonth = new Date().toISOString().substring(0, 7);
-                    const usageDoc = await db.collection('usage').doc(user.uid + '_' + yearMonth).get();
-                    if (usageDoc.exists) {
-                        userData.freeSearchUsed = usageDoc.data().count || 0;
-                    }
-                } catch(ue) { console.log('usage load:', ue.message); }
+                userData.name = apiData.name || user.displayName || '';
+                userData.email = apiData.email || user.email || '';
+                userData.phone = apiData.phone || '';
+                userData.balance = apiData.points || 0;
+                userData.tier = apiData.tier || 'free';
+                userData.freeSearchUsed = apiData.used || 0;
+                userData.freeSearchLimit = apiData.limit || 2;
+                userData.loginId = apiData.loginId || (user.email || '').replace('@taxnavi.kr', '');
+                userData.isFirstMonth = (userData.tier === 'free' && userData.freeSearchLimit === 5);
                 
                 // 프로필 폼 채우기
                 document.getElementById('profileLoginId').value = userData.loginId;
@@ -1294,78 +1245,45 @@
                 userData.name = user.displayName || '';
             }
             
-            // payments에서 충전 내역 로드 (최근 50건)
+            // payments — 충전 내역 로드 (API)
             try {
-                const paySnapshot = await db.collection('payments')
-                    .where('userId', '==', currentUserId)
-                    .where('status', '==', 'paid')
-                    .orderBy('createdAt', 'desc')
-                    .limit(50)
-                    .get();
-                
-                chargeHistory = [];
-                paySnapshot.forEach(doc => {
-                    const d = doc.data();
-                    const createdAt = d.createdAt ? d.createdAt.toDate() : new Date();
-                    chargeHistory.push({
-                        date: createdAt.toLocaleDateString('ko-KR'),
-                        method: d.cardName || '카드결제',
-                        amount: d.chargeAmount || 0,
-                        paidAmount: d.paidAmount || 0
-                    });
-                });
+                const chData = await apiGet('/api/my/charge-history');
+                chargeHistory = (chData.charges || []).map(c => ({
+                    date: c.date ? new Date(c.date).toLocaleDateString('ko-KR') : '-',
+                    method: c.method || '카드결제',
+                    amount: c.chargeAmount || 0,
+                    paidAmount: c.paidAmount || 0
+                }));
             } catch (chargeErr) {
                 console.error('충전 내역 로드 오류:', chargeErr);
             }
             
-            // usageLog에서 사용 내역 로드 (최근 50건)
+            // usageLog — 사용 내역 로드 (API)
             try {
-                const usageSnapshot = await db.collection('usageLog')
-                    .where('userId', '==', currentUserId)
-                    .orderBy('createdAt', 'desc')
-                    .limit(50)
-                    .get();
-                
+                const usData = await apiGet('/api/my/usage-history');
                 const typeLabel = { search: 'AI 통합검색', summary: 'AI 요약' };
                 const typeIcon = { search: 'search', summary: 'summary' };
-                
-                usageHistory = [];
-                usageSnapshot.forEach(doc => {
-                    const d = doc.data();
-                    const createdAt = d.createdAt ? d.createdAt.toDate() : new Date();
-                    const pointUsed = d.pointUsed || 0;
-                    usageHistory.push({
-                        type: typeIcon[d.type] || 'search',
-                        title: typeLabel[d.type] || d.type || 'AI 검색',
-                        date: createdAt.toLocaleDateString('ko-KR'),
-                        detail: d.query ? d.query.substring(0, 30) + '...' : '-',
-                        amount: pointUsed > 0 ? -pointUsed : 0
-                    });
-                });
+                usageHistory = (usData.usages || []).map(l => ({
+                    type: typeIcon[l.type] || 'search',
+                    title: typeLabel[l.type] || l.type || 'AI 검색',
+                    date: l.date ? new Date(l.date).toLocaleDateString('ko-KR') : '-',
+                    detail: l.query ? l.query.substring(0, 30) + '...' : '-',
+                    amount: l.pointUsed > 0 ? -l.pointUsed : 0
+                }));
             } catch (usageErr) {
                 console.error('사용 내역 로드 오류:', usageErr);
             }
             
-            // suggestions에서 문의 내역 로드
+            // suggestions — 문의 내역 로드 (API)
             try {
-                const sugSnapshot = await db.collection('suggestions')
-                    .where('userId', '==', currentUserId)
-                    .orderBy('createdAt', 'desc')
-                    .limit(10)
-                    .get();
-                
-                inquiryHistory = [];
-                sugSnapshot.forEach(doc => {
-                    const d = doc.data();
-                    const createdAt = d.createdAt ? d.createdAt.toDate() : new Date();
-                    inquiryHistory.push({
-                        id: doc.id,
-                        type: d.type || '일반문의',
-                        title: d.title || '',
-                        date: createdAt.toLocaleDateString('ko-KR'),
-                        status: d.status || '대기'
-                    });
-                });
+                const iqData = await apiGet('/api/my/inquiries');
+                inquiryHistory = (iqData.inquiries || []).map(s => ({
+                    id: s.id,
+                    type: s.type || '일반문의',
+                    title: s.title || '',
+                    date: s.date ? new Date(s.date).toLocaleDateString('ko-KR') : '-',
+                    status: s.status || '대기'
+                }));
             } catch (sugErr) {
                 console.error('문의 내역 로드 오류:', sugErr);
             }
