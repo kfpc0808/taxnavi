@@ -61,6 +61,7 @@ tbody td{padding:10px 14px;border-bottom:1px solid #F0F3F7;color:#333}
 tbody tr:hover{background:#FAFBFD}
 .tier-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
 .tier-free{background:#F0F3F7;color:#8A95A5}
+.tier-lite{background:#F0FDF4;color:#15803D}
 .tier-basic{background:#EEF4FF;color:#1B3A5C}
 .tier-pro{background:#FEF3C7;color:#92400E}
 .tier-enterprise{background:#DCFCE7;color:#166534}
@@ -133,7 +134,7 @@ tbody tr:hover{background:#FAFBFD}
         <div class="stat-card"><div class="stat-label">오늘 검색</div><div class="stat-value" id="st-today-search">-</div><div class="stat-sub" id="st-today-results">결과 -건</div></div>
         <div class="stat-card accent"><div class="stat-label">오늘 신규가입</div><div class="stat-value" id="st-today-signup">-</div><div class="stat-sub" id="st-today-active">활성 -명</div></div>
         <div class="stat-card"><div class="stat-label">주간 검색</div><div class="stat-value" id="st-week-search">-</div></div>
-        <div class="stat-card green"><div class="stat-label">전체 회원</div><div class="stat-value" id="st-total-users">-</div><div class="stat-sub" id="st-tier-breakdown">무료 - / 베이직 - / 프로 -</div></div>
+        <div class="stat-card green"><div class="stat-label">전체 회원</div><div class="stat-value" id="st-total-users">-</div><div class="stat-sub" id="st-tier-breakdown">무료 - / Lite - / 베이직 - / 프로 -</div></div>
       </div>
       <div class="panel">
         <div class="panel-header"><h3>주간 검색 추이</h3></div>
@@ -267,7 +268,7 @@ async function loadDashboard() {
     document.getElementById('st-week-search').textContent = (d.week.searches || 0).toLocaleString();
     document.getElementById('st-total-users').textContent = (d.users.total || 0).toLocaleString();
     document.getElementById('st-tier-breakdown').textContent = 
-      '무료 ' + d.users.free + ' / 베이직 ' + d.users.basic + ' / 프로 ' + d.users.pro;
+      '무료 ' + d.users.free + ' / Lite ' + (d.users.lite||0) + ' / 베이직 ' + d.users.basic + ' / 프로 ' + d.users.pro;
     
     // Chart
     const chart = document.getElementById('weekChart');
@@ -296,6 +297,7 @@ async function loadUsers() {
       if (u.tier === 'enterprise') return (u.monthlyLimit || 0) + '건';
       if (u.tier === 'pro') return '120건';
       if (u.tier === 'basic') return '50건';
+      if (u.tier === 'lite') return '30건';
       return '2건';
     };
     tb.innerHTML = d.users.map(u => `<tr>
@@ -313,6 +315,7 @@ async function loadUsers() {
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <select onchange="updateTier('${u.uid}',this.value)" style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px">
             <option ${u.tier==='free'?'selected':''}>free</option>
+            <option ${u.tier==='lite'?'selected':''}>lite</option>
             <option ${u.tier==='basic'?'selected':''}>basic</option>
             <option ${u.tier==='pro'?'selected':''}>pro</option>
             <option ${u.tier==='enterprise'?'selected':''}>enterprise</option>

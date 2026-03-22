@@ -218,7 +218,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 /* PRICING */
 .pricing{padding:80px 24px;background:linear-gradient(180deg,#F5F8FC,var(--bg))}
 .pricing-inner{max-width:1100px;margin:0 auto}
-.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;align-items:start}
+.pricing-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;align-items:start}
 .price-card{background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:32px 24px;text-align:center;transition:var(--transition);position:relative}
 .price-card.featured{border-color:var(--primary);box-shadow:var(--shadow-xl);transform:scale(1.03)}
 .price-card.featured::before{content:'추천';position:absolute;top:-12px;left:50%;transform:translateX(-50%);padding:4px 16px;background:var(--primary);color:white;font-size:12px;font-weight:700;border-radius:var(--radius-full)}
@@ -316,6 +316,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .btn-popup-close{width:100%;padding:10px;font-size:13px;font-weight:600;color:var(--text-light);transition:var(--transition)}
 .btn-popup-close:hover{color:var(--text)}
 
+@media(max-width:1200px){.pricing-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:1080px){.pricing-grid{grid-template-columns:repeat(2,1fr)}.price-card.featured{transform:none}.price-card.featured:hover{transform:translateY(-3px)}.sites-showcase{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){.hero h1{font-size:30px}.hero-desc{font-size:15px}.nav-links{display:none}.mobile-menu-btn{display:flex}.features-grid,.sites-showcase{grid-template-columns:1fr}.pricing-grid{grid-template-columns:1fr;max-width:380px;margin:0 auto}.footer-top{flex-direction:column;gap:28px}.footer-links-group{gap:36px}.footer-bottom{flex-direction:column;gap:10px;text-align:center}.search-btn{padding:13px 18px;font-size:14px}.results-header{flex-direction:column;gap:10px;align-items:flex-start}.disclaimer-bar{font-size:11px;padding:8px 16px}}
 @media(max-width:480px){.hero{padding:48px 16px 36px}.hero h1{font-size:24px}.search-box{padding:4px 4px 4px 14px}.search-box input{font-size:14px}.category-group{justify-content:center}.category-label{min-width:100%;text-align:center}.sources-list{gap:6px}}
@@ -459,6 +460,17 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
         <button class="btn-price btn-price-outline" onclick="openModal('signup')">무료로 시작</button>
       </div>
       <div class="price-card">
+        <div class="price-name">Lite</div><div class="price-desc">AI 없이 검색결과만 빠르게</div>
+        <div class="price-amount">10,000<span>원/월</span></div><div class="price-period">정기결제 · VAT 별도</div>
+        <ul class="price-features">
+          <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>검색 월 30회</li>
+          <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>6개 사이트 통합검색</li>
+          <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>원문 링크 바로 연결</li>
+          <li class="disabled"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>AI 종합 답변</li>
+        </ul>
+        <button class="btn-price btn-price-outline" onclick="openModal('signup')">Lite 시작</button>
+      </div>
+      <div class="price-card">
         <div class="price-name">베이직</div><div class="price-desc">국세법령정보시스템 중심 검색</div>
         <div class="price-amount">30,000<span>원/월</span></div><div class="price-period">정기결제 · VAT 별도</div>
         <ul class="price-features">
@@ -506,7 +518,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">TaxNavi는 어떤 서비스인가요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>TaxNavi는 AI 기반 세무·법률 통합검색 서비스입니다. 국세법령정보시스템, 대법원 법고을, 조세심판원, 금융감독원, 국가법령정보센터, 국세상담센터 등 6개 공공 사이트를 AI가 한번에 검색하고 핵심 내용을 요약해 드립니다.</p></div></div>
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">검색 결과는 저장되나요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>검색 결과는 별도로 저장되지 않습니다. 필요한 내용은 각 결과의 '복사' 버튼 또는 '전체 복사' 버튼으로 바로 복사하여 활용하실 수 있습니다.</p></div></div>
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">어떤 자료를 검색할 수 있나요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>대법원 판례, 국세청 세법해석(질의회신·사전답변), 기획재정부 예규, 조세심판원 심판결정례, 금융감독원 금융법규, 국가법령정보센터 전체 법령, 국세상담센터 상담사례·Q&A까지 폭넓게 검색할 수 있습니다.</p></div></div>
-  <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">베이직과 프로의 차이는 무엇인가요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>베이직(월 30,000원)은 국세법령정보시스템을 중심으로 월 50회 검색이 가능합니다. 프로(월 50,000원)는 6개 사이트 통합검색이 월 120회 가능하며, AI 핵심 요약과 쟁점별 분석 리포트가 포함됩니다. 월간 한도 초과 시 건당 1,000원으로 충전하여 추가 이용할 수 있습니다.</p></div></div>
+  <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Lite, 베이직, 프로의 차이는 무엇인가요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>Lite(월 10,000원)는 6개 사이트 검색결과를 월 30회 조회할 수 있으며, AI 답변은 제공되지 않습니다. 베이직(월 30,000원)은 월 50회 검색과 AI 핵심 요약이 포함됩니다. 프로(월 50,000원)는 월 120회 검색과 AI 종합 답변, 쟁점별 분석 리포트가 포함됩니다. 월간 한도 초과 시 건당 1,000원으로 충전하여 추가 이용할 수 있습니다.</p></div></div>
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">JARVIA 회원은 어떻게 무료로 이용하나요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>JARVIA 멤버십 회원(월 50,000원)은 TaxNavi 프로 등급(월 50,000원 상당)을 추가 비용 없이 이용하실 수 있습니다. 로그인 시 'JARVIA 계정으로 로그인'을 선택하시면 자동으로 프로 플랜이 적용됩니다.</p></div></div>
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">이 서비스는 세무 자문인가요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>아닙니다. TaxNavi는 공공 데이터 기반의 AI 검색 도구이며, 세무 자문이나 법률 상담을 제공하지 않습니다. 구체적인 세무 문제는 반드시 세무사·변호사와 상담하시기 바랍니다.</p></div></div>
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">결제는 어떻게 하나요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>회원가입 후 원하는 요금제를 선택하시면 신용카드 정기결제로 진행됩니다. 월 단위 결제이며 언제든지 해지 가능합니다.</p></div></div>
@@ -771,7 +783,7 @@ firebase.auth().onAuthStateChanged(async user => {
       if (logoutBtn) logoutBtn.style.display = 'inline-flex';
     } else {
       // 일반 회원 → 이름(등급) 표시
-      const tierMap = {free:'무료',basic:'베이직',pro:'프로',enterprise:'기관'};
+      const tierMap = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관'};
       let label = user.displayName || '회원';
       try {
         const tk = await user.getIdToken();
@@ -830,13 +842,21 @@ async function handleSearch(){
     if (usageResp.ok) {
       const u = await usageResp.json();
       const remaining = Math.max(0, (u.limit || 0) - (u.used || 0));
-      const tierName = {free:'무료',basic:'베이직',pro:'프로',enterprise:'기관'}[u.tier] || u.tier;
+      const tierName = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관'}[u.tier] || u.tier;
       let msg;
       if (remaining > 0) {
-        msg = '🔍 AI 검색 안내\n\n'
-            + '등급: ' + tierName + ' (월 ' + u.limit + '회)\n'
-            + '남은 횟수: ' + remaining + '건\n\n'
-            + '1건이 차감됩니다. 검색하시겠습니까?';
+        if (u.tier === 'lite') {
+          msg = '🔍 검색 안내 (Lite)\n\n'
+              + '등급: Lite (월 ' + u.limit + '회)\n'
+              + '남은 횟수: ' + remaining + '건\n\n'
+              + '※ Lite는 검색결과만 제공됩니다 (AI 답변 없음)\n'
+              + '1건이 차감됩니다. 검색하시겠습니까?';
+        } else {
+          msg = '🔍 AI 검색 안내\n\n'
+              + '등급: ' + tierName + ' (월 ' + u.limit + '회)\n'
+              + '남은 횟수: ' + remaining + '건\n\n'
+              + '1건이 차감됩니다. 검색하시겠습니까?';
+        }
       } else {
         // 한도 초과 → 포인트 차감 안내
         msg = '🔍 AI 검색 안내\n\n'
