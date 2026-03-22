@@ -1108,7 +1108,7 @@ async function handleSearch(){
   const soSub=document.getElementById('searchingSub'),soBar=document.getElementById('soBar');
   document.getElementById('resultsSection').classList.remove('active');
   ov.classList.add('active');
-  document.querySelector('.search-box').scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>{ov.scrollIntoView({behavior:'smooth',block:'center'})},300);
   st.textContent='AI가 질문을 분석하고 있습니다';
   soSub.textContent='최적의 검색 전략을 수립하고 있습니다...';
   si.innerHTML='';
