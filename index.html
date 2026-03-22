@@ -377,7 +377,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
     <div class="search-wrapper">
       <div class="search-box">
         <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="#8A95A5" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="#8A95A5" stroke-width="2" stroke-linecap="round"/></svg>
-<input type="search" id="searchInput" autocomplete="new-password" role="searchbox" placeholder="예: 상속세 사전증여 관련 판례와 세법해석을 찾아주세요" onkeydown="if(event.key==='Enter')handleSearch()"><input type="search" id="searchInput" autocomplete="new-password" role="searchbox" placeholder="예: 상속세 사전증여 관련 판례와 세법해석을 찾아주세요" onkeydown="if(event.key==='Enter')handleSearch()">
+<input type="text" id="searchInput" name="taxnavi-search-query" autocomplete="nope" role="searchbox" aria-autocomplete="none" placeholder="예: 상속세 사전증여 관련 판례와 세법해석을 찾아주세요" onkeydown="if(event.key==='Enter')handleSearch()" onfocus="this.removeAttribute('readonly')" readonly>
         <button class="search-btn" onclick="handleSearch()">
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="white" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>검색
         </button>
@@ -968,7 +968,10 @@ async function handleSearch(){
       showRealResults(q, data);
       return;
     }
+    // 검색 결과 0건 안내
+    showToast('검색 결과가 없습니다. 다른 키워드로 다시 시도해 보세요.');
   } catch(apiErr) {
+
     clearSoTimers();ov.classList.remove('active');
     showToast('검색 서비스에 일시적 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
   }
