@@ -336,14 +336,14 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 /* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:24px}
 .modal-overlay.active{display:flex}
-.modal{background:var(--bg-card);border-radius:var(--radius-lg);width:100%;max-width:420px;max-height:90vh;overflow-y:auto;padding:36px 32px;position:relative;animation:scaleIn .3s ease;box-shadow:var(--shadow-xl)}
+.modal{background:var(--bg-card);border-radius:var(--radius-lg);width:100%;max-width:420px;max-height:90vh;overflow-y:auto;padding:24px 22px;position:relative;animation:scaleIn .3s ease;box-shadow:var(--shadow-xl)}
 .modal-close{position:absolute;top:14px;right:14px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;color:var(--text-light);transition:var(--transition)}
 .modal-close:hover{background:#F0F3F7;color:var(--text)}
 .modal h2{font-size:22px;font-weight:800;margin-bottom:6px;text-align:center}
 .modal-subtitle{font-size:13.5px;color:var(--text-secondary);text-align:center;margin-bottom:24px}
-.form-group{margin-bottom:14px}
-.form-group label{display:block;font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:5px}
-.form-group input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:16px;font-family:var(--font-main);color:var(--text);transition:var(--transition);background:var(--bg)}
+.form-group{margin-bottom:10px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px}
+.form-group input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:16px;font-family:var(--font-main);color:var(--text);transition:var(--transition);background:var(--bg)}
 .form-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(27,58,92,.1)}
 .btn-submit{width:100%;padding:13px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;font-size:15px;font-weight:700;border-radius:var(--radius);margin-top:6px;transition:var(--transition)}
 .btn-submit:hover{box-shadow:0 6px 20px rgba(27,58,92,.35);transform:translateY(-1px)}
@@ -354,7 +354,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .modal-footer{text-align:center;margin-top:18px;font-size:12.5px;color:var(--text-light)}
 .modal-footer a{color:var(--primary);font-weight:600}
 .modal-footer a:hover{text-decoration:underline}
-.modal-tabs{display:flex;gap:4px;background:#F0F3F7;border-radius:var(--radius);padding:4px;margin-bottom:22px}
+.modal-tabs{display:flex;gap:4px;background:#F0F3F7;border-radius:var(--radius);padding:4px;margin-bottom:16px}
 .modal-tab{flex:1;padding:9px;text-align:center;font-size:13.5px;font-weight:600;color:var(--text-secondary);border-radius:8px;transition:var(--transition)}
 .modal-tab.active{background:white;color:var(--primary);box-shadow:var(--shadow-sm)}
 
@@ -627,34 +627,32 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <div class="form-group"><label>아이디 <span style="color:#EF4444">*</span></label><input type="text" id="su-loginid" placeholder="영문/숫자 4자 이상" minlength="4"></div>
       <div class="form-group">
         <label>연락처 <span style="color:#EF4444">*</span></label>
-        <div style="display:flex;gap:4px;align-items:center">
-          <input id="su-ph1" value="010" style="width:54px;text-align:center" readonly>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input id="su-ph1" value="010" style="flex:1;text-align:center;min-width:0" readonly>
           <span style="color:var(--text-light)">-</span>
-          <input id="su-ph2" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" style="width:64px;text-align:center;font-size:16px" placeholder="0000">
+          <input id="su-ph2" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" style="flex:1.3;text-align:center;font-size:16px;min-width:0" placeholder="0000">
           <span style="color:var(--text-light)">-</span>
-          <input id="su-ph3" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" style="width:64px;text-align:center;font-size:16px" placeholder="0000">
+          <input id="su-ph3" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" style="flex:1.3;text-align:center;font-size:16px;min-width:0" placeholder="0000">
         </div>
       </div>
-      <div class="form-group" style="background:#F0F7FF;padding:12px 14px;border-radius:10px;border:1px solid #D0E3FF">
-        <label style="font-weight:700;color:#1565C0;font-size:12.5px">📱 연락처 인증 <span style="color:#EF4444">*</span></label>
-        <div style="display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap">
+      <div class="form-group" style="background:#F0F7FF;padding:10px 12px;border-radius:8px;border:1px solid #D0E3FF">
+        <label style="font-weight:700;color:#1565C0;font-size:12px">📱 연락처 인증 <span style="color:#EF4444">*</span></label>
+        <div style="display:flex;gap:6px;margin-top:6px;align-items:center;flex-wrap:wrap">
           <button type="button" id="su-sms-send" onclick="doSendSMS()" style="padding:8px 14px;background:var(--primary);color:white;border-radius:8px;font-size:12.5px;font-weight:700;white-space:nowrap;border:none;cursor:pointer">인증번호 발송</button>
           <input id="su-sms-code" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="인증번호 4자리" style="width:100px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:16px;text-align:center">
           <button type="button" onclick="doVerifySMS()" style="padding:8px 14px;background:var(--success);color:white;border-radius:8px;font-size:12.5px;font-weight:700;white-space:nowrap;border:none;cursor:pointer">확인</button>
         </div>
-        <div id="su-sms-status" style="font-size:12px;margin-top:6px;color:var(--text-light)"></div>
+        <div id="su-sms-status" style="font-size:11px;margin-top:4px;color:var(--text-light)"></div>
         <input type="hidden" id="su-sms-verified" value="N">
       </div>
       <div class="form-group"><label>비밀번호 <span style="color:#EF4444">*</span></label><input type="password" id="su-pw" placeholder="8자 이상 입력하세요"></div>
       <div class="form-group"><label>비밀번호 확인 <span style="color:#EF4444">*</span></label><input type="password" id="su-pw2" placeholder="비밀번호를 다시 입력하세요"></div>
-      <div style="margin:8px 0;display:flex;flex-direction:column;gap:6px">
-        <label style="font-size:12.5px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="su-agree-terms" style="width:16px;height:16px;accent-color:var(--primary)"><span><a href="#" onclick="showTermsModal('termsOfService');return false;" style="color:var(--primary);text-decoration:underline">이용약관</a>에 동의합니다 <span style="color:#EF4444">*</span></span></label>
-        <label style="font-size:12.5px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="su-agree-privacy" style="width:16px;height:16px;accent-color:var(--primary)"><span><a href="#" onclick="showTermsModal('privacyPolicy');return false;" style="color:var(--primary);text-decoration:underline">개인정보처리방침</a>에 동의합니다 <span style="color:#EF4444">*</span></span></label>
+      <div style="margin:6px 0;display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="su-agree-terms" style="width:15px;height:15px;accent-color:var(--primary)"><span><a href="#" onclick="showTermsModal('termsOfService');return false;" style="color:var(--primary);text-decoration:underline">이용약관</a>에 동의합니다 <span style="color:#EF4444">*</span></span></label>
+        <label style="font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="su-agree-privacy" style="width:15px;height:15px;accent-color:var(--primary)"><span><a href="#" onclick="showTermsModal('privacyPolicy');return false;" style="color:var(--primary);text-decoration:underline">개인정보처리방침</a>에 동의합니다 <span style="color:#EF4444">*</span></span></label>
       </div>
       <button class="btn-submit" onclick="handleAuth()">회원가입</button>
     </div>
-    <div class="modal-divider">또는</div>
-    <button class="btn-jarvia-login" onclick="handleJarviaLogin()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="#E8A838"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#E8A838" stroke-width="2"/></svg>JARVIA 계정으로 로그인 (프로 무료)</button>
     <div class="modal-footer" id="modalFooter">계정이 없으신가요? <a href="#" onclick="switchTab('signup');return false;">회원가입</a></div>
   </div>
 </div>
@@ -667,7 +665,6 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
         <div class="popup-feature"><div class="popup-feature-icon" style="background:#EEF4FF">⚖️</div><p><strong>6개 공공 사이트</strong> 통합검색 (판례·세법해석·예규·심판례·상담사례)</p></div>
         <div class="popup-feature"><div class="popup-feature-icon" style="background:#FFF4E5">🤖</div><p><strong>자연어 입력</strong> → AI가 최적 사이트 선택 + 키워드 추출</p></div>
         <div class="popup-feature"><div class="popup-feature-icon" style="background:#E8FFF0">📋</div><p>결과는 저장되지 않으며 <strong>간편 복사</strong>로 바로 활용</p></div>
-        <div class="popup-feature"><div class="popup-feature-icon" style="background:#FEF0F0">🎁</div><p><strong>JARVIA 멤버십 회원</strong>은 프로 등급 무료!</p></div>
       </div>
       <button class="btn-popup-start" onclick="closePopup()">시작하기</button>
       <button class="btn-popup-close" onclick="closePopup()">다음에 볼게요</button>
