@@ -1047,7 +1047,9 @@ async function submitPublicInquiry() {
 }
 
 // ─── 초기 로드 ───
+if('scrollRestoration' in history) history.scrollRestoration='manual';
 document.addEventListener('DOMContentLoaded', () => {
+  window.scrollTo(0, 0);
   loadNoticeMarquee();
   setTimeout(loadAdminPopups, 2000);
 });
