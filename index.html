@@ -600,8 +600,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 <div class="toast" id="toast"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/></svg><span id="toastMessage">복사되었습니다</span></div>
 
 <script>
-const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw',url:'https://taxlaw.nts.go.kr'},courtCase:{name:'대법원 법고을',color:'#DC2626',badge:'badge-courtCase',url:'https://lx.scourt.go.kr'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal',url:'https://www.tt.go.kr'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw',url:'https://law.fss.or.kr'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr',url:'https://www.law.go.kr'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA',url:'https://call.nts.go.kr'}};
-
+const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw',url:'https://taxlaw.nts.go.kr'},courtCase:{name:'판례·법령해석례 (법제처)',color:'#DC2626',badge:'badge-courtCase',url:'https://www.law.go.kr'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal',url:'https://www.tt.go.kr'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw',url:'https://law.fss.or.kr'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr',url:'https://www.law.go.kr'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA',url:'https://call.nts.go.kr'}};
 try{document.querySelectorAll('.anim').forEach(el=>new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})},{threshold:.05}).observe(el))}catch(e){document.querySelectorAll('.anim').forEach(el=>{el.style.opacity='1';el.style.transform='translateY(0)'})}
 
 window.addEventListener('scroll',()=>{document.getElementById('header').classList.toggle('scrolled',window.scrollY>10)});
@@ -952,7 +951,7 @@ function showRealResults(query, data){
   // Individual results
   data.searchResults.forEach((r,i)=>{
     const siteInfo=SITES[r.site]||{name:r.source||r.site,color:'#666',badge:'badge-taxlaw',url:''};
-    const siteUrl=siteInfo.url||'';
+    const siteUrl=r.url||siteInfo.url||'';
     const d=document.createElement('div');d.className='result-card';d.style.animationDelay=(i*.06)+'s';
     d.setAttribute('data-site',r.site);
     d.setAttribute('id','result-'+i);
