@@ -825,7 +825,7 @@ function handleAuth(){
         if (requestedTier !== 'free') {
           const tierNames = {lite:'Lite',basic:'베이직',pro:'프로'};
           const tierPrices = {lite:'10,000',basic:'30,000',pro:'50,000'};
-          if (confirm('🎉 회원가입 완료!\n\n신청 등급: ' + (tierNames[requestedTier]||requestedTier) + ' (' + (tierPrices[requestedTier]||'') + '원/월)\n\n유료 등급 전환을 위해 1만원 이상 충전이 필요합니다.\n당월 이용료는 무료이며, 충전한 포인트로 바로 검색하실 수 있습니다.\n\n지금 충전 페이지로 이동하시겠습니까?')) {
+          if (confirm('🎉 회원가입 완료!\n\n신청 등급: ' + (tierNames[requestedTier]||requestedTier) + ' (' + (tierPrices[requestedTier]||'') + '원/월)\n\n유료 등급 전환을 위해 1만원 이상 충전이 필요합니다.\n월이용료는 다음달 말일부터 결제됩니다. 당월은 충전한 포인트로 바로 이용하실 수 있습니다.\n\n지금 충전 페이지로 이동하시겠습니까?')) {
             window.location.href = 'mypage.html#tab-balance';
           } else {
             showToast('회원가입 완료! 마이페이지에서 언제든 충전할 수 있습니다.');
