@@ -152,10 +152,11 @@ tbody tr:hover{background:#FAFBFD}
         <div class="panel-header"><h3>회원 목록</h3><span class="badge" id="userCount">0명</span></div>
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>이름</th><th>아이디</th><th>전화번호</th><th>등급</th><th>신청등급</th><th>포인트</th><th>월한도</th><th>총검색</th><th>마지막검색</th><th>가입일</th><th>JARVIA</th><th>관리</th></tr></thead>
-            <tbody id="usersTable"><tr><td colspan="12" class="loading">로딩 중...</td></tr></tbody>
+            <thead><tr><th>#</th><th>이름</th><th>아이디</th><th>전화번호</th><th>등급</th><th>신청등급</th><th>포인트</th><th>월한도</th><th>총검색</th><th>마지막검색</th><th>가입일</th><th>JARVIA</th><th>관리</th></tr></thead>
+            <tbody id="usersTable"><tr><td colspan="13" class="loading">로딩 중...</td></tr></tbody>
           </table>
         </div>
+        <div id="userPagination" style="display:flex;justify-content:center;align-items:center;gap:8px;padding:16px;font-size:13px"></div>
       </div>
     </div>
 
@@ -278,6 +279,27 @@ tbody tr:hover{background:#FAFBFD}
   </div>
 </div>
 
+<!-- USER EDIT MODAL -->
+<div id="userEditOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1200;align-items:center;justify-content:center;padding:24px" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:white;border-radius:16px;padding:28px 24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.15)">
+    <h3 style="margin-bottom:18px;font-size:18px">✏️ 회원 정보 수정</h3>
+    <input type="hidden" id="ue-uid">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">이름</label><input id="ue-name" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">전화번호</label><input id="ue-phone" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">등급</label><select id="ue-tier" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="free">free</option><option value="lite">lite</option><option value="basic">basic</option><option value="pro">pro</option><option value="enterprise">enterprise</option></select></div>
+      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">신청등급</label><select id="ue-requestedTier" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="free">free</option><option value="lite">lite</option><option value="basic">basic</option><option value="pro">pro</option></select></div>
+      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">포인트</label><input id="ue-points" type="number" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">월한도</label><input id="ue-monthlyLimit" type="number" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
+    </div>
+    <div style="margin-top:12px"><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">새 비밀번호 (변경 시에만 입력)</label><input id="ue-password" type="password" placeholder="8자 이상 (미입력 시 변경 없음)" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
+    <div style="display:flex;gap:8px;margin-top:20px">
+      <button onclick="saveUserEdit()" style="flex:1;padding:10px;background:#1B3A5C;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">저장</button>
+      <button onclick="document.getElementById('userEditOverlay').style.display='none'" style="padding:10px 20px;background:#ddd;color:#333;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">취소</button>
+    </div>
+  </div>
+</div>
+
 <script>
 let token = null;
 
@@ -372,48 +394,122 @@ async function loadDashboard() {
 }
 
 // ── Users ──
+let _allUsers = [];
+let _userPage = 1;
+const _userPerPage = 20;
+
 async function loadUsers() {
   try {
-    const d = await api('/api/admin/users?limit=100');
-    document.getElementById('userCount').textContent = d.count + '명';
-    const tb = document.getElementById('usersTable');
-    if (!d.users.length) { tb.innerHTML = '<tr><td colspan="12" class="loading">회원이 없습니다</td></tr>'; return; }
-    const limitLabel = (u) => {
-      if (u.tier === 'enterprise') return (u.monthlyLimit || 0) + '건';
-      if (u.tier === 'pro') return '120건';
-      if (u.tier === 'basic') return '50건';
-      if (u.tier === 'lite') return '30건';
-      return '2건';
-    };
-    tb.innerHTML = d.users.map(u => `<tr>
-      <td><strong>${u.name||'-'}</strong></td>
-      <td>${u.loginId||u.email||'-'}</td>
-      <td>${u.phone||'-'}</td>
-      <td><span class="tier-badge tier-${u.tier}">${u.tier}</span></td>
-      <td>${u.requestedTier && u.requestedTier !== 'free' && u.requestedTier !== u.tier ? '<span style="color:#E8A838;font-weight:700;font-size:12px">⬆ '+u.requestedTier+'</span>' : (u.requestedTier && u.requestedTier !== 'free' ? '<span style="color:#22C55E;font-size:12px">✅ '+u.requestedTier+'</span>' : '<span style="color:#8A95A5;font-size:12px">-</span>')}</td>
-      <td style="text-align:right;font-weight:600;color:${(u.points||0)>0?'#22C55E':'#8A95A5'}">${(u.points||0).toLocaleString()}P</td>
-      <td style="text-align:center">${limitLabel(u)}</td>
-      <td>${u.totalSearches||0}</td>
-      <td>${u.lastSearchAt ? fmtTime(u.lastSearchAt) : '-'}</td>
-      <td>${u.createdAt ? fmtTime(u.createdAt) : '-'}</td>
-      <td>${u.jarviaLinked ? '✅' : '-'}</td>
-      <td>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <select onchange="updateTier('${u.uid}',this.value)" style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px">
-            <option ${u.tier==='free'?'selected':''}>free</option>
-            <option ${u.tier==='lite'?'selected':''}>lite</option>
-            <option ${u.tier==='basic'?'selected':''}>basic</option>
-            <option ${u.tier==='pro'?'selected':''}>pro</option>
-            <option ${u.tier==='enterprise'?'selected':''}>enterprise</option>
-          </select>
-          <button onclick="adjustPoints('${u.uid}','${(u.name||'').replace(/'/g,'')}')" style="padding:4px 8px;background:#E8A838;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer" title="포인트 조정">💰P</button>
-          ${u.tier==='enterprise'?'<button onclick="showSubAccounts(\''+u.uid+'\',\''+((u.name||'').replace(/'/g,''))+'\')" style="padding:4px 8px;background:#166534;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer" title="하위계정 관리">👥</button>':''}
-        </div>
-      </td>
-    </tr>`).join('');
+    const d = await api('/api/admin/users?limit=500');
+    _allUsers = d.users || [];
+    document.getElementById('userCount').textContent = _allUsers.length + '명';
+    _userPage = 1;
+    renderUsersPage();
   } catch (err) {
-    document.getElementById('usersTable').innerHTML = '<tr><td colspan="12" class="loading">오류: '+err.message+'</td></tr>';
+    document.getElementById('usersTable').innerHTML = '<tr><td colspan="13" class="loading">오류: '+err.message+'</td></tr>';
   }
+}
+
+function renderUsersPage() {
+  const tb = document.getElementById('usersTable');
+  if (!_allUsers.length) { tb.innerHTML = '<tr><td colspan="13" class="loading">회원이 없습니다</td></tr>'; document.getElementById('userPagination').innerHTML=''; return; }
+  const totalPages = Math.ceil(_allUsers.length / _userPerPage);
+  if (_userPage > totalPages) _userPage = totalPages;
+  const start = (_userPage - 1) * _userPerPage;
+  const pageUsers = _allUsers.slice(start, start + _userPerPage);
+  const limitLabel = (u) => {
+    if (u.tier === 'enterprise') return (u.monthlyLimit || 0) + '건';
+    if (u.tier === 'pro') return '120건';
+    if (u.tier === 'basic') return '50건';
+    if (u.tier === 'lite') return '30건';
+    return '2건';
+  };
+  tb.innerHTML = pageUsers.map((u, i) => `<tr>
+    <td style="text-align:center;color:#8A95A5;font-size:12px">${start + i + 1}</td>
+    <td><strong>${u.name||'-'}</strong></td>
+    <td>${u.loginId||u.email||'-'}</td>
+    <td>${u.phone||'-'}</td>
+    <td><span class="tier-badge tier-${u.tier}">${u.tier}</span></td>
+    <td>${u.requestedTier && u.requestedTier !== 'free' && u.requestedTier !== u.tier ? '<span style="color:#E8A838;font-weight:700;font-size:12px">⬆ '+u.requestedTier+'</span>' : (u.requestedTier && u.requestedTier !== 'free' ? '<span style="color:#22C55E;font-size:12px">✅ '+u.requestedTier+'</span>' : '<span style="color:#8A95A5;font-size:12px">-</span>')}</td>
+    <td style="text-align:right;font-weight:600;color:${(u.points||0)>0?'#22C55E':'#8A95A5'}">${(u.points||0).toLocaleString()}P</td>
+    <td style="text-align:center">${limitLabel(u)}</td>
+    <td>${u.totalSearches||0}</td>
+    <td>${u.lastSearchAt ? fmtTime(u.lastSearchAt) : '-'}</td>
+    <td>${u.createdAt ? fmtTime(u.createdAt) : '-'}</td>
+    <td>${u.jarviaLinked ? '✅' : '-'}</td>
+    <td>
+      <div style="display:flex;gap:4px;flex-wrap:wrap">
+        <button onclick="openUserEdit('${u.uid}')" style="padding:4px 8px;background:#1B3A5C;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer" title="수정">✏️</button>
+        <button onclick="deleteUser('${u.uid}','${(u.name||'').replace(/'/g,'')}')" style="padding:4px 8px;background:#DC2626;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer" title="삭제">🗑️</button>
+        <button onclick="adjustPoints('${u.uid}','${(u.name||'').replace(/'/g,'')}')" style="padding:4px 8px;background:#E8A838;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer" title="포인트 조정">💰P</button>
+        ${u.tier==='enterprise'?'<button onclick="showSubAccounts(\''+u.uid+'\',\''+((u.name||'').replace(/'/g,''))+'\')" style="padding:4px 8px;background:#166534;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer" title="하위계정 관리">👥</button>':''}
+      </div>
+    </td>
+  </tr>`).join('');
+  // 페이지네이션
+  let pgHtml = '';
+  if (totalPages > 1) {
+    pgHtml += '<button onclick="_userPage=1;renderUsersPage()" style="padding:6px 10px;border:1px solid #ddd;border-radius:4px;background:'+ (_userPage===1?'#1B3A5C':'#fff') +';color:'+(_userPage===1?'#fff':'#333')+';font-size:12px;cursor:pointer"' + (_userPage===1?' disabled':'') + '>«</button>';
+    pgHtml += '<button onclick="_userPage=Math.max(1,_userPage-1);renderUsersPage()" style="padding:6px 10px;border:1px solid #ddd;border-radius:4px;background:#fff;color:#333;font-size:12px;cursor:pointer"' + (_userPage===1?' disabled':'') + '>‹</button>';
+    const startP = Math.max(1, _userPage - 2);
+    const endP = Math.min(totalPages, startP + 4);
+    for (let p = startP; p <= endP; p++) {
+      pgHtml += '<button onclick="_userPage='+p+';renderUsersPage()" style="padding:6px 10px;border:1px solid '+(p===_userPage?'#1B3A5C':'#ddd')+';border-radius:4px;background:'+(p===_userPage?'#1B3A5C':'#fff')+';color:'+(p===_userPage?'#fff':'#333')+';font-size:12px;font-weight:'+(p===_userPage?'700':'400')+';cursor:pointer">'+p+'</button>';
+    }
+    pgHtml += '<button onclick="_userPage=Math.min('+totalPages+',_userPage+1);renderUsersPage()" style="padding:6px 10px;border:1px solid #ddd;border-radius:4px;background:#fff;color:#333;font-size:12px;cursor:pointer"' + (_userPage===totalPages?' disabled':'') + '>›</button>';
+    pgHtml += '<button onclick="_userPage='+totalPages+';renderUsersPage()" style="padding:6px 10px;border:1px solid #ddd;border-radius:4px;background:'+ (_userPage===totalPages?'#1B3A5C':'#fff') +';color:'+(_userPage===totalPages?'#fff':'#333')+';font-size:12px;cursor:pointer"' + (_userPage===totalPages?' disabled':'') + '>»</button>';
+    pgHtml += '<span style="color:#8A95A5;margin-left:8px">(' + _userPage + ' / ' + totalPages + '페이지)</span>';
+  }
+  document.getElementById('userPagination').innerHTML = pgHtml;
+}
+
+function openUserEdit(uid) {
+  const u = _allUsers.find(x => x.uid === uid);
+  if (!u) return;
+  document.getElementById('ue-uid').value = uid;
+  document.getElementById('ue-name').value = u.name || '';
+  document.getElementById('ue-phone').value = u.phone || '';
+  document.getElementById('ue-tier').value = u.tier || 'free';
+  document.getElementById('ue-requestedTier').value = u.requestedTier || 'free';
+  document.getElementById('ue-points').value = u.points || 0;
+  document.getElementById('ue-monthlyLimit').value = u.monthlyLimit || 0;
+  document.getElementById('ue-password').value = '';
+  document.getElementById('userEditOverlay').style.display = 'flex';
+}
+
+async function saveUserEdit() {
+  const uid = document.getElementById('ue-uid').value;
+  if (!uid) return;
+  const body = {
+    uid,
+    name: document.getElementById('ue-name').value.trim(),
+    phone: document.getElementById('ue-phone').value.trim(),
+    tier: document.getElementById('ue-tier').value,
+    requestedTier: document.getElementById('ue-requestedTier').value,
+    points: parseInt(document.getElementById('ue-points').value) || 0,
+    monthlyLimit: parseInt(document.getElementById('ue-monthlyLimit').value) || 0
+  };
+  const pw = document.getElementById('ue-password').value;
+  if (pw) {
+    if (pw.length < 8) { alert('비밀번호는 8자 이상이어야 합니다'); return; }
+    body.newPassword = pw;
+  }
+  try {
+    await apiPost('/api/admin/update-user-full', body);
+    alert('✅ 회원 정보가 수정되었습니다');
+    document.getElementById('userEditOverlay').style.display = 'none';
+    loadUsers();
+  } catch (e) { alert('수정 실패: ' + e.message); }
+}
+
+async function deleteUser(uid, name) {
+  if (!confirm('⚠️ 정말 "' + name + '" 회원을 삭제하시겠습니까?\n\nFirebase 계정 + 모든 데이터(결제, 검색, 사용내역)가\n완전히 삭제되며 복구할 수 없습니다.')) return;
+  if (!confirm('🔴 최종 확인: "' + name + '" 회원을 영구 삭제합니다.\n\n정말 진행하시겠습니까?')) return;
+  try {
+    await apiPost('/api/admin/delete-user', { uid });
+    alert('✅ 회원이 완전히 삭제되었습니다');
+    loadUsers();
+  } catch (e) { alert('삭제 실패: ' + e.message); }
 }
 
 async function updateTier(uid, tier) {
