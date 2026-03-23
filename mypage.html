@@ -605,7 +605,7 @@
         const API_BASE = 'https://taxnavi-backend-1012609333373.asia-northeast3.run.app';
 
         // ★★★ INNOPAY 승인 Cloud Function URL (참고파일과 동일 — 필요 시 교체) ★★★
-        const INNOPAY_APPROVE_URL = 'https://asia-northeast3-finmastertest.cloudfunctions.net/innopayApprove';
+        const INNOPAY_APPROVE_URL = API_BASE + '/api/innopay-approve';
 
         // 상태 관리
         let selectedChargeAmount = 0;
@@ -863,7 +863,7 @@
                 const moid = 'TAXNAVI' + Date.now() + Math.random().toString(36).substr(2, 9);
                 
                 if (typeof innopay === 'undefined') {
-                    alert('결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+                    alert('결제 모듈을 불러오지 못했습니다.\n페이지를 새로고침 후 다시 시도해주세요.');
                     return;
                 }
                 
