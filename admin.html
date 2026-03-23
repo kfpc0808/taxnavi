@@ -152,8 +152,8 @@ tbody tr:hover{background:#FAFBFD}
         <div class="panel-header"><h3>회원 목록</h3><span class="badge" id="userCount">0명</span></div>
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>이름</th><th>아이디</th><th>전화번호</th><th>등급</th><th>포인트</th><th>월한도</th><th>총검색</th><th>마지막검색</th><th>가입일</th><th>JARVIA</th><th>관리</th></tr></thead>
-            <tbody id="usersTable"><tr><td colspan="11" class="loading">로딩 중...</td></tr></tbody>
+            <thead><tr><th>이름</th><th>아이디</th><th>전화번호</th><th>등급</th><th>신청등급</th><th>포인트</th><th>월한도</th><th>총검색</th><th>마지막검색</th><th>가입일</th><th>JARVIA</th><th>관리</th></tr></thead>
+            <tbody id="usersTable"><tr><td colspan="12" class="loading">로딩 중...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -377,7 +377,7 @@ async function loadUsers() {
     const d = await api('/api/admin/users?limit=100');
     document.getElementById('userCount').textContent = d.count + '명';
     const tb = document.getElementById('usersTable');
-    if (!d.users.length) { tb.innerHTML = '<tr><td colspan="11" class="loading">회원이 없습니다</td></tr>'; return; }
+    if (!d.users.length) { tb.innerHTML = '<tr><td colspan="12" class="loading">회원이 없습니다</td></tr>'; return; }
     const limitLabel = (u) => {
       if (u.tier === 'enterprise') return (u.monthlyLimit || 0) + '건';
       if (u.tier === 'pro') return '120건';
@@ -390,6 +390,7 @@ async function loadUsers() {
       <td>${u.loginId||u.email||'-'}</td>
       <td>${u.phone||'-'}</td>
       <td><span class="tier-badge tier-${u.tier}">${u.tier}</span></td>
+      <td>${u.requestedTier && u.requestedTier !== 'free' && u.requestedTier !== u.tier ? '<span style="color:#E8A838;font-weight:700;font-size:12px">⬆ '+u.requestedTier+'</span>' : (u.requestedTier && u.requestedTier !== 'free' ? '<span style="color:#22C55E;font-size:12px">✅ '+u.requestedTier+'</span>' : '<span style="color:#8A95A5;font-size:12px">-</span>')}</td>
       <td style="text-align:right;font-weight:600;color:${(u.points||0)>0?'#22C55E':'#8A95A5'}">${(u.points||0).toLocaleString()}P</td>
       <td style="text-align:center">${limitLabel(u)}</td>
       <td>${u.totalSearches||0}</td>
@@ -411,7 +412,7 @@ async function loadUsers() {
       </td>
     </tr>`).join('');
   } catch (err) {
-    document.getElementById('usersTable').innerHTML = '<tr><td colspan="11" class="loading">오류: '+err.message+'</td></tr>';
+    document.getElementById('usersTable').innerHTML = '<tr><td colspan="12" class="loading">오류: '+err.message+'</td></tr>';
   }
 }
 
