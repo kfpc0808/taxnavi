@@ -948,7 +948,7 @@ firebase.auth().onAuthStateChanged(async user => {
       } catch(e) { console.log('balance load:', e.message); if (balanceEl) { balanceEl.textContent = '💰 0 P'; balanceEl.style.display = 'inline-flex'; } }
     }
   } else {
-    if (loginBtn) { loginBtn.textContent = '로그인'; loginBtn.style.background=''; loginBtn.style.color=''; loginBtn.style.borderColor=''; loginBtn.onclick = () => { openModal('login'); return false; }; }
+    if (loginBtn) { loginBtn.textContent = '로그인/회원가입'; loginBtn.style.background=''; loginBtn.style.color=''; loginBtn.style.borderColor=''; loginBtn.onclick = () => { openModal('login'); return false; }; }
     if (startBtn) { startBtn.textContent = '무료 체험'; startBtn.onclick = () => { openModal('signup'); return false; }; }
     if (chargeBtn) chargeBtn.style.display = 'none';
     if (mypageBtn) mypageBtn.style.display = 'none';
@@ -1330,6 +1330,8 @@ function toggleMobileMenu(){
     closeMobileMenu();
   } else {
     l.style.cssText='';
+    // body로 이동시켜 header의 backdrop-filter 스태킹 컨텍스트 탈출
+    document.body.appendChild(l);
     l.classList.add('mobile-open');
     o.classList.add('active');
     if(!l.querySelector('.mobile-drawer-close')){
@@ -1347,7 +1349,15 @@ function closeMobileMenu(){
   l.classList.remove('mobile-open');
   l.style.cssText='';
   o.classList.remove('active');
+  // 원래 위치(nav 안)로 복귀
+  const nav=document.querySelector('.nav');
+  const menuBtn=document.querySelector('.mobile-menu-btn');
+  nav.insertBefore(l,menuBtn);
 }
+// 드로어 메뉴 링크 클릭 시 자동 닫힘
+document.querySelectorAll('.nav-links a').forEach(function(a){
+  a.addEventListener('click',function(){if(window.innerWidth<=768)closeMobileMenu()});
+});
 
 document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
 </script>
