@@ -537,6 +537,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <div class="price-card">
         <div class="price-name">무료 체험</div><div class="price-desc">먼저 경험해 보세요</div>
         <div class="price-amount">0<span>원</span></div><div class="price-period">회원가입 후 바로 시작</div>
+        <div style="font-size:12px;color:var(--accent-dark);font-weight:700;margin:-18px 0 18px;background:#FFF9EE;padding:4px 12px;border-radius:20px;display:inline-block">충전제 · 건당 1,000원</div>
         <ul class="price-features">
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>첫 달 5회, 이후 월 2회</li>
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>기본 키워드 검색</li>
@@ -548,17 +549,19 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <div class="price-card">
         <div class="price-name">Lite</div><div class="price-desc">AI 없이 검색결과만 빠르게</div>
         <div class="price-amount">10,000<span>원/월</span></div><div class="price-period">정기결제 · VAT 별도</div>
+        <div style="font-size:12px;color:var(--accent-dark);font-weight:700;margin:-18px 0 18px;background:#FFF9EE;padding:4px 12px;border-radius:20px;display:inline-block">건당 333원 (AI 없음)</div>
         <ul class="price-features">
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>검색 월 30회</li>
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>6개 사이트 통합검색</li>
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>원문 링크 바로 연결</li>
           <li class="disabled"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>AI 종합 답변</li>
         </ul>
-        <button class="btn-price btn-price-outline" onclick="openModal('signup')">Lite 시작</button>
+        <button class="btn-price btn-price-outline" onclick="openModal('signup','lite')">Lite 시작</button>
       </div>
       <div class="price-card">
         <div class="price-name">베이직</div><div class="price-desc">국세법령정보시스템 중심 검색</div>
         <div class="price-amount">30,000<span>원/월</span></div><div class="price-period">정기결제 · VAT 별도</div>
+        <div style="font-size:12px;color:var(--accent-dark);font-weight:700;margin:-18px 0 18px;background:#FFF9EE;padding:4px 12px;border-radius:20px;display:inline-block">건당 600원</div>
         <ul class="price-features">
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>AI 검색 월 50회</li>
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>6개 사이트 통합검색</li>
@@ -566,11 +569,12 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>원문 링크 바로 연결</li>
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>쟁점별 분석 리포트</li>
         </ul>
-        <button class="btn-price btn-price-outline" onclick="openModal('signup')">베이직 시작</button>
+        <button class="btn-price btn-price-outline" onclick="openModal('signup','basic')">베이직 시작</button>
       </div>
       <div class="price-card featured">
         <div class="price-name">프로</div><div class="price-desc">6개 사이트 통합검색 + AI 요약</div>
         <div class="price-amount">50,000<span>원/월</span></div><div class="price-period">정기결제 · VAT 별도</div>
+        <div style="font-size:12px;color:#fff;font-weight:700;margin:-18px 0 18px;background:var(--primary);padding:4px 12px;border-radius:20px;display:inline-block">건당 417원 · 최저 단가</div>
         <ul class="price-features">
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>AI 검색 <strong>월 120회</strong></li>
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><strong>6개 사이트</strong> 통합검색</li>
@@ -578,7 +582,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>원문 링크 바로 연결</li>
           <li><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>쟁점별 분석 리포트</li>
         </ul>
-        <button class="btn-price btn-price-primary" onclick="openModal('signup')">프로 시작하기</button>
+        <button class="btn-price btn-price-primary" onclick="openModal('signup','pro')">프로 시작하기</button>
       </div>
       <div class="price-card">
         <div class="price-name">기관</div><div class="price-desc">세무법인·회계법인 맞춤</div>
@@ -657,6 +661,16 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       </div>
       <div class="form-group"><label>비밀번호 <span style="color:#EF4444">*</span></label><input type="password" id="su-pw" placeholder="8자 이상 입력하세요"></div>
       <div class="form-group"><label>비밀번호 확인 <span style="color:#EF4444">*</span></label><input type="password" id="su-pw2" placeholder="비밀번호를 다시 입력하세요"></div>
+      <div class="form-group" style="background:#F0F7FF;padding:12px;border-radius:8px;border:1px solid #D0E3FF">
+        <label style="font-weight:700;color:#1565C0;font-size:12px">📋 희망 등급 선택</label>
+        <select id="su-tier" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:var(--font-main);margin-top:6px;background:white">
+          <option value="free">무료 (충전제 · 건당 1,000원)</option>
+          <option value="lite">Lite — 10,000원/월 (검색 30회 · 건당 333원)</option>
+          <option value="basic">베이직 — 30,000원/월 (AI검색 50회 · 건당 600원)</option>
+          <option value="pro">프로 — 50,000원/월 (AI검색 120회 · 건당 417원)</option>
+        </select>
+        <p style="font-size:11px;color:var(--text-light);margin-top:4px">※ 유료 등급은 가입 후 1만원 이상 충전 시 관리자 승인 후 전환됩니다. 당월 이용료는 무료입니다.</p>
+      </div>
       <div style="margin:6px 0;display:flex;flex-direction:column;gap:4px">
         <label style="font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="su-agree-terms" style="width:15px;height:15px;accent-color:var(--primary)"><span><a href="#" onclick="showTermsModal('termsOfService');return false;" style="color:var(--primary);text-decoration:underline">이용약관</a>에 동의합니다 <span style="color:#EF4444">*</span></span></label>
         <label style="font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="su-agree-privacy" style="width:15px;height:15px;accent-color:var(--primary)"><span><a href="#" onclick="showTermsModal('privacyPolicy');return false;" style="color:var(--primary);text-decoration:underline">개인정보처리방침</a>에 동의합니다 <span style="color:#EF4444">*</span></span></label>
@@ -731,7 +745,7 @@ window.addEventListener('scroll',()=>{document.getElementById('header').classLis
 
 function toggleFaq(b){const i=b.parentElement,o=i.classList.contains('open');document.querySelectorAll('.faq-item.open').forEach(x=>x.classList.remove('open'));if(!o)i.classList.add('open')}
 
-function openModal(t){document.getElementById('authModal').classList.add('active');switchTab(t)}
+function openModal(t,tier){document.getElementById('authModal').classList.add('active');switchTab(t);if(tier){var sel=document.getElementById('su-tier');if(sel)sel.value=tier;}}
 function closeModal(){document.getElementById('authModal').classList.remove('active')}
 function switchTab(t){
   const l=t==='login';
@@ -790,6 +804,7 @@ function handleAuth(){
     
     const phone = '010-' + ph2 + '-' + ph3;
     const dummyEmail = loginId + '@taxnavi.kr';
+    const requestedTier = document.getElementById('su-tier').value || 'free';
     
     firebase.auth().createUserWithEmailAndPassword(dummyEmail, pw)
       .then(cred => cred.user.updateProfile({ displayName: name }).then(() => cred.user))
@@ -798,11 +813,24 @@ function handleAuth(){
           fetch(API_BASE_URL + '/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-            body: JSON.stringify({ name, phone, loginId })
+            body: JSON.stringify({ name, phone, loginId, requestedTier })
           }).catch(e => console.log('register save:', e.message));
         });
       })
-      .then(() => { closeModal(); showToast('회원가입 완료! 환영합니다.'); })
+      .then(() => {
+        closeModal();
+        if (requestedTier !== 'free') {
+          const tierNames = {lite:'Lite',basic:'베이직',pro:'프로'};
+          const tierPrices = {lite:'10,000',basic:'30,000',pro:'50,000'};
+          if (confirm('🎉 회원가입 완료!\n\n신청 등급: ' + (tierNames[requestedTier]||requestedTier) + ' (' + (tierPrices[requestedTier]||'') + '원/월)\n\n유료 등급 전환을 위해 1만원 이상 충전이 필요합니다.\n당월 이용료는 무료이며, 충전한 포인트로 바로 검색하실 수 있습니다.\n\n지금 충전 페이지로 이동하시겠습니까?')) {
+            window.location.href = 'mypage.html#tab-balance';
+          } else {
+            showToast('회원가입 완료! 마이페이지에서 언제든 충전할 수 있습니다.');
+          }
+        } else {
+          showToast('회원가입 완료! 환영합니다.');
+        }
+      })
       .catch(err => {
         if (err.code === 'auth/email-already-in-use') showToast('이미 사용 중인 아이디입니다');
         else showToast('가입 실패: ' + err.message);
@@ -926,7 +954,16 @@ firebase.auth().onAuthStateChanged(async user => {
       try {
         const tk = await user.getIdToken();
         const resp = await fetch(API_BASE_URL + '/api/usage', { headers:{'Authorization':'Bearer '+tk} });
-        if (resp.ok) { const d = await resp.json(); if(d.tier) label = (user.displayName||'회원') + '(' + (tierMap[d.tier]||d.tier) + ')'; }
+        if (resp.ok) {
+          const d = await resp.json();
+          if(d.tier) label = (user.displayName||'회원') + '(' + (tierMap[d.tier]||d.tier) + ')';
+          // 포인트도 API 응답에서 표시
+          if (balanceEl) {
+            const pts = d.points || 0;
+            balanceEl.textContent = '💰 ' + pts.toLocaleString() + ' P';
+            balanceEl.style.display = 'inline-flex';
+          }
+        }
       } catch(e){}
       if (loginBtn) { loginBtn.textContent = label; loginBtn.onclick = null; loginBtn.style.cursor = 'default'; }
       if (startBtn) { startBtn.textContent = '검색하기'; startBtn.onclick = () => { document.getElementById('searchInput').focus(); return false; }; }
@@ -934,18 +971,6 @@ firebase.auth().onAuthStateChanged(async user => {
       if (chargeBtn) chargeBtn.style.display = 'inline-flex';
       if (mypageBtn) mypageBtn.style.display = 'inline-flex';
       if (logoutBtn) logoutBtn.style.display = 'inline-flex';
-      // 보유 포인트 표시
-      try {
-        const uDoc = await db.collection('users').doc(user.uid).get();
-        if (uDoc.exists && balanceEl) {
-          const pts = uDoc.data().points || 0;
-          balanceEl.textContent = '💰 ' + pts.toLocaleString() + ' P';
-          balanceEl.style.display = 'inline-flex';
-        } else if (balanceEl) {
-          balanceEl.textContent = '💰 0 P';
-          balanceEl.style.display = 'inline-flex';
-        }
-      } catch(e) { console.log('balance load:', e.message); if (balanceEl) { balanceEl.textContent = '💰 0 P'; balanceEl.style.display = 'inline-flex'; } }
     }
   } else {
     if (loginBtn) { loginBtn.textContent = '로그인/회원가입'; loginBtn.style.background=''; loginBtn.style.color=''; loginBtn.style.borderColor=''; loginBtn.onclick = () => { openModal('login'); return false; }; }
