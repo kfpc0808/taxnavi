@@ -454,9 +454,12 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .expert-card[data-role="citizen"] .ec-num{background:#0891B2}
 .ec-text strong{font-weight:700}
 .ec-text span{color:var(--text-secondary)}
-.expert-nav{display:flex;justify-content:center;gap:8px;margin-top:20px}
+.expert-nav{display:flex;justify-content:center;gap:8px;margin-top:20px;align-items:center}
 .expert-dot{width:8px;height:8px;border-radius:50%;background:#D1D5DB;border:none;cursor:pointer;padding:0;transition:all .3s}
 .expert-dot.active{width:24px;border-radius:4px;background:#4F46E5}
+.expert-arrow{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0;color:var(--text-secondary)}
+.expert-arrow:hover{background:#F3F4F6;border-color:#9CA3AF;color:var(--text-primary)}
+.expert-arrow svg{width:16px;height:16px}
 @media(max-width:768px){.expert-card{min-width:290px;max-width:290px;padding:24px}.expert-header h2{font-size:24px}.expert-section{padding:48px 0 50px}}
 </style>
 </head>
@@ -526,7 +529,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <div class="sources-list">
         <span class="source-chip" style="background:#1B3A5C">국세법령정보시스템</span>
         <span class="source-chip" style="background:#DC2626">대법원 법고을</span>
-        <span class="source-chip" style="background:#1B3A5C">사법정보공개포털</span>
+        <span class="source-chip" style="background:#0D9488">사법정보공개포털</span>
         <span class="source-chip" style="background:#D97706">조세심판원</span>
         <span class="source-chip" style="background:#16A34A">금융감독원</span>
         <span class="source-chip" style="background:#7C3AED">국가법령정보센터</span>
@@ -598,10 +601,14 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <div class="expert-card" data-role="lawyer"><div class="ec-top"><div class="ec-icon">⚖️</div><div><div class="ec-role">TAX LAWYER</div><div class="ec-name">조세 전문 변호사</div></div></div><div class="ec-quote">대법원 판례만으로 소송 전략을 세우고 계신가요?</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>판결 경향 즉시 파악</strong> <span>— 같은 쟁점의 인용·기각 흐름을 한눈에 봅니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>판결서 원문 직접 접근</strong> <span>— 사법정보공개포털 비실명 판결문까지 검색합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>소송 전략 시간 단축</strong> <span>— 7개 사이트 리서치를 한 번의 검색으로 끝냅니다</span></div></li></ul></div>
       <div class="expert-card" data-role="cpa"><div class="ec-top"><div class="ec-icon">📊</div><div><div class="ec-role">CERTIFIED PUBLIC ACCOUNTANT</div><div class="ec-name">회계사</div></div></div><div class="ec-quote">"제 판단으로는"보다 "판례 근거가 있습니다"가 고객을 움직입니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>자문에 판례 근거 첨부</strong> <span>— "판례가 있습니다"로 설득력을 높입니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>M&amp;A·가업승계 리스크 검토</strong> <span>— 관련 판례·예규를 AI가 정리합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>세무조정 쟁점 사전 확인</strong> <span>— 과세관청 해석과 법원 판단을 비교합니다</span></div></li></ul></div>
       <div class="expert-card" data-role="lawfirm"><div class="ec-top"><div class="ec-icon">🏛️</div><div><div class="ec-role">LAW FIRM</div><div class="ec-name">법무법인</div></div></div><div class="ec-quote">하나의 쟁점에 사이트 5개를 열어보던 시간, 이제 끝입니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>7개 사이트 통합검색</strong> <span>— 국세청·대법원·법제처를 따로 열 필요 없습니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>의견서 작성 시간 단축</strong> <span>— AI가 근거 문서를 자동 정리합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>국제조세·구조조정 대응</strong> <span>— 법령·판례·행정규칙을 교차 검토합니다</span></div></li></ul></div>
-      <div class="expert-card" data-role="finance"><div class="ec-top"><div class="ec-icon">💰</div><div><div class="ec-role">FINANCIAL PLANNER</div><div class="ec-name">재무설계사 · 보험 컨설턴트</div></div></div><div class="ec-quote">고객이 절세를 물었을 때, 즉시 근거를 보여줄 수 있어야 신뢰입니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>절세 설계에 법적 근거</strong> <span>— 상속·증여세 판례를 직접 확인하고 제시합니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>보험 과세 즉시 검색</strong> <span>— 보험차익·연금소득 세법해석을 바로 찾습니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>고객 신뢰도 향상</strong> <span>— 근거 기반 상담으로 전문성을 보여줍니다</span></div></li></ul></div>
+      <div class="expert-card" data-role="finance"><div class="ec-top"><div class="ec-icon">💰</div><div><div class="ec-role">FINANCIAL PLANNER</div><div class="ec-name">재무컨설턴트</div></div></div><div class="ec-quote">고객이 절세를 물었을 때, 즉시 근거를 보여줄 수 있어야 신뢰입니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>절세 설계에 법적 근거</strong> <span>— 상속·증여세 판례를 직접 확인하고 제시합니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>보험 과세 즉시 검색</strong> <span>— 보험차익·연금소득 세법해석을 바로 찾습니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>고객 신뢰도 향상</strong> <span>— 근거 기반 상담으로 전문성을 보여줍니다</span></div></li></ul></div>
       <div class="expert-card" data-role="citizen"><div class="ec-top"><div class="ec-icon">👤</div><div><div class="ec-role">INDIVIDUAL TAXPAYER</div><div class="ec-name">일반 납세자</div></div></div><div class="ec-quote">양도세·상속세, 비슷한 사건이 법원에서 어떻게 판결났는지 궁금하셨죠?</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>비슷한 판결 찾기</strong> <span>— 자연어로 질문하면 AI가 검색합니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>불복 가능성 사전 판단</strong> <span>— 추징 전에 관련 심판례·판례를 확인합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>전문가 상담 전 사전 준비</strong> <span>— 미리 파악하고 더 효율적으로 상담합니다</span></div></li></ul></div>
     </div>
-    <div class="expert-nav" id="expertNav"></div>
+    <div class="expert-nav" id="expertNav">
+      <button class="expert-arrow" id="expertPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div id="expertDots" style="display:flex;gap:8px;align-items:center"></div>
+      <button class="expert-arrow" id="expertNext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
   </div>
 </section>
 
@@ -691,11 +698,11 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
   <p class="section-subtitle">TaxNavi 이용에 대해 궁금한 점을 확인하세요.</p>
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">TaxNavi는 어떤 서비스인가요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>TaxNavi는 AI 기반 세무·법률 통합검색 서비스입니다. 국세법령정보시스템, 대법원 법고을, 조세심판원, 금융감독원, 국가법령정보센터, 국세상담센터, 사법정보공개포털 등 7개 공공 사이트를 AI가 한번에 검색하고 핵심 내용을 요약해 드립니다.</p></div></div>
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">검색 결과는 저장되나요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>검색 결과는 별도로 저장되지 않습니다. 필요한 내용은 각 결과의 '복사' 버튼 또는 '전체 복사' 버튼으로 바로 복사하여 활용하실 수 있습니다.</p></div></div>
-  <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">어떤 자료를 검색할 수 있나요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>대법원 판례, 국세청 세법해석(질의회신·사전답변), 기획재정부 예규, 조세심판원 심판결정례, 금융감독원 금융법규, 국가법령정보센터 전체 법령, 국세상담센터 상담사례·Q&A까지 폭넓게 검색할 수 있습니다.</p></div></div>
+  <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">어떤 자료를 검색할 수 있나요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>대법원 판례, 국세청 세법해석(질의회신·사전답변), 기획재정부 예규, 조세심판원 심판결정례, 금융감독원 금융법규, 국가법령정보센터 전체 법령, 국세상담센터 상담사례·Q&A, 사법정보공개포털 판결서 원문(비실명)·하급심 판결까지 폭넓게 검색할 수 있습니다.</p></div></div>
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Lite, 베이직, 프로의 차이는 무엇인가요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>Lite(월 10,000원)는 7개 사이트 검색결과를 월 30회 조회할 수 있으며, AI 답변은 제공되지 않습니다. 베이직(월 30,000원)은 월 50회 검색과 AI 핵심 요약이 포함됩니다. 프로(월 50,000원)는 월 120회 검색과 AI 종합 답변, 쟁점별 분석 리포트가 포함됩니다. 월간 한도 초과 시 건당 1,000원으로 충전하여 추가 이용할 수 있습니다.</p></div></div>
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">이 서비스는 세무 자문인가요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>아닙니다. TaxNavi는 공공 데이터 기반의 AI 검색 도구이며, 세무 자문이나 법률 상담을 제공하지 않습니다. 구체적인 세무 문제는 반드시 세무사·변호사와 상담하시기 바랍니다.</p></div></div>
   <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">결제는 어떻게 하나요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>회원가입 후 원하는 요금제를 선택하시면 신용카드 정기결제로 진행됩니다. 월 단위 결제이며 언제든지 해지 가능합니다.</p></div></div>
-  <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">검색 데이터의 출처는 어디인가요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>모든 검색 데이터는 국세청, 대법원, 조세심판원, 금융감독원, 법제처 등 정부·공공기관이 운영하는 공개 사이트에서 실시간으로 수집됩니다. 원문 출처를 반드시 함께 표기합니다.</p></div></div>
+  <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">검색 데이터의 출처는 어디인가요?<svg class="faq-arrow" width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="faq-answer"><p>모든 검색 데이터는 국세청, 대법원, 조세심판원, 금융감독원, 법제처, 사법정보공개포털 등 정부·공공기관이 운영하는 공개 사이트에서 실시간으로 수집됩니다. 원문 출처를 반드시 함께 표기합니다.</p></div></div>
 </section>
 
 <footer class="footer">
@@ -1521,11 +1528,18 @@ document.getElementById('authModal').addEventListener('click',function(e){if(e.t
 // ── 전문가 가이드 스크롤 네비게이션 ──
 (function(){
   const scroll=document.getElementById('expertScroll');
-  const nav=document.getElementById('expertNav');
-  if(!scroll||!nav)return;
+  const dotsWrap=document.getElementById('expertDots');
+  const prevBtn=document.getElementById('expertPrev');
+  const nextBtn=document.getElementById('expertNext');
+  if(!scroll||!dotsWrap)return;
   const cards=scroll.querySelectorAll('.expert-card');
-  cards.forEach((_,i)=>{const d=document.createElement('button');d.className='expert-dot'+(i===0?' active':'');d.onclick=()=>{cards[i].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'})};nav.appendChild(d)});
-  scroll.addEventListener('scroll',()=>{const sl=scroll.scrollLeft;const cw=cards[0]?.offsetWidth||340;const idx=Math.round(sl/(cw+20));nav.querySelectorAll('.expert-dot').forEach((d,i)=>{d.classList.toggle('active',i===idx)})});
+  let curIdx=0;
+  const getIdx=()=>{const sl=scroll.scrollLeft;const cw=cards[0]?.offsetWidth||340;return Math.round(sl/(cw+20))};
+  const updateDots=()=>{const idx=getIdx();curIdx=idx;dotsWrap.querySelectorAll('.expert-dot').forEach((d,i)=>{d.classList.toggle('active',i===idx)})};
+  cards.forEach((_,i)=>{const d=document.createElement('button');d.className='expert-dot'+(i===0?' active':'');d.onclick=()=>{cards[i].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'})};dotsWrap.appendChild(d)});
+  scroll.addEventListener('scroll',updateDots);
+  if(prevBtn)prevBtn.onclick=()=>{const idx=Math.max(0,getIdx()-1);cards[idx].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'})};
+  if(nextBtn)nextBtn.onclick=()=>{const idx=Math.min(cards.length-1,getIdx()+1);cards[idx].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'})};
 })();
 </script>
 </body>
