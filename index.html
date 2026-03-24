@@ -9,10 +9,18 @@
 <meta property="og:description" content="7개 공공 사이트를 AI가 한번에 검색하고 핵심을 요약합니다.">
 <meta property="og:url" content="https://taxnavi.kr">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://taxnavi.kr/og-taxnavi.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://taxnavi.kr/og-taxnavi.png">
 <link rel="canonical" href="https://taxnavi.kr">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<!-- Kakao SDK -->
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
+<script>if(window.Kakao&&!Kakao.isInitialized())Kakao.init('2953646393fc63c68eaad8a2467e35bf');</script>
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -120,8 +128,10 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .search-box input::placeholder{color:var(--text-light)}
 .search-btn{flex-shrink:0;padding:13px 28px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;font-size:15px;font-weight:700;border-radius:12px;transition:var(--transition);display:flex;align-items:center;gap:7px}
 .search-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(27,58,92,.35)}
-.search-hint{font-size:13px;color:rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;gap:6px;animation:fadeInUp .6s ease .4s backwards}
+.search-hint{font-size:12px;color:rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;gap:6px;animation:fadeInUp .6s ease .4s backwards;white-space:nowrap}
 .search-hint strong{color:var(--accent)}
+.btn-share-taxnavi{display:inline-flex;align-items:center;gap:5px;padding:7px 16px;background:linear-gradient(135deg,#E8A838,#D97706);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(232,168,56,.3);animation:fadeInUp .6s ease .45s backwards}
+.btn-share-taxnavi:hover{opacity:.9;transform:translateY(-1px)}
 .search-counter{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:8px 20px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius-full);font-size:13.5px;color:rgba(255,255,255,.7);animation:fadeInUp .6s ease .5s backwards}
 .search-counter strong{color:white;font-size:20px;font-weight:800}
 
@@ -395,7 +405,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 @media(max-width:1200px){.pricing-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:1080px){.pricing-grid{grid-template-columns:repeat(2,1fr)}.price-card.featured{transform:none}.price-card.featured:hover{transform:translateY(-3px)}.sites-showcase{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){.hero h1{font-size:30px}.hero-desc{font-size:15px}.nav-links{display:none}.mobile-menu-btn{display:flex}.features-grid{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;gap:14px;padding:0 16px 12px}.features-grid::-webkit-scrollbar{display:none}.features-grid .feature-card{width:66vw;min-width:66vw;flex-shrink:0;scroll-snap-align:start}.sites-showcase{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;gap:12px;padding:0 16px 12px}.sites-showcase::-webkit-scrollbar{display:none}.sites-showcase .site-card{width:66vw;min-width:66vw;flex-shrink:0;scroll-snap-align:start}.pricing-grid{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;gap:14px;max-width:100%;margin:0 auto;padding:16px 16px 12px}.pricing-grid::-webkit-scrollbar{display:none}.pricing-grid .price-card{min-width:260px;flex-shrink:0;scroll-snap-align:start}.footer-top{flex-direction:column;gap:28px}.footer-links-group{gap:36px}.footer-bottom{flex-direction:column;gap:10px;text-align:center}.search-btn{padding:13px 18px;font-size:14px}.search-btn .mobile-hide{display:none}.search-btn{width:44px;height:44px;padding:0;border-radius:50%;justify-content:center}.results-header{flex-direction:column;gap:10px;align-items:flex-start}.disclaimer-bar{font-size:11px;padding:8px 16px}.result-card{padding:16px 16px}.searching-overlay{padding:24px 16px;margin:12px 8px 0}.so-steps{gap:0;flex-wrap:wrap;justify-content:center}.so-step{padding:6px 10px;font-size:11px}.so-step-line{width:16px}.so-sites{gap:6px}.site-progress{padding:5px 10px;font-size:11px}.admin-popup-box{max-width:92%;margin:0 16px}.terms-modal{padding:20px 16px;max-width:95%}.terms-modal-content{max-height:60vh;padding:12px}.notice-marquee{font-size:12px;padding:6px 0}.category-label{min-width:60px;font-size:13px}.inquiry-modal{padding:20px 16px;max-width:95%}.mobile-block{display:block}.mobile-br::before{content:'\A';white-space:pre}}
-@media(max-width:480px){.hero{padding:48px 16px 36px}.hero h1{font-size:24px}.search-box{padding:4px 4px 4px 14px}.search-box input{font-size:16px}.sources-list{gap:6px}}
+@media(max-width:480px){.hero{padding:48px 16px 36px}.hero h1{font-size:24px}.search-box{padding:4px 4px 4px 14px}.search-box input{font-size:16px}.sources-list{gap:6px}.search-hint{font-size:11px;gap:4px}.search-hint svg{display:none}}
 </style>
 </head>
 <body>
@@ -447,7 +457,8 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       </div>
       <p class="search-hint">
         <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <strong>자연어로 입력</strong>해도 AI가 질문을 분석하여 최적의 사이트와 키워드를 선택합니다
+        <strong>자연어로 입력</strong>하면 AI가 최적의 사이트와 키워드를 자동 선택합니다
+        <button class="btn-share-taxnavi" onclick="shareTaxNavi()">📤 공유</button>
       </p>
     </div>
     <div class="search-counter">오늘 분석 횟수: <strong id="searchCount">0</strong>회</div>
@@ -910,6 +921,30 @@ async function doVerifySMS() {
     status.textContent = '❌ ' + err.message;
     status.style.color = '#EF4444';
   }
+}
+
+// ─── TaxNavi 공유 ───
+function shareTaxNavi(){
+  var url='https://taxnavi.kr';
+  var isMob=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if(isMob&&window.Kakao&&Kakao.isInitialized()){
+    try{
+      Kakao.Share.sendDefault({
+        objectType:'feed',
+        content:{
+          title:'TaxNavi — 국세청예규·판례 AI 통합검색',
+          description:'7개 공공 사이트를 AI가 한번에 검색하고 핵심을 요약합니다.',
+          imageUrl:'https://taxnavi.kr/og-taxnavi.png',
+          imageWidth:1200,
+          imageHeight:630,
+          link:{mobileWebUrl:url,webUrl:url}
+        },
+        buttons:[{title:'TaxNavi 바로가기',link:{mobileWebUrl:url,webUrl:url}}]
+      });
+      return;
+    }catch(e){console.error('카카오 공유 실패:',e);}
+  }
+  navigator.clipboard.writeText(url).then(function(){showToast('링크가 복사되었습니다! 붙여넣기로 공유하세요.');}).catch(function(){var t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast('링크가 복사되었습니다!');});
 }
 
 function handleJarviaLogin(){
