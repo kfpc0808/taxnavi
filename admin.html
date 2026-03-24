@@ -65,6 +65,7 @@ tbody tr:hover{background:#FAFBFD}
 .tier-basic{background:#EEF4FF;color:#1B3A5C}
 .tier-pro{background:#FEF3C7;color:#92400E}
 .tier-enterprise{background:#DCFCE7;color:#166534}
+.tier-jarvia_free{background:#FFF7ED;color:#C2410C}
 .err-badge{background:#FEF0F0;color:#B91C1C;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
 
 /* CHART placeholder */
@@ -287,7 +288,7 @@ tbody tr:hover{background:#FAFBFD}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">이름</label><input id="ue-name" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
       <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">전화번호</label><input id="ue-phone" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
-      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">등급</label><select id="ue-tier" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="free">free</option><option value="lite">lite</option><option value="basic">basic</option><option value="pro">pro</option><option value="enterprise">enterprise</option></select></div>
+      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">등급</label><select id="ue-tier" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="free">free</option><option value="lite">lite</option><option value="basic">basic</option><option value="pro">pro</option><option value="enterprise">enterprise</option><option value="jarvia_free">jarvia_free (JARVIA월5건)</option></select></div>
       <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">신청등급</label><select id="ue-requestedTier" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="free">free</option><option value="lite">lite</option><option value="basic">basic</option><option value="pro">pro</option></select></div>
       <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">포인트</label><input id="ue-points" type="number" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
       <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">월한도</label><input id="ue-monthlyLimit" type="number" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
@@ -422,6 +423,7 @@ function renderUsersPage() {
     if (u.tier === 'pro') return '120건';
     if (u.tier === 'basic') return '50건';
     if (u.tier === 'lite') return '30건';
+    if (u.tier === 'jarvia_free') return '5건';
     return '2건';
   };
   tb.innerHTML = pageUsers.map((u, i) => `<tr>
@@ -574,7 +576,7 @@ async function loadSuggestions() {
     document.getElementById('sugCount').textContent = d.count + '건';
     const tb = document.getElementById('suggestionsTable');
     if (!d.suggestions.length) { tb.innerHTML = '<tr><td colspan="7" class="loading">문의가 없습니다</td></tr>'; return; }
-    const tierLabel = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관'};
+    const tierLabel = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'};
     tb.innerHTML = d.suggestions.map(s => `<tr>
       <td style="white-space:nowrap">${s.createdAt ? fmtTime(s.createdAt) : '-'}</td>
       <td><strong>${s.userName||'-'}</strong></td>

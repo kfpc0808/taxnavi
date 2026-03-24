@@ -954,7 +954,7 @@ firebase.auth().onAuthStateChanged(async user => {
       if (logoutBtn) logoutBtn.style.display = 'inline-flex';
     } else {
       // 일반 회원 → 이름(등급) 표시
-      const tierMap = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관'};
+      const tierMap = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'};
       let label = user.displayName || '회원';
       try {
         const tk = await user.getIdToken();
@@ -1127,7 +1127,7 @@ async function handleSearch(){
     if (usageResp.ok) {
       const u = await usageResp.json();
       const remaining = Math.max(0, (u.limit || 0) - (u.used || 0));
-      const tierName = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관'}[u.tier] || u.tier;
+      const tierName = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'}[u.tier] || u.tier;
       let msg;
       if (remaining > 0) {
         if (u.tier === 'lite') {
