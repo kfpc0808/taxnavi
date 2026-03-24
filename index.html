@@ -934,7 +934,7 @@ function shareTaxNavi(){
     try{
       Kakao.Share.sendDefault({
         objectType:'feed',
-        content:{title:title,description:desc,imageUrl:'https://taxnavi.kr/og-taxnavi.png',imageWidth:1200,imageHeight:630,link:{mobileWebUrl:url,webUrl:url}},
+        content:{title:title,description:desc,imageUrl:'https://taxnavi.kr/og-taxnavi.png',link:{mobileWebUrl:url,webUrl:url}},
         buttons:[{title:'TaxNavi 바로가기',link:{mobileWebUrl:url,webUrl:url}}]
       });
       return;
