@@ -130,8 +130,8 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .search-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(27,58,92,.35)}
 .search-hint{font-size:12px;color:rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;gap:6px;animation:fadeInUp .6s ease .4s backwards;white-space:nowrap}
 .search-hint strong{color:var(--accent)}
-.btn-share-taxnavi{display:inline-flex;align-items:center;gap:5px;padding:7px 16px;background:linear-gradient(135deg,#E8A838,#D97706);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(232,168,56,.3);animation:fadeInUp .6s ease .45s backwards}
-.btn-share-taxnavi:hover{opacity:.9;transform:translateY(-1px)}
+.btn-share-taxnavi{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:#D97706;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-share-taxnavi:hover{background:#B45309}
 .search-counter{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:8px 20px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius-full);font-size:13.5px;color:rgba(255,255,255,.7);animation:fadeInUp .6s ease .5s backwards}
 .search-counter strong{color:white;font-size:20px;font-weight:800}
 
@@ -438,6 +438,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <a href="mypage.html" class="btn-mypage" id="btnMypage">👤 마이페이지</a>
       <a href="#" class="btn-logout" id="btnLogout" onclick="firebase.auth().signOut();return false;">로그아웃</a>
     </div>
+    <button class="btn-share-taxnavi" onclick="shareTaxNavi()">📤 공유</button>
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><div class="hamburger"><span></span><span></span><span></span></div></button>
   </nav>
 </header>
@@ -458,7 +459,6 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <p class="search-hint">
         <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <strong>자연어로 입력</strong>하면 AI가 최적의 사이트와 키워드를 자동 선택합니다
-        <button class="btn-share-taxnavi" onclick="shareTaxNavi()">📤 공유</button>
       </p>
     </div>
     <div class="search-counter">오늘 분석 횟수: <strong id="searchCount">0</strong>회</div>
@@ -926,26 +926,31 @@ async function doVerifySMS() {
 // ─── TaxNavi 공유 ───
 function shareTaxNavi(){
   var url='https://taxnavi.kr';
+  var title='TaxNavi — 국세청예규·판례 AI 통합검색';
+  var desc='7개 공공 사이트를 AI가 한번에 검색하고 핵심을 요약합니다.';
   var isMob=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  // 1) 모바일 + 카카오톡 공유
   if(isMob&&window.Kakao&&Kakao.isInitialized()){
     try{
       Kakao.Share.sendDefault({
         objectType:'feed',
-        content:{
-          title:'TaxNavi — 국세청예규·판례 AI 통합검색',
-          description:'7개 공공 사이트를 AI가 한번에 검색하고 핵심을 요약합니다.',
-          imageUrl:'https://taxnavi.kr/og-taxnavi.png',
-          imageWidth:1200,
-          imageHeight:630,
-          link:{mobileWebUrl:url,webUrl:url}
-        },
+        content:{title:title,description:desc,imageUrl:'https://taxnavi.kr/og-taxnavi.png',imageWidth:1200,imageHeight:630,link:{mobileWebUrl:url,webUrl:url}},
         buttons:[{title:'TaxNavi 바로가기',link:{mobileWebUrl:url,webUrl:url}}]
       });
       return;
-    }catch(e){console.error('카카오 공유 실패:',e);}
+    }catch(e){console.error('[카카오 공유 실패]',e);}
   }
-  navigator.clipboard.writeText(url).then(function(){showToast('링크가 복사되었습니다! 붙여넣기로 공유하세요.');}).catch(function(){var t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast('링크가 복사되었습니다!');});
+  // 2) 모바일 네이티브 공유 (카카오 실패 시)
+  if(navigator.share){
+    navigator.share({title:title,text:desc,url:url}).catch(function(){});
+    return;
+  }
+  // 3) PC — 클립보드 복사
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(function(){showToast('링크가 복사되었습니다! 붙여넣기로 공유하세요.');}).catch(function(){fallbackCopy(url);});
+  }else{fallbackCopy(url);}
 }
+function fallbackCopy(url){var t=document.createElement('textarea');t.value=url;t.style.position='fixed';t.style.left='-9999px';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast('링크가 복사되었습니다!');}
 
 function handleJarviaLogin(){
   showToast('JARVIA 계정 연동은 준비 중입니다. 이메일로 가입해주세요.');
