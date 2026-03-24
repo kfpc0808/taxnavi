@@ -406,6 +406,58 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 @media(max-width:1080px){.pricing-grid{grid-template-columns:repeat(2,1fr)}.price-card.featured{transform:none}.price-card.featured:hover{transform:translateY(-3px)}.sites-showcase{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){.hero h1{font-size:30px}.hero-desc{font-size:15px}.nav-links{display:none}.mobile-menu-btn{display:flex}.features-grid{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;gap:14px;padding:0 16px 12px}.features-grid::-webkit-scrollbar{display:none}.features-grid .feature-card{width:66vw;min-width:66vw;flex-shrink:0;scroll-snap-align:start}.sites-showcase{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;gap:12px;padding:0 16px 12px}.sites-showcase::-webkit-scrollbar{display:none}.sites-showcase .site-card{width:66vw;min-width:66vw;flex-shrink:0;scroll-snap-align:start}.pricing-grid{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;gap:14px;max-width:100%;margin:0 auto;padding:16px 16px 12px}.pricing-grid::-webkit-scrollbar{display:none}.pricing-grid .price-card{min-width:260px;flex-shrink:0;scroll-snap-align:start}.footer-top{flex-direction:column;gap:28px}.footer-links-group{gap:36px}.footer-bottom{flex-direction:column;gap:10px;text-align:center}.search-btn{padding:13px 18px;font-size:14px}.search-btn .mobile-hide{display:none}.search-btn{width:44px;height:44px;padding:0;border-radius:50%;justify-content:center}.results-header{flex-direction:column;gap:10px;align-items:flex-start}.disclaimer-bar{font-size:11px;padding:8px 16px}.result-card{padding:16px 16px}.searching-overlay{padding:24px 16px;margin:12px 8px 0}.so-steps{gap:0;flex-wrap:wrap;justify-content:center}.so-step{padding:6px 10px;font-size:11px}.so-step-line{width:16px}.so-sites{gap:6px}.site-progress{padding:5px 10px;font-size:11px}.admin-popup-box{max-width:92%;margin:0 16px}.terms-modal{padding:20px 16px;max-width:95%}.terms-modal-content{max-height:60vh;padding:12px}.notice-marquee{font-size:12px;padding:6px 0}.category-label{min-width:60px;font-size:13px}.inquiry-modal{padding:20px 16px;max-width:95%}.mobile-block{display:block}.mobile-br::before{content:'\A';white-space:pre}}
 @media(max-width:480px){.hero{padding:48px 16px 36px}.hero h1{font-size:24px}.search-box{padding:4px 4px 4px 14px}.search-box input{font-size:16px}.sources-list{gap:6px}.search-hint{font-size:11px;gap:4px}.search-hint svg{display:none}}
+/* 전문가별 활용 가이드 */
+.expert-section{max-width:1200px;margin:0 auto;padding:60px 0 70px}
+.expert-header{text-align:center;margin-bottom:36px;padding:0 24px}
+.expert-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:linear-gradient(135deg,#EEF2FF,#E0E7FF);border-radius:100px;font-size:13px;font-weight:600;color:#4F46E5;margin-bottom:16px}
+.expert-badge::before{content:'';width:6px;height:6px;background:#4F46E5;border-radius:50%}
+.expert-header h2{font-size:30px;font-weight:900;line-height:1.3;letter-spacing:-.5px;margin-bottom:10px}
+.expert-header h2 em{font-style:normal;background:linear-gradient(135deg,#2563EB,#4F46E5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.expert-header>p{font-size:15px;color:var(--text-secondary);line-height:1.6}
+.expert-scroll-wrap{position:relative;padding:0 24px}
+.expert-scroll{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:4px 0 20px}
+.expert-scroll::-webkit-scrollbar{display:none}
+.expert-card{min-width:340px;max-width:340px;background:#fff;border:1px solid var(--border);border-radius:18px;padding:30px;scroll-snap-align:start;flex-shrink:0;position:relative;overflow:hidden;transition:all .3s ease}
+.expert-card:hover{border-color:transparent;box-shadow:0 12px 40px rgba(0,0,0,.08);transform:translateY(-3px)}
+.expert-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:18px 18px 0 0}
+.expert-card[data-role="tax"]::before{background:linear-gradient(90deg,#2563EB,#3B82F6)}
+.expert-card[data-role="lawyer"]::before{background:linear-gradient(90deg,#7C3AED,#8B5CF6)}
+.expert-card[data-role="cpa"]::before{background:linear-gradient(90deg,#059669,#10B981)}
+.expert-card[data-role="lawfirm"]::before{background:linear-gradient(90deg,#DC2626,#EF4444)}
+.expert-card[data-role="finance"]::before{background:linear-gradient(90deg,#D97706,#F59E0B)}
+.expert-card[data-role="citizen"]::before{background:linear-gradient(90deg,#0891B2,#06B6D4)}
+.ec-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.ec-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.expert-card[data-role="tax"] .ec-icon{background:#EFF6FF}
+.expert-card[data-role="lawyer"] .ec-icon{background:#F5F3FF}
+.expert-card[data-role="cpa"] .ec-icon{background:#ECFDF5}
+.expert-card[data-role="lawfirm"] .ec-icon{background:#FEF2F2}
+.expert-card[data-role="finance"] .ec-icon{background:#FFFBEB}
+.expert-card[data-role="citizen"] .ec-icon{background:#ECFEFF}
+.ec-role{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--text-muted, #8A90A0);text-transform:uppercase}
+.ec-name{font-size:17px;font-weight:800;margin-top:1px}
+.ec-quote{font-size:14px;line-height:1.6;color:var(--text-secondary);margin-bottom:20px;padding:12px 14px;background:#F8F9FC;border-radius:10px;border-left:3px solid}
+.expert-card[data-role="tax"] .ec-quote{border-left-color:#2563EB}
+.expert-card[data-role="lawyer"] .ec-quote{border-left-color:#7C3AED}
+.expert-card[data-role="cpa"] .ec-quote{border-left-color:#059669}
+.expert-card[data-role="lawfirm"] .ec-quote{border-left-color:#DC2626}
+.expert-card[data-role="finance"] .ec-quote{border-left-color:#D97706}
+.expert-card[data-role="citizen"] .ec-quote{border-left-color:#0891B2}
+.ec-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.ec-list li{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.5}
+.ec-num{width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px;color:#fff}
+.expert-card[data-role="tax"] .ec-num{background:#2563EB}
+.expert-card[data-role="lawyer"] .ec-num{background:#7C3AED}
+.expert-card[data-role="cpa"] .ec-num{background:#059669}
+.expert-card[data-role="lawfirm"] .ec-num{background:#DC2626}
+.expert-card[data-role="finance"] .ec-num{background:#D97706}
+.expert-card[data-role="citizen"] .ec-num{background:#0891B2}
+.ec-text strong{font-weight:700}
+.ec-text span{color:var(--text-secondary)}
+.expert-nav{display:flex;justify-content:center;gap:8px;margin-top:20px}
+.expert-dot{width:8px;height:8px;border-radius:50%;background:#D1D5DB;border:none;cursor:pointer;padding:0;transition:all .3s}
+.expert-dot.active{width:24px;border-radius:4px;background:#4F46E5}
+@media(max-width:768px){.expert-card{min-width:290px;max-width:290px;padding:24px}.expert-header h2{font-size:24px}.expert-section{padding:48px 0 50px}}
 </style>
 </head>
 <body>
@@ -530,6 +582,25 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
     <div class="feature-card"><span class="feature-icon">📋</span><h3>간편 복사</h3><p>검색 결과는 저장되지 않습니다. 개별·전체 복사 버튼으로 바로 활용하세요</p></div>
     <div class="feature-card"><span class="feature-icon">🤖</span><h3>질문 분석 AI</h3><p>질문 의도를 파악하여 법령확인/판례찾기/실무절차 등 최적 경로를 자동 선택합니다</p></div>
     <div class="feature-card"><span class="feature-icon">🏢</span><h3>기관 도입</h3><p>법무법인·세무법인·회계법인을 위한 다수 계정 관리와 API를 제공합니다</p></div>
+  </div>
+</section>
+
+<section class="expert-section anim" id="expert">
+  <div class="expert-header">
+    <div class="expert-badge">전문가별 활용 가이드</div>
+    <h2>당신의 업무에<br><em>TaxNavi가 필요한 이유</em></h2>
+    <p>7개 공공 사이트 통합검색 + AI 요약, 각 분야 전문가에게 어떤 가치를 드릴까요?</p>
+  </div>
+  <div class="expert-scroll-wrap">
+    <div class="expert-scroll" id="expertScroll">
+      <div class="expert-card" data-role="tax"><div class="ec-top"><div class="ec-icon">📋</div><div><div class="ec-role">TAX ACCOUNTANT</div><div class="ec-name">세무사</div></div></div><div class="ec-quote">같은 쟁점, 하급심에서는 납세자가 이긴 판결이 있습니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>하급심 판결까지 검색</strong> <span>— 대법원에 없는 유리한 판결을 찾아냅니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>세무조사 대응 근거 확보</strong> <span>— 예규·심판례·판례를 한 번에 비교합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>경정청구 성공률 향상</strong> <span>— AI가 쟁점별 판례 흐름을 요약해 드립니다</span></div></li></ul></div>
+      <div class="expert-card" data-role="lawyer"><div class="ec-top"><div class="ec-icon">⚖️</div><div><div class="ec-role">TAX LAWYER</div><div class="ec-name">조세 전문 변호사</div></div></div><div class="ec-quote">대법원 판례만으로 소송 전략을 세우고 계신가요?</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>판결 경향 즉시 파악</strong> <span>— 같은 쟁점의 인용·기각 흐름을 한눈에 봅니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>판결서 원문 직접 접근</strong> <span>— 사법정보공개포털 비실명 판결문까지 검색합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>소송 전략 시간 단축</strong> <span>— 7개 사이트 리서치를 한 번의 검색으로 끝냅니다</span></div></li></ul></div>
+      <div class="expert-card" data-role="cpa"><div class="ec-top"><div class="ec-icon">📊</div><div><div class="ec-role">CERTIFIED PUBLIC ACCOUNTANT</div><div class="ec-name">회계사</div></div></div><div class="ec-quote">"제 판단으로는"보다 "판례 근거가 있습니다"가 고객을 움직입니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>자문에 판례 근거 첨부</strong> <span>— "판례가 있습니다"로 설득력을 높입니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>M&amp;A·가업승계 리스크 검토</strong> <span>— 관련 판례·예규를 AI가 정리합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>세무조정 쟁점 사전 확인</strong> <span>— 과세관청 해석과 법원 판단을 비교합니다</span></div></li></ul></div>
+      <div class="expert-card" data-role="lawfirm"><div class="ec-top"><div class="ec-icon">🏛️</div><div><div class="ec-role">LAW FIRM</div><div class="ec-name">법무법인</div></div></div><div class="ec-quote">하나의 쟁점에 사이트 5개를 열어보던 시간, 이제 끝입니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>7개 사이트 통합검색</strong> <span>— 국세청·대법원·법제처를 따로 열 필요 없습니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>의견서 작성 시간 단축</strong> <span>— AI가 근거 문서를 자동 정리합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>국제조세·구조조정 대응</strong> <span>— 법령·판례·행정규칙을 교차 검토합니다</span></div></li></ul></div>
+      <div class="expert-card" data-role="finance"><div class="ec-top"><div class="ec-icon">💰</div><div><div class="ec-role">FINANCIAL PLANNER</div><div class="ec-name">재무설계사 · 보험 컨설턴트</div></div></div><div class="ec-quote">고객이 절세를 물었을 때, 즉시 근거를 보여줄 수 있어야 신뢰입니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>절세 설계에 법적 근거</strong> <span>— 상속·증여세 판례를 직접 확인하고 제시합니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>보험 과세 즉시 검색</strong> <span>— 보험차익·연금소득 세법해석을 바로 찾습니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>고객 신뢰도 향상</strong> <span>— 근거 기반 상담으로 전문성을 보여줍니다</span></div></li></ul></div>
+      <div class="expert-card" data-role="citizen"><div class="ec-top"><div class="ec-icon">👤</div><div><div class="ec-role">INDIVIDUAL TAXPAYER</div><div class="ec-name">일반 납세자</div></div></div><div class="ec-quote">양도세·상속세, 비슷한 사건이 법원에서 어떻게 판결났는지 궁금하셨죠?</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>비슷한 판결 찾기</strong> <span>— 자연어로 질문하면 AI가 검색합니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>불복 가능성 사전 판단</strong> <span>— 추징 전에 관련 심판례·판례를 확인합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>전문가 상담 전 사전 준비</strong> <span>— 미리 파악하고 더 효율적으로 상담합니다</span></div></li></ul></div>
+    </div>
+    <div class="expert-nav" id="expertNav"></div>
   </div>
 </section>
 
@@ -1445,6 +1516,16 @@ document.querySelectorAll('.nav-links a').forEach(function(a){
 });
 
 document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+// ── 전문가 가이드 스크롤 네비게이션 ──
+(function(){
+  const scroll=document.getElementById('expertScroll');
+  const nav=document.getElementById('expertNav');
+  if(!scroll||!nav)return;
+  const cards=scroll.querySelectorAll('.expert-card');
+  cards.forEach((_,i)=>{const d=document.createElement('button');d.className='expert-dot'+(i===0?' active':'');d.onclick=()=>{cards[i].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'})};nav.appendChild(d)});
+  scroll.addEventListener('scroll',()=>{const sl=scroll.scrollLeft;const cw=cards[0]?.offsetWidth||340;const idx=Math.round(sl/(cw+20));nav.querySelectorAll('.expert-dot').forEach((d,i)=>{d.classList.toggle('active',i===idx)})});
+})();
 </script>
 </body>
 </html>
