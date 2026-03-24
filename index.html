@@ -955,13 +955,20 @@ firebase.auth().onAuthStateChanged(async user => {
     } else {
       // 일반 회원 → 이름(등급) 표시
       const tierMap = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'};
+      const jarviaRoleMap = {inner_circle:'이너서클',branch_manager:'지사장',jarvia_inner:'이너서클'};
       let label = user.displayName || '회원';
       try {
         const tk = await user.getIdToken();
         const resp = await fetch(API_BASE_URL + '/api/usage', { headers:{'Authorization':'Bearer '+tk} });
         if (resp.ok) {
           const d = await resp.json();
-          if(d.tier) label = (user.displayName||'회원') + '(' + (tierMap[d.tier]||d.tier) + ')';
+          if(d.tier) {
+            let tierLabel = tierMap[d.tier] || d.tier;
+            if(d.tier === 'jarvia_free' && d.jarviaRole) {
+              tierLabel = (jarviaRoleMap[d.jarviaRole] || d.jarviaRole) + '_월5건';
+            }
+            label = (user.displayName||'회원') + '(' + tierLabel + ')';
+          }
           // 포인트도 API 응답에서 표시
           if (balanceEl) {
             const pts = d.points || 0;
@@ -1127,7 +1134,14 @@ async function handleSearch(){
     if (usageResp.ok) {
       const u = await usageResp.json();
       const remaining = Math.max(0, (u.limit || 0) - (u.used || 0));
-      const tierName = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'}[u.tier] || u.tier;
+      const tierName = (function(){
+            const map = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'};
+            if(u.tier === 'jarvia_free' && u.jarviaRole) {
+              const rm = {inner_circle:'이너서클',branch_manager:'지사장',jarvia_inner:'이너서클'};
+              return (rm[u.jarviaRole] || u.jarviaRole) + '_월5건';
+            }
+            return map[u.tier] || u.tier;
+          })();
       let msg;
       if (remaining > 0) {
         if (u.tier === 'lite') {

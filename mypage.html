@@ -617,6 +617,7 @@
             freeSearchUsed: 0,
             freeSearchLimit: 0,
             tier: 'free',
+            jarviaRole: '',
             name: '',
             email: '',
             phone: '',
@@ -690,7 +691,12 @@
             document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString() + ' P';
             
             const tierMap = { free: '무료', lite: 'Lite', basic: '베이직', pro: '프로', enterprise: '기관', jarvia_free: 'JARVIA(월5건)' };
-            document.getElementById('tierBadge').textContent = tierMap[userData.tier] || '무료';
+            const jarviaRoleMap = { inner_circle: '이너서클', branch_manager: '지사장', jarvia_inner: '이너서클' };
+            let tierLabel = tierMap[userData.tier] || '무료';
+            if (userData.tier === 'jarvia_free' && userData.jarviaRole) {
+                tierLabel = (jarviaRoleMap[userData.jarviaRole] || userData.jarviaRole) + '_월5건';
+            }
+            document.getElementById('tierBadge').textContent = tierLabel;
             
             // 검색 잔여 라벨 (등급별 동적)
             const searchLabel = document.getElementById('freeSearchLabel');
@@ -1225,6 +1231,7 @@
                 userData.phone = apiData.phone || '';
                 userData.balance = apiData.points || 0;
                 userData.tier = apiData.tier || 'free';
+                userData.jarviaRole = apiData.jarviaRole || '';
                 userData.freeSearchUsed = apiData.used || 0;
                 userData.freeSearchLimit = apiData.limit || 2;
                 userData.loginId = apiData.loginId || (user.email || '').replace('@taxnavi.kr', '');
