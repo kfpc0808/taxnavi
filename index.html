@@ -934,8 +934,9 @@ function shareTaxNavi(){
     try{
       Kakao.Share.sendDefault({
         objectType:'feed',
-        content:{title:title,description:desc,imageUrl:'https://taxnavi.kr/og-taxnavi.png',link:{mobileWebUrl:url,webUrl:url}},
-        buttons:[{title:'TaxNavi 바로가기',link:{mobileWebUrl:url,webUrl:url}}]
+        content:{title:title,description:desc,imageUrl:'https://taxnavi.kr/og-taxnavi.png',imageWidth:800,imageHeight:400,link:{mobileWebUrl:url,webUrl:url}},
+        buttons:[{title:'TaxNavi 바로가기',link:{mobileWebUrl:url,webUrl:url}}],
+        installTalk:true
       });
       return;
     }catch(e){console.error('[카카오 공유 실패]',e);}
