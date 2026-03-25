@@ -167,7 +167,7 @@ tbody tr:hover{background:#FAFBFD}
         <div class="panel-header"><h3>검색 로그</h3><span class="badge">최근 50건</span></div>
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>시간</th><th>이메일</th><th>검색어</th><th>키워드</th><th>의도</th><th>사이트</th><th>결과</th><th>AI답변</th><th>소요</th><th>등급</th></tr></thead>
+            <thead><tr><th>시간</th><th>이름</th><th>검색어</th><th>키워드</th><th>의도</th><th>사이트</th><th>결과</th><th>AI답변</th><th>소요</th><th>등급</th></tr></thead>
             <tbody id="searchLogsTable"><tr><td colspan="10" class="loading">로딩 중...</td></tr></tbody>
           </table>
         </div>
@@ -269,8 +269,8 @@ tbody tr:hover{background:#FAFBFD}
         <div class="panel-header"><h3>💳 결제 내역</h3></div>
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>일시</th><th>회원명</th><th>결제금액</th><th>충전포인트</th><th>결제수단</th><th>TID</th></tr></thead>
-            <tbody id="paymentTable"><tr><td colspan="6"><p class="loading">로딩 중...</p></td></tr></tbody>
+            <thead><tr><th>일시</th><th>회원명</th><th>결제금액</th><th>충전포인트</th><th>잔여포인트</th><th>결제수단</th><th>TID</th></tr></thead>
+            <tbody id="paymentTable"><tr><td colspan="7"><p class="loading">로딩 중...</p></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -538,7 +538,7 @@ async function loadSearchLogs() {
     if (!d.logs.length) { tb.innerHTML = '<tr><td colspan="10" class="loading">로그가 없습니다</td></tr>'; return; }
     tb.innerHTML = d.logs.map(l => `<tr>
       <td style="white-space:nowrap">${l.createdAt ? fmtTime(l.createdAt) : '-'}</td>
-      <td>${l.email||'-'}</td>
+      <td>${l.name||l.email||'-'}</td>
       <td><strong>${l.question||'-'}</strong></td>
       <td>${l.keywords||'-'}</td>
       <td>${l.intent||'-'}</td>
@@ -743,12 +743,13 @@ async function loadPayments() {
     document.getElementById('pt-total-revenue').textContent = d.totalRevenue.toLocaleString() + '원';
     document.getElementById('pt-total-count').textContent = d.payments.length + '건';
     const tb = document.getElementById('paymentTable');
-    if (!d.payments.length) { tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#999">결제 내역이 없습니다</td></tr>'; return; }
+    if (!d.payments.length) { tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#999">결제 내역이 없습니다</td></tr>'; return; }
     tb.innerHTML = d.payments.map(p => '<tr>'
       + '<td>' + fmtTime(p.date) + '</td>'
       + '<td style="font-weight:600">' + (p.userName || '-') + '</td>'
       + '<td style="color:#E8A838;font-weight:700">' + (p.paidAmount || 0).toLocaleString() + '원</td>'
       + '<td style="color:#1B3A5C;font-weight:700">+' + (p.chargeAmount || 0).toLocaleString() + 'P</td>'
+      + '<td style="color:#16A34A;font-weight:600">' + (p.remainingPoints != null ? p.remainingPoints.toLocaleString() + 'P' : '-') + '</td>'
       + '<td>' + (p.cardName || '카드') + '</td>'
       + '<td style="font-size:11px;color:#999">' + (p.tid || '-') + '</td>'
       + '</tr>').join('');
