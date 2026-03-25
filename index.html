@@ -718,7 +718,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 TaxNavi. All rights reserved. | 데이터 출처: 국세청, 대법원, 조세심판원, 금융감독원, 법제처</span>
+      <span>© 2026 TaxNavi. All rights reserved. | 데이터 출처: 국세청, 대법원, 조세심판원, 금융감독원, 법제처, 사법정보공개포털</span>
       <div style="display:flex;gap:12px"><a href="#" onclick="showTermsModal('termsOfService');return false;">이용약관</a><a href="#" onclick="showTermsModal('privacyPolicy');return false;">개인정보처리방침</a></div>
     </div>
   </div>
@@ -833,7 +833,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 <div class="toast-popup-overlay" id="toastPopup"><div class="toast-popup"><div class="toast-popup-msg" id="toastMessage">알림</div><button class="toast-popup-btn" onclick="document.getElementById('toastPopup').classList.remove('show')">확인</button></div></div>
 
 <script>
-const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw',url:'https://taxlaw.nts.go.kr'},courtCase:{name:'대법원 판례검색 (법고을)',color:'#DC2626',badge:'badge-courtCase',url:'https://lx.scourt.go.kr/'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal',url:'https://www.tt.go.kr'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw',url:'https://law.fss.or.kr'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr',url:'https://www.law.go.kr/main.html'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA',url:'https://call.nts.go.kr'}};
+const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw',url:'https://taxlaw.nts.go.kr'},courtCase:{name:'대법원 판례검색 (법고을)',color:'#DC2626',badge:'badge-courtCase',url:'https://lx.scourt.go.kr/'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal',url:'https://www.tt.go.kr'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw',url:'https://law.fss.or.kr'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr',url:'https://www.law.go.kr/main.html'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA',url:'https://call.nts.go.kr'},courtPortal:{name:'사법정보공개포털',color:'#0D9488',badge:'badge-courtPortal',url:'https://portal.scourt.go.kr'}};
 try{document.querySelectorAll('.anim').forEach(el=>new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})},{threshold:.05}).observe(el))}catch(e){document.querySelectorAll('.anim').forEach(el=>{el.style.opacity='1';el.style.transform='translateY(0)'})}
 
 window.addEventListener('scroll',()=>{document.getElementById('header').classList.toggle('scrolled',window.scrollY>10)});
@@ -1315,7 +1315,7 @@ async function handleSearch(){
     st.textContent='7개 사이트를 검색하고 있습니다';
     soSub.textContent='공공 데이터베이스에서 관련 문서를 수집 중...';
     soBar.style.width='35%';
-    si.innerHTML='<span class="site-progress searching"><span class="sp-dot"></span>국세법령</span><span class="site-progress searching"><span class="sp-dot"></span>법제처</span><span class="site-progress"><span class="sp-dot"></span>조세심판원</span><span class="site-progress"><span class="sp-dot"></span>금융감독원</span><span class="site-progress"><span class="sp-dot"></span>법령센터</span><span class="site-progress"><span class="sp-dot"></span>국세상담</span>';
+    si.innerHTML='<span class="site-progress searching"><span class="sp-dot"></span>국세법령</span><span class="site-progress searching"><span class="sp-dot"></span>법제처</span><span class="site-progress"><span class="sp-dot"></span>조세심판원</span><span class="site-progress"><span class="sp-dot"></span>금융감독원</span><span class="site-progress"><span class="sp-dot"></span>법령센터</span><span class="site-progress"><span class="sp-dot"></span>국세상담</span><span class="site-progress"><span class="sp-dot"></span>사법정보</span>';
   },2000);
   const soTimer2=setTimeout(()=>{
     si.querySelectorAll('.site-progress').forEach((s,i)=>{if(i<2){s.className='site-progress done'}if(i===2||i===3){s.className='site-progress searching'}});
