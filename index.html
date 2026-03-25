@@ -225,6 +225,9 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .results-tab .cnt{font-size:11px;opacity:.7}
 .btn-copy-all{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;color:var(--text-secondary);transition:var(--transition)}
 .btn-copy-all:hover{border-color:var(--primary);color:var(--primary);background:#F0F6FF}
+.btn-save-txt{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;color:var(--text-secondary);transition:var(--transition);cursor:pointer}
+.btn-save-txt:hover{border-color:#16A34A;color:#16A34A;background:#F0FDF4}
+.nav-searching a,.nav-searching button{pointer-events:none!important;opacity:.4!important}
 
 .result-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:14px;transition:var(--transition);animation:slideUp .4s ease backwards;position:relative}
 .result-card:hover{border-color:var(--primary);box-shadow:var(--shadow-md);transform:translateY(-2px)}
@@ -560,6 +563,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
     <button class="btn-copy-all" onclick="copyAllResults()">
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>전체 복사
     </button>
+    <button class="btn-save-txt" onclick="saveResultsTxt()">📥 저장</button>
   </div>
   <div class="results-tabs" id="resultsTabs"></div>
   <div id="resultsContainer"></div>
@@ -1297,6 +1301,7 @@ async function handleSearch(){
   const soSub=document.getElementById('searchingSub'),soBar=document.getElementById('soBar');
   document.getElementById('resultsSection').classList.remove('active');
   ov.classList.add('active');
+  _setSearching(true);
   setTimeout(()=>{ov.scrollIntoView({behavior:'smooth',block:'center'})},300);
   st.textContent='AI가 질문을 분석하고 있습니다';
   soSub.textContent='최적의 검색 전략을 수립하고 있습니다...';
@@ -1347,20 +1352,20 @@ async function handleSearch(){
     });
     
     if(resp.status===429){
-      clearSoTimers();ov.classList.remove('active');
+      clearSoTimers();ov.classList.remove('active');_setSearching(false);
       const d=await resp.json();
       showToast('월간 검색 한도('+d.limit+'회)를 초과했습니다. 포인트를 충전해주세요.');
       return;
     }
     if(resp.status===401){
-      clearSoTimers();ov.classList.remove('active');
+      clearSoTimers();ov.classList.remove('active');_setSearching(false);
       openModal('login');
       showToast('로그인이 만료되었습니다. 다시 로그인해주세요.');
       return;
     }
     
     const data = await resp.json();
-    clearSoTimers();soBar.style.width='100%';ov.classList.remove('active');
+    clearSoTimers();soBar.style.width='100%';ov.classList.remove('active');_setSearching(false);
     
     if(data.success && data.searchResults && data.searchResults.length > 0){
       showRealResults(q, data);
@@ -1370,7 +1375,7 @@ async function handleSearch(){
     showToast('검색 결과가 없습니다. 다른 키워드로 다시 시도해 보세요.');
   } catch(apiErr) {
 
-    clearSoTimers();ov.classList.remove('active');
+    clearSoTimers();ov.classList.remove('active');_setSearching(false);
     showToast('검색 서비스에 일시적 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
   }
 }
@@ -1434,6 +1439,9 @@ function showRealResults(query, data){
   
   sec.classList.add('active');sec.scrollIntoView({behavior:'smooth',block:'start'});
   window._realResults=data.searchResults;
+  
+  // sessionStorage에 결과 저장 (페이지 복귀 시 복원용)
+  try { sessionStorage.setItem('taxnavi_lastQuery', query); sessionStorage.setItem('taxnavi_lastData', JSON.stringify(data)); } catch(e){}
   
   if(data.meta) console.log('[TaxNavi]',data.meta.totalTime+'s',data.meta.sitesSearched+'sites',data.meta.resultsFound+'results');
 }
@@ -1541,6 +1549,69 @@ document.getElementById('authModal').addEventListener('click',function(e){if(e.t
   if(prevBtn)prevBtn.onclick=()=>{const idx=Math.max(0,getIdx()-1);cards[idx].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'})};
   if(nextBtn)nextBtn.onclick=()=>{const idx=Math.min(cards.length-1,getIdx()+1);cards[idx].scrollIntoView({behavior:'smooth',inline:'start',block:'nearest'})};
 })();
+
+// ── 검색 중 이탈 방지 ──
+let _isSearchingNow=false;
+function _setSearching(flag){
+  _isSearchingNow=flag;
+  const nav=document.querySelector('.nav-links');
+  if(nav){flag?nav.classList.add('nav-searching'):nav.classList.remove('nav-searching')}
+  const btns=document.querySelectorAll('.btn-mypage,.btn-charge,.btn-login,.btn-start');
+  btns.forEach(b=>{flag?b.classList.add('nav-searching'):b.classList.remove('nav-searching')});
+}
+window.addEventListener('beforeunload',function(e){
+  if(_isSearchingNow){e.preventDefault();e.returnValue='검색이 진행 중입니다. 페이지를 떠나면 결과를 받을 수 없습니다.';}
+});
+
+// ── 검색 결과 복원 (다른 페이지 갔다가 돌아왔을 때) ──
+(function(){
+  try {
+    const sq=sessionStorage.getItem('taxnavi_lastQuery');
+    const sd=sessionStorage.getItem('taxnavi_lastData');
+    if(sq&&sd){
+      const data=JSON.parse(sd);
+      if(data.success&&data.searchResults&&data.searchResults.length>0){
+        showRealResults(sq,data);
+      }
+    }
+  } catch(e){}
+})();
+
+// ── TXT 저장 ──
+function saveResultsTxt(){
+  let txt='TaxNavi 검색 결과\n';
+  txt+='검색일: '+new Date().toLocaleDateString('ko-KR')+'\n';
+  const q=document.getElementById('resultQuery')?.textContent||'';
+  txt+='검색어: '+q+'\n';
+  txt+='='+'='.repeat(50)+'\n\n';
+  // AI 답변
+  const ai=document.querySelector('.result-card[data-type="ai-answer"]');
+  if(ai){
+    txt+='[AI 종합 답변]\n';
+    txt+=ai.innerText.replace('🤖 AI 종합 답변','').replace('복사','').trim()+'\n\n';
+    txt+='='+'='.repeat(50)+'\n\n';
+  }
+  // 개별 결과
+  const cards=document.querySelectorAll('.result-card[data-site]');
+  cards.forEach((c,i)=>{
+    const t=c.querySelector('.result-title')?c.querySelector('.result-title').textContent:'';
+    const m=c.querySelector('.result-meta')?c.querySelector('.result-meta').textContent.trim():'';
+    const s=c.querySelector('.result-summary')?c.querySelector('.result-summary').textContent.replace('미리보기','').trim():'';
+    const src=c.querySelector('.result-source-tag')?c.querySelector('.result-source-tag').textContent.trim():'';
+    txt+='['+(i+1)+'] '+t+'\n';
+    txt+='출처: '+src+'\n';
+    txt+=m+'\n';
+    if(s&&!s.includes('미리보기 없음'))txt+=s+'\n';
+    txt+='\n'+'─'.repeat(40)+'\n\n';
+  });
+  txt+='\n※ TaxNavi (https://taxnavi.kr) — AI 기반 세법·판례 통합검색\n';
+  txt+='※ 본 내용은 참고 자료이며 법적 효력이 없습니다.\n';
+  // 다운로드
+  const fname='TaxNavi_'+q.replace(/['"]/g,'').replace(/\s+/g,'_').substring(0,30)+'_'+new Date().toISOString().split('T')[0]+'.txt';
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;a.click();URL.revokeObjectURL(a.href);
+  showToast('검색 결과가 저장되었습니다');
+}
 </script>
 </body>
 </html>
