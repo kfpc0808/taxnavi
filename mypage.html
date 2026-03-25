@@ -166,6 +166,10 @@
         .transaction-amount-value.plus { color: var(--success); }
         .transaction-amount-value.minus { color: var(--danger); }
         .transaction-balance { font-size: 12px; color: var(--text-light); }
+        .tx-badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+        .tx-badge.deducted { background:#dbeafe; color:#1d4ed8; }
+        .tx-badge.not-deducted { background:#fee2e2; color:#dc2626; }
+        .tx-remaining { font-size:11px; color:var(--text-light); margin-top:2px; }
 
         .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
         .filter-select {
@@ -1103,18 +1107,31 @@
                 container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><h3>사용 내역이 없습니다</h3></div>';
                 return;
             }
-            container.innerHTML = usageHistory.map(item => '<div class="transaction-item">'
-                + '<div class="transaction-icon ' + item.type + '">'
-                + (item.type === 'charge' ? '💰' : item.type === 'search' ? '🔍' : '📊')
-                + '</div>'
-                + '<div class="transaction-info">'
-                + '<div class="transaction-title">' + item.title + '</div>'
-                + '<div class="transaction-detail">' + item.date + ' · ' + item.detail + '</div>'
-                + '</div>'
-                + '<div class="transaction-amount">'
-                + '<div class="transaction-amount-value ' + (item.amount > 0 ? 'plus' : item.amount < 0 ? 'minus' : '') + '">'
-                + (item.amount > 0 ? '+' : '') + (item.amount === 0 ? '무료' : item.amount.toLocaleString() + ' P')
-                + '</div></div></div>').join('');
+            container.innerHTML = usageHistory.map(item => {
+                const badge = item.deducted
+                    ? '<span class="tx-badge deducted">차감</span>'
+                    : '<span class="tx-badge not-deducted">미차감</span>';
+                const answerTag = item.hasAnswer === false ? ' <span style="color:#dc2626;font-size:11px">(답변실패)</span>' : '';
+                const remainTag = item.remaining != null
+                    ? '<div class="tx-remaining">잔여 ' + item.remaining + '건 / ' + item.monthlyLimit + '건</div>'
+                    : '';
+                const amountText = item.amount > 0 ? '+' + item.amount.toLocaleString() + ' P'
+                    : item.amount < 0 ? item.amount.toLocaleString() + ' P'
+                    : '무료';
+                const amountClass = item.amount > 0 ? 'plus' : item.amount < 0 ? 'minus' : '';
+                return '<div class="transaction-item">'
+                    + '<div class="transaction-icon ' + item.type + '">'
+                    + (item.type === 'charge' ? '💰' : item.type === 'search' ? '🔍' : '📊')
+                    + '</div>'
+                    + '<div class="transaction-info">'
+                    + '<div class="transaction-title">' + item.title + answerTag + '</div>'
+                    + '<div class="transaction-detail">' + item.date + ' · ' + item.detail + '</div>'
+                    + '</div>'
+                    + '<div class="transaction-amount">'
+                    + '<div class="transaction-amount-value ' + amountClass + '">' + badge + ' ' + amountText + '</div>'
+                    + remainTag
+                    + '</div></div>';
+            }).join('');
         }
 
         // 프로필 저장
@@ -1275,7 +1292,14 @@
                     title: typeLabel[l.type] || l.type || 'AI 검색',
                     date: l.date ? new Date(l.date).toLocaleDateString('ko-KR') : '-',
                     detail: l.query ? l.query.substring(0, 30) + '...' : '-',
-                    amount: l.pointUsed > 0 ? -l.pointUsed : 0
+                    amount: l.pointUsed > 0 ? -l.pointUsed : 0,
+                    deducted: l.deducted !== false,
+                    hasAnswer: l.hasAnswer !== false,
+                    monthlyLimit: l.monthlyLimit || 0,
+                    monthlyUsed: l.monthlyUsed || 0,
+                    remaining: l.remaining != null ? l.remaining : null,
+                    resultCount: l.resultCount || 0,
+                    tier: l.tier || ''
                 }));
             } catch (usageErr) {
                 console.error('사용 내역 로드 오류:', usageErr);
