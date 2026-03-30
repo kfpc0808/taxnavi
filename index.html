@@ -434,6 +434,9 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .expert-card[data-role="cpa"]::before{background:linear-gradient(90deg,#059669,#10B981)}
 .expert-card[data-role="lawfirm"]::before{background:linear-gradient(90deg,#DC2626,#EF4444)}
 .expert-card[data-role="finance"]::before{background:linear-gradient(90deg,#D97706,#F59E0B)}
+.expert-card[data-role="labor"]::before{background:linear-gradient(90deg,#EA580C,#F97316)}
+.expert-card[data-role="scrivener"]::before{background:linear-gradient(90deg,#4338CA,#6366F1)}
+.expert-card[data-role="admin"]::before{background:linear-gradient(90deg,#475569,#64748B)}
 .expert-card[data-role="citizen"]::before{background:linear-gradient(90deg,#0891B2,#06B6D4)}
 .ec-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .ec-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
@@ -442,6 +445,9 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .expert-card[data-role="cpa"] .ec-icon{background:#ECFDF5}
 .expert-card[data-role="lawfirm"] .ec-icon{background:#FEF2F2}
 .expert-card[data-role="finance"] .ec-icon{background:#FFFBEB}
+.expert-card[data-role="labor"] .ec-icon{background:#FFF7ED}
+.expert-card[data-role="scrivener"] .ec-icon{background:#EEF2FF}
+.expert-card[data-role="admin"] .ec-icon{background:#F1F5F9}
 .expert-card[data-role="citizen"] .ec-icon{background:#ECFEFF}
 .ec-role{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--text-muted, #8A90A0);text-transform:uppercase}
 .ec-name{font-size:17px;font-weight:800;margin-top:1px}
@@ -451,6 +457,9 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .expert-card[data-role="cpa"] .ec-quote{border-left-color:#059669}
 .expert-card[data-role="lawfirm"] .ec-quote{border-left-color:#DC2626}
 .expert-card[data-role="finance"] .ec-quote{border-left-color:#D97706}
+.expert-card[data-role="labor"] .ec-quote{border-left-color:#EA580C}
+.expert-card[data-role="scrivener"] .ec-quote{border-left-color:#4338CA}
+.expert-card[data-role="admin"] .ec-quote{border-left-color:#475569}
 .expert-card[data-role="citizen"] .ec-quote{border-left-color:#0891B2}
 .ec-list{list-style:none;display:flex;flex-direction:column;gap:10px}
 .ec-list li{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.5}
@@ -460,6 +469,9 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .expert-card[data-role="cpa"] .ec-num{background:#059669}
 .expert-card[data-role="lawfirm"] .ec-num{background:#DC2626}
 .expert-card[data-role="finance"] .ec-num{background:#D97706}
+.expert-card[data-role="labor"] .ec-num{background:#EA580C}
+.expert-card[data-role="scrivener"] .ec-num{background:#4338CA}
+.expert-card[data-role="admin"] .ec-num{background:#475569}
 .expert-card[data-role="citizen"] .ec-num{background:#0891B2}
 .ec-text strong{font-weight:700}
 .ec-text span{color:var(--text-secondary)}
@@ -611,6 +623,9 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <div class="expert-card" data-role="lawyer"><div class="ec-top"><div class="ec-icon">⚖️</div><div><div class="ec-role">TAX LAWYER</div><div class="ec-name">조세 전문 변호사</div></div></div><div class="ec-quote">대법원 판례만으로 소송 전략을 세우고 계신가요?</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>판결 경향 즉시 파악</strong> <span>— 같은 쟁점의 인용·기각 흐름을 한눈에 봅니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>판결서 원문 직접 접근</strong> <span>— 사법정보공개포털 비실명 판결문까지 검색합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>소송 전략 시간 단축</strong> <span>— 7개 사이트 리서치를 한 번의 검색으로 끝냅니다</span></div></li></ul></div>
       <div class="expert-card" data-role="cpa"><div class="ec-top"><div class="ec-icon">📊</div><div><div class="ec-role">CERTIFIED PUBLIC ACCOUNTANT</div><div class="ec-name">회계사</div></div></div><div class="ec-quote">"제 판단으로는"보다 "판례 근거가 있습니다"가 고객을 움직입니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>자문에 판례 근거 첨부</strong> <span>— "판례가 있습니다"로 설득력을 높입니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>M&amp;A·가업승계 리스크 검토</strong> <span>— 관련 판례·예규를 AI가 정리합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>세무조정 쟁점 사전 확인</strong> <span>— 과세관청 해석과 법원 판단을 비교합니다</span></div></li></ul></div>
       <div class="expert-card" data-role="lawfirm"><div class="ec-top"><div class="ec-icon">🏛️</div><div><div class="ec-role">LAW FIRM</div><div class="ec-name">법무법인</div></div></div><div class="ec-quote">하나의 쟁점에 사이트 5개를 열어보던 시간, 이제 끝입니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>7개 사이트 통합검색</strong> <span>— 국세청·대법원·법제처를 따로 열 필요 없습니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>의견서 작성 시간 단축</strong> <span>— AI가 근거 문서를 자동 정리합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>국제조세·구조조정 대응</strong> <span>— 법령·판례·행정규칙을 교차 검토합니다</span></div></li></ul></div>
+      <div class="expert-card" data-role="labor"><div class="ec-top"><div class="ec-icon">⚙️</div><div><div class="ec-role">LABOR ATTORNEY</div><div class="ec-name">노무사</div></div></div><div class="ec-quote">퇴직금 산정에 세법 해석이 필요한데, 판례를 일일이 찾을 시간이 없습니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>퇴직소득세 쟁점 검색</strong> <span>— 퇴직금·퇴직연금 과세 판례를 즉시 확인합니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>근로소득 vs 사업소득 판단</strong> <span>— 프리랜서·특수고용 과세 기준을 비교합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>스톡옵션·성과급 과세</strong> <span>— 보상 구조별 세무 처리 근거를 AI가 정리합니다</span></div></li></ul></div>
+      <div class="expert-card" data-role="scrivener"><div class="ec-top"><div class="ec-icon">📝</div><div><div class="ec-role">JUDICIAL SCRIVENER</div><div class="ec-name">법무사</div></div></div><div class="ec-quote">등기 의뢰인이 "세금은 얼마나 나오나요?"라고 물을 때, 바로 근거를 보여주고 싶습니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>부동산 등기 시 세금 확인</strong> <span>— 취득세·양도세·증여세 법령을 한 번에 검색합니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>부담부증여·상속 과세</strong> <span>— 등기 유형별 세무 쟁점 판례를 빠르게 찾습니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>의뢰인 세무 상담 지원</strong> <span>— 세무사 연계 전 초기 방향 제시 근거를 확보합니다</span></div></li></ul></div>
+      <div class="expert-card" data-role="admin"><div class="ec-top"><div class="ec-icon">🗂️</div><div><div class="ec-role">LICENSED ADMINISTRATOR</div><div class="ec-name">행정사</div></div></div><div class="ec-quote">과세전적부심사 대리 시, 유사 심판례를 빨리 찾아야 설득력이 생깁니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>이의신청·심판청구 준비</strong> <span>— 조세심판원 유사 사례를 AI가 분류해 줍니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>과세전적부심사 자료 조사</strong> <span>— 국세상담센터 유권해석을 빠르게 검색합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>세금 관련 민원 대행</strong> <span>— 관련 법령·판례 근거를 첨부해 민원 신뢰도를 높입니다</span></div></li></ul></div>
       <div class="expert-card" data-role="finance"><div class="ec-top"><div class="ec-icon">💰</div><div><div class="ec-role">FINANCIAL PLANNER</div><div class="ec-name">재무컨설턴트</div></div></div><div class="ec-quote">고객이 절세를 물었을 때, 즉시 근거를 보여줄 수 있어야 신뢰입니다.</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>절세 설계에 법적 근거</strong> <span>— 상속·증여세 판례를 직접 확인하고 제시합니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>보험 과세 즉시 검색</strong> <span>— 보험차익·연금소득 세법해석을 바로 찾습니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>고객 신뢰도 향상</strong> <span>— 근거 기반 상담으로 전문성을 보여줍니다</span></div></li></ul></div>
       <div class="expert-card" data-role="citizen"><div class="ec-top"><div class="ec-icon">👤</div><div><div class="ec-role">INDIVIDUAL TAXPAYER</div><div class="ec-name">일반 납세자</div></div></div><div class="ec-quote">양도세·상속세, 비슷한 사건이 법원에서 어떻게 판결났는지 궁금하셨죠?</div><ul class="ec-list"><li><div class="ec-num">1</div><div class="ec-text"><strong>비슷한 판결 찾기</strong> <span>— 자연어로 질문하면 AI가 검색합니다</span></div></li><li><div class="ec-num">2</div><div class="ec-text"><strong>불복 가능성 사전 판단</strong> <span>— 추징 전에 관련 심판례·판례를 확인합니다</span></div></li><li><div class="ec-num">3</div><div class="ec-text"><strong>전문가 상담 전 사전 준비</strong> <span>— 미리 파악하고 더 효율적으로 상담합니다</span></div></li></ul></div>
     </div>
