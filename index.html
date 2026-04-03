@@ -1117,12 +1117,14 @@ firebase.auth().onAuthStateChanged(async user => {
         const resp = await fetch(API_BASE_URL + '/api/usage', { headers:{'Authorization':'Bearer '+tk} });
         if (resp.ok) {
           const d = await resp.json();
+          const userName = user.displayName || d.name || '회원';
+          label = userName;
           if(d.tier) {
             let tierLabel = tierMap[d.tier] || d.tier;
             if(d.tier === 'jarvia_free' && d.jarviaRole) {
               tierLabel = (jarviaRoleMap[d.jarviaRole] || d.jarviaRole) + '_월5건';
             }
-            label = (user.displayName||'회원') + '(' + tierLabel + ')';
+            label = userName + '(' + tierLabel + ')';
           }
           // 포인트도 API 응답에서 표시
           if (balanceEl) {
