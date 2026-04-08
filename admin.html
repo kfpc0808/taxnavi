@@ -66,6 +66,7 @@ tbody tr:hover{background:#FAFBFD}
 .tier-pro{background:#FEF3C7;color:#92400E}
 .tier-enterprise{background:#DCFCE7;color:#166534}
 .tier-jarvia_free{background:#FFF7ED;color:#C2410C}
+.tier-demo{background:#EDE9FE;color:#6D28D9}
 .err-badge{background:#FEF0F0;color:#B91C1C;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
 
 /* CHART placeholder */
@@ -130,6 +131,7 @@ tbody tr:hover{background:#FAFBFD}
         <li onclick="showTab('popups')">🖼️ <span>팝업 관리</span></li>
         <li onclick="showTab('notices')">📢 <span>공지 관리</span></li>
         <li onclick="showTab('payments')">💳 <span>결제 내역</span></li>
+        <li onclick="showTab('demoAccounts')">🎁 <span>체험계정 관리</span></li>
       </ul>
     </aside>
     <div class="main">
@@ -276,6 +278,44 @@ tbody tr:hover{background:#FAFBFD}
       </div>
     </div>
 
+    <!-- DEMO ACCOUNTS 체험계정 관리 -->
+    <div id="sec-demoAccounts" class="section">
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+        <div class="stat-card accent"><div class="stat-label">활성 체험계정</div><div class="stat-value" id="dm-active">-</div></div>
+        <div class="stat-card"><div class="stat-label">만료 / 비활성</div><div class="stat-value" id="dm-expired">-</div></div>
+        <div class="stat-card green"><div class="stat-label">전체 체험계정</div><div class="stat-value" id="dm-total">-</div></div>
+      </div>
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-header"><h3>🎁 체험계정 생성</h3></div>
+        <div style="padding:20px 22px">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+            <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:600">성명 <span style="color:#DC2626">*</span></label><input id="dm-name" placeholder="예: 한국세무사회 체험" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px"></div>
+            <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:600">아이디 <span style="color:#DC2626">*</span></label><input id="dm-loginId" placeholder="예: demo-kacpta" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px"></div>
+            <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:600">비밀번호 <span style="color:#DC2626">*</span></label><input id="dm-password" type="text" placeholder="6자 이상" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px">
+            <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:600">이용 시작일</label><input id="dm-startDate" type="date" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px"></div>
+            <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:600">이용 만료일 <span style="color:#DC2626">*</span></label><input id="dm-expiresAt" type="date" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px"></div>
+            <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:600">1일 검색 횟수</label><input id="dm-dailyLimit" type="number" value="10" min="1" max="999" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px"></div>
+          </div>
+          <div style="margin-top:12px"><label style="font-size:12px;color:#666;display:block;margin-bottom:4px;font-weight:600">메모 (용도)</label><input id="dm-memo" placeholder="예: 한국세무사회 공문 첨부용" style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:13px"></div>
+          <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
+            <button onclick="createDemoAccount()" style="padding:10px 28px;background:#1B3A5C;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">🎁 체험계정 생성</button>
+            <span id="dm-createStatus" style="font-size:13px"></span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h3>📋 체험계정 목록</h3><span class="badge" id="demoCount">0개</span></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>#</th><th>성명</th><th>아이디</th><th>상태</th><th>이용기간</th><th>1일한도</th><th>오늘사용</th><th>메모</th><th>생성일</th><th>관리</th></tr></thead>
+            <tbody id="demoTable"><tr><td colspan="10"><p class="loading">로딩 중...</p></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
   </div>
 </div>
@@ -348,6 +388,7 @@ function showTab(name) {
   if (name === 'popups') loadPopups();
   if (name === 'notices') loadNotices();
   if (name === 'payments') loadPayments();
+  if (name === 'demoAccounts') loadDemoAccounts();
 }
 
 // ── API Call Helper ──
@@ -827,6 +868,130 @@ async function createSubAccount(masterUid) {
 }
 
 // ── Helpers ──
+// ── Demo Accounts (체험계정 관리) ──
+let _demoAccounts = [];
+
+async function loadDemoAccounts() {
+  try {
+    const d = await api('/api/admin/demo-accounts');
+    _demoAccounts = d.accounts || [];
+    renderDemoAccounts();
+  } catch (err) {
+    document.getElementById('demoTable').innerHTML = '<tr><td colspan="10" class="loading">로딩 실패: '+err.message+'</td></tr>';
+  }
+}
+
+function renderDemoAccounts() {
+  var tb = document.getElementById('demoTable');
+  var now = new Date();
+  var activeCount = 0, expiredCount = 0;
+  if (!_demoAccounts.length) {
+    tb.innerHTML = '<tr><td colspan="10" class="loading">체험계정이 없습니다. 위에서 생성해 주세요.</td></tr>';
+  } else {
+    tb.innerHTML = _demoAccounts.map(function(a, i) {
+      var expires = a.demoExpiresAt ? new Date(a.demoExpiresAt) : null;
+      var isExpired = expires && expires < now;
+      var isDisabled = a.demoDisabled === true;
+      var statusHtml;
+      if (isDisabled) { statusHtml = '<span style="color:#8A95A5;font-weight:700">⏸ 비활성</span>'; expiredCount++; }
+      else if (isExpired) { statusHtml = '<span style="color:#DC2626;font-weight:700">⏰ 만료</span>'; expiredCount++; }
+      else { statusHtml = '<span style="color:#22C55E;font-weight:700">✅ 활성</span>'; activeCount++; }
+      var startDate = a.demoStartDate || '-';
+      var endDate = expires ? expires.toISOString().substring(0,10) : '-';
+      var todayUsed = a.demoDailyUsed || 0;
+      var resetDate = a.demoDailyResetDate || '';
+      var kstNow = new Date(now.getTime() + 9*60*60*1000);
+      var todayStr = kstNow.toISOString().substring(0,10);
+      if (resetDate !== todayStr) todayUsed = 0;
+      return '<tr style="'+(isExpired||isDisabled?'opacity:.5':'')+'">'
+        +'<td style="text-align:center;font-size:12px;color:#8A95A5">'+(i+1)+'</td>'
+        +'<td><strong>'+(a.name||'-')+'</strong></td>'
+        +'<td>'+(a.loginId||'-')+'</td>'
+        +'<td>'+statusHtml+'</td>'
+        +'<td style="font-size:12px;white-space:nowrap">'+startDate+' ~ '+endDate+'</td>'
+        +'<td style="text-align:center">'+(a.demoDailyLimit||'-')+'회</td>'
+        +'<td style="text-align:center;font-weight:700;color:'+(todayUsed>0?'#1B3A5C':'#8A95A5')+'">'+todayUsed+'회</td>'
+        +'<td style="font-size:12px;color:#666;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(a.demoMemo||'')+'">'+(a.demoMemo||'-')+'</td>'
+        +'<td style="font-size:12px;white-space:nowrap">'+(a.createdAt?fmtTime(a.createdAt):'-')+'</td>'
+        +'<td><div style="display:flex;gap:4px;flex-wrap:wrap">'
+        +(isDisabled
+          ?'<button onclick="toggleDemoAccount(\''+a.uid+'\',false)" style="padding:4px 8px;background:#22C55E;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer" title="활성화">▶</button>'
+          :'<button onclick="toggleDemoAccount(\''+a.uid+'\',true)" style="padding:4px 8px;background:#F59E0B;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer" title="비활성화">⏸</button>')
+        +'<button onclick="editDemoAccount(\''+a.uid+'\')" style="padding:4px 8px;background:#1B3A5C;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer" title="수정">✏️</button>'
+        +'<button onclick="deleteDemoAccount(\''+a.uid+'\',\''+(a.name||'').replace(/'/g,'')+'\')" style="padding:4px 8px;background:#DC2626;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer" title="삭제">🗑️</button>'
+        +'</div></td></tr>';
+    }).join('');
+  }
+  document.getElementById('dm-active').textContent = activeCount;
+  document.getElementById('dm-expired').textContent = expiredCount;
+  document.getElementById('dm-total').textContent = _demoAccounts.length;
+  document.getElementById('demoCount').textContent = _demoAccounts.length + '개';
+}
+
+async function createDemoAccount() {
+  var name = document.getElementById('dm-name').value.trim();
+  var loginId = document.getElementById('dm-loginId').value.trim();
+  var password = document.getElementById('dm-password').value.trim();
+  var expiresAt = document.getElementById('dm-expiresAt').value;
+  var startDate = document.getElementById('dm-startDate').value || new Date().toISOString().substring(0,10);
+  var dailyLimit = parseInt(document.getElementById('dm-dailyLimit').value) || 10;
+  var memo = document.getElementById('dm-memo').value.trim();
+  if (!name) { alert('성명을 입력하세요'); return; }
+  if (!loginId) { alert('아이디를 입력하세요'); return; }
+  if (!password || password.length < 6) { alert('비밀번호는 6자 이상 입력하세요'); return; }
+  if (!expiresAt) { alert('만료일을 선택하세요'); return; }
+  var statusEl = document.getElementById('dm-createStatus');
+  statusEl.textContent = '⏳ 생성 중...'; statusEl.style.color = '#E8A838';
+  try {
+    var result = await apiPost('/api/admin/create-demo-account', {
+      name: name, loginId: loginId, password: password,
+      demoStartDate: startDate,
+      demoExpiresAt: expiresAt + 'T23:59:59+09:00',
+      demoDailyLimit: dailyLimit,
+      demoMemo: memo
+    });
+    if (result.error) throw new Error(result.error);
+    statusEl.textContent = '✅ 생성 완료!'; statusEl.style.color = '#22C55E';
+    document.getElementById('dm-name').value = '';
+    document.getElementById('dm-loginId').value = '';
+    document.getElementById('dm-password').value = '';
+    document.getElementById('dm-expiresAt').value = '';
+    document.getElementById('dm-startDate').value = '';
+    document.getElementById('dm-dailyLimit').value = '10';
+    document.getElementById('dm-memo').value = '';
+    setTimeout(function(){ statusEl.textContent = ''; }, 3000);
+    loadDemoAccounts();
+  } catch (err) { statusEl.textContent = '❌ 실패: '+err.message; statusEl.style.color = '#DC2626'; }
+}
+
+async function toggleDemoAccount(uid, disable) {
+  if (!confirm('이 체험계정을 '+(disable?'비활성화':'활성화')+' 하시겠습니까?')) return;
+  try { var r = await apiPost('/api/admin/update-demo-account', { uid: uid, demoDisabled: disable }); if(r.error) throw new Error(r.error); loadDemoAccounts(); }
+  catch (e) { alert('실패: '+e.message); }
+}
+
+async function editDemoAccount(uid) {
+  var a = _demoAccounts.find(function(x){ return x.uid===uid; });
+  if (!a) return;
+  var newName = prompt('성명:', a.name||''); if (newName===null) return;
+  var newExpires = prompt('만료일 (YYYY-MM-DD):', a.demoExpiresAt?new Date(a.demoExpiresAt).toISOString().substring(0,10):''); if (newExpires===null) return;
+  var newDaily = prompt('1일 검색 횟수:', a.demoDailyLimit||10); if (newDaily===null) return;
+  var newMemo = prompt('메모:', a.demoMemo||''); if (newMemo===null) return;
+  var newPw = prompt('새 비밀번호 (변경 시만 입력, 미입력=유지):', '');
+  if (newPw===null) return;
+  var body = { uid: uid, name: newName, demoExpiresAt: newExpires+'T23:59:59+09:00', demoDailyLimit: parseInt(newDaily)||10, demoMemo: newMemo };
+  if (newPw && newPw.length >= 6) body.newPassword = newPw;
+  else if (newPw && newPw.length > 0) { alert('비밀번호는 6자 이상'); return; }
+  try { var r2 = await apiPost('/api/admin/update-demo-account', body); if(r2.error) throw new Error(r2.error); alert('✅ 수정 완료'); loadDemoAccounts(); }
+  catch (e) { alert('수정 실패: '+e.message); }
+}
+
+async function deleteDemoAccount(uid, name) {
+  if (!confirm('⚠️ 체험계정 "'+name+'"을 삭제하시겠습니까?\nFirebase 계정 + 데이터가 완전히 삭제됩니다.')) return;
+  try { await apiPost('/api/admin/delete-user', { uid: uid }); alert('✅ 삭제 완료'); loadDemoAccounts(); }
+  catch (e) { alert('삭제 실패: '+e.message); }
+}
+
 function fmtTime(iso) {
   if (!iso) return '-';
   const d = new Date(iso);
