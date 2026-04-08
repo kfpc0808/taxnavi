@@ -750,8 +750,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <div class="footer-biz">
         <span><strong>택스나비(TaxNavi)</strong></span><span class="footer-biz-divider">|</span>
         <span>사업자번호 469-77-00555</span><span class="footer-biz-divider">|</span>
-        <span>통신판매업신고번호 제2026-고양일산동-0688호</span><span class="footer-biz-divider">|</span>
-        <span id="footerEmail">E. </span>
+        <span>통신판매업신고번호 제2026-고양일산동-0688호</span>
       </div>
       <div class="footer-legal"><a href="#" onclick="showTermsModal('termsOfService');return false;">이용약관</a><a href="#" onclick="showTermsModal('privacyPolicy');return false;">개인정보처리방침</a></div>
     </div>
@@ -1564,9 +1563,6 @@ document.querySelectorAll('.nav-links a').forEach(function(a){
 });
 
 document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
-
-// 이메일 동적 삽입 (Cloudflare 이메일 보호 우회)
-(function(){var e=document.getElementById('footerEmail');if(e)e.textContent='E. '+'polar'+'islkh'+'@'+'naver'+'.com';})();
 
 // ── 전문가 가이드 스크롤 네비게이션 ──
 (function(){
