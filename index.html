@@ -1639,4 +1639,10 @@ function saveResultsTxt(){
   txt+='※ 본 내용은 참고 자료이며 법적 효력이 없습니다.\n';
   // 다운로드
   const fname='TaxNavi_'+q.replace(/['"]/g,'').replace(/\s+/g,'_').substring(0,30)+'_'+new Date().toISOString().split('T')[0]+'.txt';
-  const blob=new Blob([txt],{type:'text/pla
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;a.click();URL.revokeObjectURL(a.href);
+  showToast('검색 결과가 저장되었습니다');
+}
+</script>
+</body>
+</html>
