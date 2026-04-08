@@ -751,7 +751,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
         <span><strong>택스나비(TaxNavi)</strong></span><span class="footer-biz-divider">|</span>
         <span>사업자번호 469-77-00555</span><span class="footer-biz-divider">|</span>
         <span>통신판매업신고번호 제2026-고양일산동-0688호</span><span class="footer-biz-divider">|</span>
-        <span>E. <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6c1c03000d1e051f0007042c020d1a091e420f0301">[email&#160;protected]</a></span>
+        <span id="footerEmail">E. </span>
       </div>
       <div class="footer-legal"><a href="#" onclick="showTermsModal('termsOfService');return false;">이용약관</a><a href="#" onclick="showTermsModal('privacyPolicy');return false;">개인정보처리방침</a></div>
     </div>
@@ -866,7 +866,7 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 
 <div class="toast-popup-overlay" id="toastPopup"><div class="toast-popup"><div class="toast-popup-msg" id="toastMessage">알림</div><button class="toast-popup-btn" onclick="document.getElementById('toastPopup').classList.remove('show')">확인</button></div></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 const SITES={taxlaw:{name:'국세법령정보시스템',color:'#1B3A5C',badge:'badge-taxlaw',url:'https://taxlaw.nts.go.kr'},courtCase:{name:'대법원 판례검색 (법고을)',color:'#DC2626',badge:'badge-courtCase',url:'https://lx.scourt.go.kr/'},taxTribunal:{name:'조세심판원',color:'#D97706',badge:'badge-taxTribunal',url:'https://www.tt.go.kr'},fssLaw:{name:'금융감독원',color:'#16A34A',badge:'badge-fssLaw',url:'https://law.fss.or.kr'},lawGoKr:{name:'국가법령정보센터',color:'#7C3AED',badge:'badge-lawGoKr',url:'https://www.law.go.kr/main.html'},hometaxQA:{name:'국세상담센터',color:'#B45309',badge:'badge-hometaxQA',url:'https://call.nts.go.kr'},courtPortal:{name:'사법정보공개포털',color:'#0D9488',badge:'badge-courtPortal',url:'https://portal.scourt.go.kr'}};
 try{document.querySelectorAll('.anim').forEach(el=>new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})},{threshold:.05}).observe(el))}catch(e){document.querySelectorAll('.anim').forEach(el=>{el.style.opacity='1';el.style.transform='translateY(0)'})}
 
@@ -1564,6 +1564,9 @@ document.querySelectorAll('.nav-links a').forEach(function(a){
 });
 
 document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+// 이메일 동적 삽입 (Cloudflare 이메일 보호 우회)
+(function(){var e=document.getElementById('footerEmail');if(e)e.textContent='E. '+'polar'+'islkh'+'@'+'naver'+'.com';})();
 
 // ── 전문가 가이드 스크롤 네비게이션 ──
 (function(){
