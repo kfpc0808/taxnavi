@@ -893,14 +893,14 @@
                     });
                 } catch(e) { console.warn('pending_charges 저장 실패:', e); }
                 
-                // INNOPAY v2 결제창 호출 (면세: amt=0, taxFreeAmt=실결제금액)
+                // INNOPAY v2 결제창 호출 (과세: amt=실결제금액, taxFreeAmt=0)
                 innopay.goPay({
                     payMethod: 'CARD',
-                    mid: 'pgkfpcen5m',
+                    mid: 'pgtaxnav1m',
                     moid: moid,
                     goodsName: 'TaxNavi 포인트 충전 ' + _selOpt.credit.toLocaleString() + 'P',
-                    amt: 0,
-                    taxFreeAmt: _selOpt.paid,
+                    amt: _selOpt.paid,
+                    taxFreeAmt: 0,
                     goodsCnt: 1,
                     buyerName: userData.name || 'Guest',
                     buyerEmail: userData.email,
@@ -1012,7 +1012,7 @@
                             paymentToken: paymentToken,
                             tid: tid,
                             moid: urlParams.get('moid') || '',
-                            mid: urlParams.get('mid') || 'pgkfpcen5m',
+                            mid: urlParams.get('mid') || 'pgtaxnav1m',
                             amt: parseInt(urlParams.get('amt') || '0'),
                             taxFreeAmt: parseInt(urlParams.get('taxFreeAmt') || '0'),
                             userId: pending ? pending.userId : (currentUserId || ''),
