@@ -672,12 +672,13 @@
             const submitBtn = document.getElementById('chargeSubmitBtn');
             
             if (_selOpt && _selOpt.paid > 0) {
+                const vatTotal = Math.round(_selOpt.paid * 1.1);
                 displayDiv.style.display = 'block';
-                document.getElementById('selectedAmountText').textContent = _selOpt.paid.toLocaleString() + '원';
+                document.getElementById('selectedAmountText').textContent = vatTotal.toLocaleString() + '원 (VAT 포함)';
                 document.getElementById('selectedPointsText').textContent = '+' + _selOpt.credit.toLocaleString() + ' P';
                 submitBtn.disabled = false;
                 submitBtn.style.opacity = '1';
-                submitBtn.innerHTML = '💳 ' + _selOpt.paid.toLocaleString() + '원 충전하기';
+                submitBtn.innerHTML = '💳 ' + vatTotal.toLocaleString() + '원 결제하기';
             } else {
                 displayDiv.style.display = 'none';
                 submitBtn.disabled = true;
@@ -749,11 +750,13 @@
                     return;
                 }
                 container.innerHTML = opts.map(o => {
+                    const vatAmt = Math.round(o.paidAmount * 1.1);
                     const bonus = o.chargeAmount > o.paidAmount
                         ? '<div class="charge-bonus">+' + (o.chargeAmount - o.paidAmount).toLocaleString() + '원 보너스!</div>'
                         : '<div class="charge-bonus">' + (o.label || o.chargeAmount.toLocaleString() + ' P') + '</div>';
                     return '<div class="charge-option" onclick="selectCharge(this,\'' + o.optionId + '\',' + o.paidAmount + ',' + o.chargeAmount + ')">'
                         + '<div class="charge-amount">' + o.paidAmount.toLocaleString() + '원</div>'
+                        + '<div style="font-size:12px;color:#8A95A5;margin-top:2px;">(VAT 별도 / 결제 ' + vatAmt.toLocaleString() + '원)</div>'
                         + bonus + '</div>';
                 }).join('');
                 _selOpt = null;
@@ -774,11 +777,13 @@
                         return;
                     }
                     container.innerHTML = opts2.map(o => {
+                        const vatAmt = Math.round(o.paidAmount * 1.1);
                         const bonus = o.chargeAmount > o.paidAmount
                             ? '<div class="charge-bonus">+' + (o.chargeAmount - o.paidAmount).toLocaleString() + '원 보너스!</div>'
                             : '<div class="charge-bonus">' + (o.label || o.chargeAmount.toLocaleString() + ' P') + '</div>';
                         return '<div class="charge-option" onclick="selectCharge(this,\'' + o.optionId + '\',' + o.paidAmount + ',' + o.chargeAmount + ')">'
                             + '<div class="charge-amount">' + o.paidAmount.toLocaleString() + '원</div>'
+                            + '<div style="font-size:12px;color:#8A95A5;margin-top:2px;">(VAT 별도 / 결제 ' + vatAmt.toLocaleString() + '원)</div>'
                             + bonus + '</div>';
                     }).join('');
                 } catch (e2) {
@@ -878,7 +883,8 @@
                 }
                 
                 // 결제 정보를 전역 + localStorage에 저장 (모바일 리다이렉트 대응)
-                window._pendingCharge = { moid: moid, paid: _selOpt.paid, credit: _selOpt.credit, optionId: _selOpt.id, userId: currentUserId, ts: Date.now() };
+                const vatPaid = Math.round(_selOpt.paid * 1.1);
+                window._pendingCharge = { moid: moid, paid: vatPaid, credit: _selOpt.credit, optionId: _selOpt.id, userId: currentUserId, ts: Date.now() };
                 try { localStorage.setItem('_pendingCharge', JSON.stringify(window._pendingCharge)); } catch(e) {}
                 
                 // Firestore에 pending 기록 저장
@@ -886,20 +892,20 @@
                     await db.collection('pending_charges').doc(moid).set({
                         moid: moid,
                         userId: currentUserId,
-                        paid: _selOpt.paid,
+                        paid: vatPaid,
                         credit: _selOpt.credit,
                         optionId: _selOpt.id,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 } catch(e) { console.warn('pending_charges 저장 실패:', e); }
                 
-                // INNOPAY v2 결제창 호출 (과세: amt=실결제금액, taxFreeAmt=0)
+                // INNOPAY v2 결제창 호출 (과세: amt=VAT포함 실결제금액, taxFreeAmt=0)
                 innopay.goPay({
                     payMethod: 'CARD',
                     mid: 'pgtaxnav1m',
                     moid: moid,
                     goodsName: 'TaxNavi 포인트 충전 ' + _selOpt.credit.toLocaleString() + 'P',
-                    amt: _selOpt.paid,
+                    amt: vatPaid,
                     taxFreeAmt: 0,
                     goodsCnt: 1,
                     buyerName: userData.name || 'Guest',
