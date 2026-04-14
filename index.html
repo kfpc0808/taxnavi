@@ -1108,7 +1108,7 @@ firebase.auth().onAuthStateChanged(async user => {
     } else {
       // 일반 회원 → 이름(등급) 표시
       const tierMap = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'};
-      const jarviaRoleMap = {inner_circle:'이너서클',branch_manager:'지사장',jarvia_inner:'이너서클'};
+      const jarviaRoleMap = {inner_circle:'이너서클',branch_manager:'지사장',jarvia_inner:'이너서클',jarvia_member:'JARVIA멤버십',jarvia_report:'리포트회원'};
       let label = user.displayName || '회원';
       try {
         const tk = await user.getIdToken();
@@ -1292,7 +1292,7 @@ async function handleSearch(){
       const tierName = (function(){
             const map = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'};
             if(u.tier === 'jarvia_free' && u.jarviaRole) {
-              const rm = {inner_circle:'이너서클',branch_manager:'지사장',jarvia_inner:'이너서클'};
+              const rm = {inner_circle:'이너서클',branch_manager:'지사장',jarvia_inner:'이너서클',jarvia_member:'JARVIA멤버십',jarvia_report:'리포트회원'};
               return (rm[u.jarviaRole] || u.jarviaRole) + '_월5건';
             }
             return map[u.tier] || u.tier;
