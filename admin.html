@@ -483,11 +483,11 @@ function renderUsersPage() {
   const pageUsers = _allUsers.slice(start, start + _userPerPage);
   const limitLabel = (u) => {
     if (u.tier === 'enterprise') return (u.monthlyLimit || 0) + '건';
-    if (u.tier === 'pro') return '120건';
-    if (u.tier === 'basic') return '50건';
-    if (u.tier === 'lite') return '30건';
+    if (u.tier === 'pro') return '30건';
+    if (u.tier === 'basic') return '10건';
+    if (u.tier === 'lite') return '10건';
     if (u.tier === 'jarvia_free') return '5건';
-    return '2건';
+    return '1건';
   };
   tb.innerHTML = pageUsers.map((u, i) => `<tr>
     <td style="text-align:center;color:#8A95A5;font-size:12px">${start + i + 1}</td>
