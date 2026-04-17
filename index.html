@@ -28,21 +28,19 @@
 <script>
 // ★★★ Firebase Console → Project Settings → General → Web App에서 복사하여 교체하세요 ★★★
 const firebaseConfig = {
-  apiKey: "AIzaSyCf7CsUTgfIWY-RW_mvTJOhczDtk1xM9sA",
-  authDomain: "kfpc-company-support-project.firebaseapp.com",
-  databaseURL: "https://kfpc-company-support-project-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "kfpc-company-support-project",
-  storageBucket: "kfpc-company-support-project.firebasestorage.app",
-  messagingSenderId: "1012609333373",
-  appId: "1:1012609333373:web:0ebceb27e5d2f12b56d914",
-  measurementId: "G-LEH0W7Y4F8"
+  apiKey: "AIzaSyBqZC-XnLEXndKU6RgQG7wWz1xUuZ8oiMs",
+  authDomain: "taxnavi-713ed.firebaseapp.com",
+  projectId: "taxnavi-713ed",
+  storageBucket: "taxnavi-713ed.firebasestorage.app",
+  messagingSenderId: "104558014699",
+  appId: "1:104558014699:web:8370e0c318cd98d35f4eae"
 };
 firebase.initializeApp(firebaseConfig);
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 const db = firebase.firestore();
 
 // ★★★ Cloud Run 배포 후 URL 교체 ★★★
-const API_BASE_URL = 'https://taxnavi-backend-1012609333373.asia-northeast3.run.app';
+const API_BASE_URL = 'https://taxnavi-backend-104558014699.asia-northeast3.run.app';
 </script>
 <style>
 :root {

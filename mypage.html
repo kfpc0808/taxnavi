@@ -595,18 +595,16 @@
     <script>
         // Firebase 설정 (TaxNavi 프로젝트)
         const firebaseConfig = {
-            apiKey: "AIzaSyCf7CsUTgfIWY-RW_mvTJOhczDtk1xM9sA",
-            authDomain: "kfpc-company-support-project.firebaseapp.com",
-            databaseURL: "https://kfpc-company-support-project-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "kfpc-company-support-project",
-            storageBucket: "kfpc-company-support-project.firebasestorage.app",
-            messagingSenderId: "1012609333373",
-            appId: "1:1012609333373:web:0ebceb27e5d2f12b56d914",
-            measurementId: "G-LEH0W7Y4F8"
+            apiKey: "AIzaSyBqZC-XnLEXndKU6RgQG7wWz1xUuZ8oiMs",
+            authDomain: "taxnavi-713ed.firebaseapp.com",
+            projectId: "taxnavi-713ed",
+            storageBucket: "taxnavi-713ed.firebasestorage.app",
+            messagingSenderId: "104558014699",
+            appId: "1:104558014699:web:8370e0c318cd98d35f4eae"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const API_BASE = 'https://taxnavi-backend-1012609333373.asia-northeast3.run.app';
+        const API_BASE = 'https://taxnavi-backend-104558014699.asia-northeast3.run.app';
 
         // ★★★ INNOPAY 승인 Cloud Function URL (참고파일과 동일 — 필요 시 교체) ★★★
         const INNOPAY_APPROVE_URL = API_BASE + '/api/innopay-approve';
