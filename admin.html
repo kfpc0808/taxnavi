@@ -61,8 +61,6 @@ tbody td{padding:10px 14px;border-bottom:1px solid #F0F3F7;color:#333}
 tbody tr:hover{background:#FAFBFD}
 .tier-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
 .tier-free{background:#F0F3F7;color:#8A95A5}
-.tier-lite{background:#F0FDF4;color:#15803D}
-.tier-basic{background:#EEF4FF;color:#1B3A5C}
 .tier-pro{background:#FEF3C7;color:#92400E}
 .tier-enterprise{background:#DCFCE7;color:#166534}
 .tier-jarvia_free{background:#FFF7ED;color:#C2410C}
@@ -141,7 +139,7 @@ tbody tr:hover{background:#FAFBFD}
         <div class="stat-card"><div class="stat-label">오늘 검색</div><div class="stat-value" id="st-today-search">-</div><div class="stat-sub" id="st-today-results">결과 -건</div></div>
         <div class="stat-card accent"><div class="stat-label">오늘 신규가입</div><div class="stat-value" id="st-today-signup">-</div><div class="stat-sub" id="st-today-active">활성 -명</div></div>
         <div class="stat-card"><div class="stat-label">주간 검색</div><div class="stat-value" id="st-week-search">-</div></div>
-        <div class="stat-card green"><div class="stat-label">전체 회원</div><div class="stat-value" id="st-total-users">-</div><div class="stat-sub" id="st-tier-breakdown">무료 - / Lite - / 베이직 - / 프로 -</div></div>
+        <div class="stat-card green"><div class="stat-label">전체 회원</div><div class="stat-value" id="st-total-users">-</div><div class="stat-sub" id="st-tier-breakdown">무료 - / 프로 -</div></div>
       </div>
       <div class="panel">
         <div class="panel-header"><h3>주간 검색 추이</h3></div>
@@ -328,8 +326,8 @@ tbody tr:hover{background:#FAFBFD}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">이름</label><input id="ue-name" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
       <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">전화번호</label><input id="ue-phone" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
-      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">등급</label><select id="ue-tier" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="free">free</option><option value="lite">lite</option><option value="basic">basic</option><option value="pro">pro</option><option value="enterprise">enterprise</option><option value="jarvia_free">jarvia_free (JARVIA월5건)</option></select></div>
-      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">신청등급</label><select id="ue-requestedTier" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="free">free</option><option value="lite">lite</option><option value="basic">basic</option><option value="pro">pro</option></select></div>
+      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">등급</label><select id="ue-tier" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="free">free</option><option value="pro">pro</option><option value="enterprise">enterprise</option><option value="jarvia_free">jarvia_free (JARVIA월5건)</option></select></div>
+      <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">신청등급</label><select id="ue-requestedTier" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="free">free</option><option value="pro">pro</option></select></div>
       <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">포인트</label><input id="ue-points" type="number" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
       <div><label style="font-size:12px;color:#666;display:block;margin-bottom:4px">월한도</label><input id="ue-monthlyLimit" type="number" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>
     </div>
@@ -439,7 +437,7 @@ async function loadDashboard() {
     document.getElementById('st-week-search').textContent = (d.week.searches || 0).toLocaleString();
     document.getElementById('st-total-users').textContent = (d.users.total || 0).toLocaleString();
     document.getElementById('st-tier-breakdown').textContent = 
-      '무료 ' + d.users.free + ' / Lite ' + (d.users.lite||0) + ' / 베이직 ' + d.users.basic + ' / 프로 ' + d.users.pro;
+      '무료 ' + (d.users.free || 0) + ' / 프로 ' + (d.users.pro || 0);
     
     // Chart
     const chart = document.getElementById('weekChart');
@@ -484,8 +482,6 @@ function renderUsersPage() {
   const limitLabel = (u) => {
     if (u.tier === 'enterprise') return (u.monthlyLimit || 0) + '건';
     if (u.tier === 'pro') return '30건';
-    if (u.tier === 'basic') return '10건';
-    if (u.tier === 'lite') return '10건';
     if (u.tier === 'jarvia_free') return '5건';
     return '1건';
   };
@@ -639,7 +635,7 @@ async function loadSuggestions() {
     document.getElementById('sugCount').textContent = d.count + '건';
     const tb = document.getElementById('suggestionsTable');
     if (!d.suggestions.length) { tb.innerHTML = '<tr><td colspan="7" class="loading">문의가 없습니다</td></tr>'; return; }
-    const tierLabel = {free:'무료',lite:'Lite',basic:'베이직',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'};
+    const tierLabel = {free:'무료',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'};
     tb.innerHTML = d.suggestions.map(s => `<tr>
       <td style="white-space:nowrap">${s.createdAt ? fmtTime(s.createdAt) : '-'}</td>
       <td><strong>${s.userName||'-'}</strong></td>
