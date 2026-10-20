@@ -479,6 +479,124 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .expert-arrow:hover{background:#F3F4F6;border-color:#9CA3AF;color:var(--text-primary)}
 .expert-arrow svg{width:16px;height:16px}
 @media(max-width:768px){.expert-card{min-width:290px;max-width:290px;padding:24px}.expert-header h2{font-size:24px}.expert-section{padding:48px 0 50px}}
+
+/* ═══════════ UI 개선 (2026-10) — 헤더·히어로·검색결과·모바일 ═══════════ */
+/* 상단 바 */
+.notice-marquee{padding:6px 0;font-size:12.5px}
+.disclaimer-bar{padding:7px 20px;font-size:12px;cursor:default}
+.disclaimer-bar svg{flex-shrink:0}
+.disclaimer-text{min-width:0}
+
+/* 헤더 */
+.nav{gap:12px}
+.nav-links{margin-left:auto;gap:4px}
+.nav-links a,.nav-links span,.btn-share-taxnavi{white-space:nowrap}
+.nav-links a svg,.btn-share-taxnavi svg{flex-shrink:0}
+.btn-login,.btn-start{display:inline-flex;align-items:center;gap:6px}
+body.tn-logged-in:not(.tn-admin) .btn-start{display:none!important}
+.point-group{display:inline-flex;align-items:center;gap:6px;margin-left:4px}
+.header-balance{align-items:center;gap:5px;height:34px;padding:0 12px;font-size:12.5px}
+.header-balance::before{content:'';width:14px;height:14px;flex-shrink:0;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M10 16.5v-9h3a2.5 2.5 0 010 5h-3'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M10 16.5v-9h3a2.5 2.5 0 010 5h-3'/%3E%3C/svg%3E") center/contain no-repeat}
+.btn-charge{align-items:center;gap:4px;height:34px;padding:0 14px!important;border-radius:var(--radius-full)!important;font-size:12.5px!important}
+.user-menu{position:relative;display:inline-flex}
+.ul-name{font-weight:700}
+.ul-tier{font-size:11px;font-weight:700;padding:2px 8px;border-radius:var(--radius-full);background:#EEF4FF;color:var(--primary);line-height:1.5}
+body.tn-logged-in .user-menu>.btn-login::after{content:'';width:7px;height:7px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg);margin:-4px 2px 0 4px;flex-shrink:0}
+.user-dropdown{position:absolute;top:calc(100% + 8px);right:0;min-width:168px;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);padding:6px;display:flex;flex-direction:column;gap:2px;opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .18s ease,transform .18s ease,visibility .18s;z-index:150}
+.user-dropdown::before{content:'';position:absolute;top:-10px;left:0;right:0;height:10px}
+body.tn-logged-in .user-menu:hover .user-dropdown,body.tn-logged-in .user-menu:focus-within .user-dropdown{opacity:1;visibility:visible;transform:none}
+.user-dropdown .btn-mypage,.user-dropdown .btn-logout{align-items:center;gap:8px;width:100%;padding:10px 12px!important;border:none!important;background:transparent!important;border-radius:8px!important;font-size:13.5px!important;font-weight:600!important}
+.user-dropdown .btn-mypage{color:var(--text)!important}
+.user-dropdown .btn-mypage:hover{background:#F0F6FF!important;color:var(--primary)!important}
+.user-dropdown .btn-logout{color:#e53e3e!important}
+.user-dropdown .btn-logout:hover{background:#FEF2F2!important}
+.btn-share-taxnavi{gap:6px;height:36px;padding:0 14px;border-radius:var(--radius-full);font-size:12.5px;background:#fff;color:var(--text-secondary);border:1.5px solid var(--border);flex-shrink:0}
+.btn-share-taxnavi:hover{background:#FFF9EE;color:var(--accent-dark);border-color:var(--accent)}
+.m-balance{display:none}
+.mobile-menu-btn{width:44px;height:44px;flex-shrink:0}
+@media(min-width:769px) and (max-width:1024px){
+  .nav{padding:0 16px}
+  .nav-links a{padding:8px 9px;font-size:13px}
+  .ul-tier{display:none}
+  .share-label{display:none}
+  .sources-list{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -24px;padding:2px 40px 2px 24px;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}
+  .sources-list::-webkit-scrollbar{display:none}
+  .btn-share-taxnavi{width:36px;padding:0;justify-content:center}
+}
+
+/* 히어로 */
+.hero{background:linear-gradient(180deg,#0D1B2A 0%,#1B3A5C 100%);padding:64px 24px 48px}
+.hero-content{max-width:960px}
+.hero h1{font-size:clamp(24px,6.6vw,46px);word-break:keep-all}
+.hero-desc{word-break:keep-all}
+.search-hint{margin-top:12px;color:rgba(255,255,255,.72)}
+.search-box input{text-overflow:ellipsis;min-width:0}
+.sources-strip{max-width:960px}
+.sources-strip-label{font-size:13px;color:rgba(255,255,255,.75);font-weight:600}
+.sources-list{gap:6px}
+.source-chip{gap:7px;padding:6px 13px 6px 11px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.92);font-size:12.5px;font-weight:600;white-space:nowrap;flex-shrink:0}
+.source-chip:hover{opacity:1;background:rgba(255,255,255,.14)}
+@media(min-width:1025px){.sources-list{flex-wrap:nowrap}}
+
+/* 검색 후 컴팩트 모드 */
+body.tn-searched .hero{position:sticky;top:64px;z-index:90;padding:12px 24px;box-shadow:0 6px 18px rgba(13,27,42,.18)}
+body.tn-searched .hero-badge,body.tn-searched .hero h1,body.tn-searched .hero-desc,body.tn-searched .search-hint,body.tn-searched .search-counter,body.tn-searched .sources-strip{display:none}
+body.tn-searched .search-wrapper{margin:0 auto;animation:none}
+body.tn-searched .results-section{scroll-margin-top:170px;padding-top:24px}
+
+/* 검색 결과 */
+.results-header{gap:12px}
+.results-header h3{min-width:0;word-break:keep-all;overflow-wrap:anywhere}
+.results-actions{display:flex;gap:8px;flex-shrink:0;margin-left:auto}
+.result-card{overflow-wrap:anywhere}
+.result-card img{max-width:100%;height:auto}
+.result-card table{display:block;max-width:100%;overflow-x:auto}
+.result-card pre{white-space:pre-wrap}
+.result-footer{flex-wrap:wrap;gap:8px}
+
+/* 모바일 */
+@media(max-width:768px){
+  .nav{padding:0 12px 0 16px;gap:8px}
+  body.tn-logged-in:not(.tn-admin) .m-balance:not(:empty){display:inline-flex;align-items:center;gap:4px;margin-left:auto;height:36px;padding:0 12px;border-radius:var(--radius-full);background:#FFF9EE;border:1px solid #F0D97A;color:var(--accent-dark);font-size:12.5px;font-weight:700;white-space:nowrap}
+  .btn-share-taxnavi{width:40px;height:40px;padding:0;justify-content:center;margin-left:auto}
+  body.tn-logged-in:not(.tn-admin) .m-balance:not(:empty)~.btn-share-taxnavi{margin-left:0}
+  .share-label{display:none}
+  .disclaimer-bar{padding:6px 14px;font-size:11px;cursor:pointer;justify-content:flex-start}
+  .disclaimer-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;text-align:left}
+  .disclaimer-bar.expanded .disclaimer-text{white-space:normal}
+  .notice-marquee{font-size:12px;padding:5px 0}
+  /* 드로어 안에서는 드롭다운을 펼친 목록으로 */
+  .nav-links.mobile-open .point-group,.nav-links.mobile-open .user-menu{display:flex;flex-direction:column;align-items:stretch;width:100%;margin:0;gap:4px}
+  .nav-links.mobile-open .point-group{padding-top:8px;margin-top:8px;border-top:1px solid var(--border-light)}
+  .nav-links.mobile-open .header-balance{align-self:flex-start;margin:0 0 4px 4px}
+  .nav-links.mobile-open .btn-charge{height:auto;justify-content:center}
+  .nav-links.mobile-open .user-dropdown{position:static;opacity:1;visibility:visible;transform:none;box-shadow:none;border:none;padding:0;min-width:0;background:transparent}
+  .nav-links.mobile-open .user-dropdown::before{display:none}
+  .nav-links.mobile-open .user-menu>.btn-login::after{display:none}
+  .nav-links.mobile-open .btn-login{flex-wrap:wrap}
+  .nav-links.mobile-open a{min-height:44px;display:flex;align-items:center}
+  .nav-links.mobile-open .btn-charge:not([style*="inline-flex"]),.nav-links.mobile-open .btn-mypage:not([style*="inline-flex"]),.nav-links.mobile-open .btn-logout:not([style*="inline-flex"]){display:none!important}
+  body.tn-logged-in:not(.tn-admin) .nav-links.mobile-open .btn-start{display:none!important}
+  /* 히어로 */
+  .hero{padding:36px 16px 32px}
+  .hero-badge{margin-bottom:16px;font-size:12px}
+  .hero h1{margin-bottom:12px;line-height:1.35}
+  .hero-desc{margin-bottom:24px;font-size:14.5px}
+  .search-hint{white-space:normal;display:block;text-align:center;word-break:keep-all;line-height:1.6}
+  .search-counter{margin-top:16px}
+  .sources-strip{margin-top:20px}
+  .sources-list{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -16px;padding:2px 32px 2px 16px;-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent)}
+  .sources-list::-webkit-scrollbar{display:none}
+  /* 컴팩트 모드 */
+  body.tn-searched .hero{padding:10px 12px}
+  body.tn-searched .results-section{scroll-margin-top:150px}
+  /* 결과 */
+  .results-section{padding:0 16px 48px}
+  .results-actions{margin-left:0;width:100%}
+  .results-actions button{flex:1;justify-content:center;min-height:44px}
+  .results-tab{min-height:40px}
+  .btn-copy-item{min-height:36px}
+}
 </style>
 </head>
 <body>
@@ -487,9 +605,9 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
   <div class="notice-marquee-inner" id="noticeMarqueeInner"></div>
 </div>
 
-<div class="disclaimer-bar">
+<div class="disclaimer-bar" onclick="this.classList.toggle('expanded')">
   <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#8B6914" stroke-width="2" stroke-linecap="round"/></svg>
-본 서비스는 법원판례, 국세청예규 등을 공식기관을 통해 검색/제공합니다. 자문을 하지 않으며, 답변은 참고로만 사용바랍니다.
+<span class="disclaimer-text">본 서비스는 법원판례, 국세청예규 등을 공식기관을 통해 검색/제공합니다. 자문을 하지 않으며, 답변은 참고로만 사용바랍니다.</span>
 </div>
 
 <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
@@ -504,23 +622,30 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
       <a href="#categories">분야별 검색</a>
       <a href="#pricing">요금제</a>
       <a href="#faq">FAQ</a>
-      <a href="#" class="btn-login" onclick="openModal('login');return false;">로그인/회원가입</a>
+      <div class="point-group">
+        <span class="header-balance" id="headerBalance">0 P</span>
+        <a href="mypage.html#tab-balance" class="btn-charge" id="btnCharge"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>충전</a>
+      </div>
+      <div class="user-menu">
+        <a href="#" class="btn-login" onclick="openModal('login');return false;">로그인/회원가입</a>
+        <div class="user-dropdown">
+          <a href="mypage.html" class="btn-mypage" id="btnMypage"><svg width="15" height="15" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 21a8 8 0 0116 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>마이페이지</a>
+          <a href="#" class="btn-logout" id="btnLogout" onclick="firebase.auth().signOut();return false;"><svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>로그아웃</a>
+        </div>
+      </div>
       <a href="#" class="btn-start" onclick="openModal('signup');return false;">무료 체험</a>
-      <span class="header-balance" id="headerBalance">💰 0 P</span>
-      <a href="mypage.html#tab-balance" class="btn-charge" id="btnCharge">💰 충전</a>
-      <a href="mypage.html" class="btn-mypage" id="btnMypage">👤 마이페이지</a>
-      <a href="#" class="btn-logout" id="btnLogout" onclick="firebase.auth().signOut();return false;">로그아웃</a>
     </div>
-    <button class="btn-share-taxnavi" onclick="shareTaxNavi()">📤 공유</button>
+    <a href="mypage.html#tab-balance" class="m-balance" id="mBalance"></a>
+    <button class="btn-share-taxnavi" onclick="shareTaxNavi()" aria-label="공유"><svg width="15" height="15" fill="none" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" stroke="currentColor" stroke-width="2"/></svg><span class="share-label">공유</span></button>
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><div class="hamburger"><span></span><span></span><span></span></div></button>
   </nav>
 </header>
 
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-badge"><span class="dot"></span><b>국내최초</b> 7개 공공 사이트 AI 통합검색</div>
+    <div class="hero-badge"><span class="dot"></span>7개 공공 사이트 AI 통합검색</div>
     <h1>세법·판례를 검색하고,<br><span class="hl">AI로 핵심을 파악하세요</span></h1>
-    <p class="hero-desc">판례, 세법해석, 예규, 심판례, 상담사례까지<br><strong>7개 공공 사이트</strong>를 AI가 한번에 검색하고 요약합니다.</p>
+    <p class="hero-desc">판례, 세법해석, 예규, 심판례, 상담사례까지<br>AI가 한번에 검색하고 <strong>핵심만 요약</strong>합니다.</p>
     <div class="search-wrapper">
       <div class="search-box">
         <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="#8A95A5" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="#8A95A5" stroke-width="2" stroke-linecap="round"/></svg>
@@ -545,13 +670,13 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
     <div class="sources-strip">
       <div class="sources-strip-label">검색 대상 공공 사이트</div>
       <div class="sources-list">
-        <span class="source-chip" style="background:#1B3A5C">국세법령정보시스템</span>
-        <span class="source-chip" style="background:#DC2626">대법원 법고을</span>
-        <span class="source-chip" style="background:#0D9488">사법정보공개포털</span>
-        <span class="source-chip" style="background:#D97706">조세심판원</span>
-        <span class="source-chip" style="background:#16A34A">금융감독원</span>
-        <span class="source-chip" style="background:#7C3AED">국가법령정보센터</span>
-        <span class="source-chip" style="background:#B45309">국세상담센터</span>
+        <span class="source-chip"><span class="source-dot" style="background:#60A5FA"></span>국세법령정보시스템</span>
+        <span class="source-chip"><span class="source-dot" style="background:#F87171"></span>대법원 법고을</span>
+        <span class="source-chip"><span class="source-dot" style="background:#2DD4BF"></span>사법정보공개포털</span>
+        <span class="source-chip"><span class="source-dot" style="background:#FBBF24"></span>조세심판원</span>
+        <span class="source-chip"><span class="source-dot" style="background:#4ADE80"></span>금융감독원</span>
+        <span class="source-chip"><span class="source-dot" style="background:#A78BFA"></span>국가법령정보센터</span>
+        <span class="source-chip"><span class="source-dot" style="background:#FB923C"></span>국세상담센터</span>
       </div>
     </div>
   </div>
@@ -575,10 +700,12 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 <section class="results-section" id="resultsSection">
   <div class="results-header">
     <h3><em id="resultQuery"></em> 검색 결과 <em id="resultCount"></em>건</h3>
+    <div class="results-actions">
     <button class="btn-copy-all" onclick="copyAllResults()">
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>전체 복사
     </button>
-    <button class="btn-save-txt" onclick="saveResultsTxt()">📥 저장</button>
+    <button class="btn-save-txt" onclick="saveResultsTxt()"><svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>저장</button>
+    </div>
   </div>
   <div class="results-tabs" id="resultsTabs"></div>
   <div id="resultsContainer"></div>
@@ -1061,6 +1188,8 @@ function handleJarviaLogin(){
 let currentUser = null;
 firebase.auth().onAuthStateChanged(async user => {
   currentUser = user;
+  document.body.classList.toggle('tn-logged-in', !!user);
+  document.body.classList.toggle('tn-admin', !!(user && user.email === 'admin@taxnavi.kr'));
   const loginBtn = document.querySelector('.btn-login');
   const startBtn = document.querySelector('.btn-start');
   const chargeBtn = document.getElementById('btnCharge');
@@ -1081,6 +1210,7 @@ firebase.auth().onAuthStateChanged(async user => {
       const tierMap = {free:'무료',pro:'프로',enterprise:'기관',jarvia_free:'JARVIA(월5건)'};
       const jarviaRoleMap = {inner_circle:'이너서클',branch_manager:'지사장',jarvia_inner:'이너서클',jarvia_member:'JARVIA멤버십',jarvia_report:'리포트회원'};
       let label = user.displayName || '회원';
+      let tierBadge = '';
       try {
         const tk = await user.getIdToken();
         const resp = await fetch(API_BASE_URL + '/api/usage', { headers:{'Authorization':'Bearer '+tk} });
@@ -1093,17 +1223,24 @@ firebase.auth().onAuthStateChanged(async user => {
             if(d.tier === 'jarvia_free' && d.jarviaRole) {
               tierLabel = (jarviaRoleMap[d.jarviaRole] || d.jarviaRole) + '_월5건';
             }
-            label = userName + '(' + tierLabel + ')';
+            tierBadge = String(tierLabel).replace('_', ' · ');
           }
           // 포인트도 API 응답에서 표시
           if (balanceEl) {
             const pts = d.points || 0;
-            balanceEl.textContent = '💰 ' + pts.toLocaleString() + ' P';
+            balanceEl.textContent = pts.toLocaleString() + ' P';
+            const mBal = document.getElementById('mBalance');
+            if (mBal) mBal.textContent = pts.toLocaleString() + ' P';
             balanceEl.style.display = 'inline-flex';
           }
         }
       } catch(e){}
-      if (loginBtn) { loginBtn.textContent = label; loginBtn.onclick = null; loginBtn.style.cursor = 'default'; }
+      if (loginBtn) {
+        loginBtn.textContent = '';
+        const nmEl = document.createElement('span'); nmEl.className = 'ul-name'; nmEl.textContent = label; loginBtn.appendChild(nmEl);
+        if (tierBadge) { const tEl = document.createElement('span'); tEl.className = 'ul-tier'; tEl.textContent = tierBadge; loginBtn.appendChild(tEl); }
+        loginBtn.onclick = null; loginBtn.style.cursor = 'default';
+      }
       if (startBtn) { startBtn.textContent = '검색하기'; startBtn.onclick = () => { document.getElementById('searchInput').focus(); return false; }; }
       // 충전/마이페이지/로그아웃 버튼 표시
       if (chargeBtn) chargeBtn.style.display = 'inline-flex';
@@ -1431,6 +1568,7 @@ function showRealResults(query, data){
     con.appendChild(d);
   });
   
+  document.body.classList.add('tn-searched');
   sec.classList.add('active');sec.scrollIntoView({behavior:'smooth',block:'start'});
   window._realResults=data.searchResults;
   
