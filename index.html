@@ -205,6 +205,8 @@ a{text-decoration:none;color:inherit} button{cursor:pointer;border:none;backgrou
 .site-progress.searching{border-color:var(--primary);color:var(--primary);background:#EEF4FF}
 .site-progress.searching .sp-dot{background:var(--primary);animation:spPulse .8s infinite alternate}
 .site-progress.done{border-color:var(--success);color:var(--success);background:#F0FDF4}
+.site-progress.error{border-color:#FCA5A5;color:#DC2626;background:#FEF2F2}
+.so-partial{margin-top:16px;max-height:280px;overflow-y:auto;padding:14px 16px;background:#FFFBF0;border:1px solid rgba(232,168,56,.35);border-radius:12px;font-size:13px;line-height:1.65;color:var(--text-secondary);text-align:left;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box}
 .site-progress.done .sp-dot{background:var(--success)}
 @keyframes spPulse{0%{opacity:1}100%{opacity:.3}}
 .so-bar-wrap{width:100%;max-width:280px;height:3px;background:var(--bg);border-radius:2px;margin:20px auto 0;overflow:hidden}
@@ -695,6 +697,7 @@ body.tn-searched .results-section{scroll-margin-top:170px;padding-top:24px}
   </div>
   <div class="searching-sites" id="searchingSites"></div>
   <div class="so-bar-wrap"><div class="so-bar" id="soBar"></div></div>
+  <div class="so-partial" id="soPartial" style="display:none"></div>
 </div>
 
 <section class="results-section" id="resultsSection">
@@ -1188,6 +1191,7 @@ function handleJarviaLogin(){
 let currentUser = null;
 firebase.auth().onAuthStateChanged(async user => {
   currentUser = user;
+  if (user) setTimeout(_resumeActiveSearch, 800); // ★ 진행 중이던 검색 이어받기 (2026-11-25)
   document.body.classList.toggle('tn-logged-in', !!user);
   document.body.classList.toggle('tn-admin', !!(user && user.email === 'admin@taxnavi.kr'));
   const loginBtn = document.querySelector('.btn-login');
@@ -1427,88 +1431,165 @@ async function handleSearch(){
     }
   } catch(e) { console.log('usage check:', e.message); }
   
-  // 실제 API 호출 시도
-  const ov=document.getElementById('searchingOverlay'),st=document.getElementById('searchingStatus'),si=document.getElementById('searchingSites');
-  const soSub=document.getElementById('searchingSub'),soBar=document.getElementById('soBar');
+  // ★ 검색 접수 → 진행 상황·결과 확인 (2026-11-25)
+  //   기존: 요청 1번에 1~3분 연결 유지 → 모바일 앱 전환·화면 꺼짐 시 끊김
+  //   변경: 접수번호를 바로 받고 1.5초마다 진행 상황을 확인 → 끊겨도 다시 이어서 확인
   document.getElementById('resultsSection').classList.remove('active');
-  ov.classList.add('active');
-  _setSearching(true);
-  setTimeout(()=>{ov.scrollIntoView({behavior:'smooth',block:'center'})},300);
-  st.textContent='AI가 질문을 분석하고 있습니다';
-  soSub.textContent='최적의 검색 전략을 수립하고 있습니다...';
-  si.innerHTML='';
-  soBar.style.width='10%';
-  document.getElementById('soStep1').className='so-step active';
-  document.getElementById('soStep2').className='so-step';
-  document.getElementById('soStep3').className='so-step';
-  document.getElementById('soLine1').className='so-step-line';
-  document.getElementById('soLine2').className='so-step-line';
-  // 단계 애니메이션 타이머
-  const soTimer1=setTimeout(()=>{
-    document.getElementById('soStep1').className='so-step done';
-    document.getElementById('soLine1').className='so-step-line done';
-    document.getElementById('soStep2').className='so-step active';
-    st.textContent='7개 사이트를 검색하고 있습니다';
-    soSub.textContent='공공 데이터베이스에서 관련 문서를 수집 중...';
-    soBar.style.width='35%';
-    si.innerHTML='<span class="site-progress searching"><span class="sp-dot"></span>국세법령</span><span class="site-progress searching"><span class="sp-dot"></span>법제처</span><span class="site-progress"><span class="sp-dot"></span>조세심판원</span><span class="site-progress"><span class="sp-dot"></span>금융감독원</span><span class="site-progress"><span class="sp-dot"></span>법령센터</span><span class="site-progress"><span class="sp-dot"></span>국세상담</span><span class="site-progress"><span class="sp-dot"></span>사법정보</span>';
-  },2000);
-  const soTimer2=setTimeout(()=>{
-    si.querySelectorAll('.site-progress').forEach((s,i)=>{if(i<2){s.className='site-progress done'}if(i===2||i===3){s.className='site-progress searching'}});
-    soSub.textContent='조세심판원, 금융감독원에서 검색 중...';
-    soBar.style.width='50%';
-  },5000);
-  const soTimer3=setTimeout(()=>{
-    si.querySelectorAll('.site-progress').forEach((s,i)=>{if(i<4){s.className='site-progress done'}if(i===4||i===5){s.className='site-progress searching'}});
-    soSub.textContent='법령센터, 국세상담센터에서 검색 중...';
-    soBar.style.width='65%';
-  },8000);
-  const soTimer4=setTimeout(()=>{
-    si.querySelectorAll('.site-progress').forEach(s=>{s.className='site-progress done'});
-    document.getElementById('soStep2').className='so-step done';
-    document.getElementById('soLine2').className='so-step-line done';
-    document.getElementById('soStep3').className='so-step active';
-    st.textContent='AI가 답변을 생성하고 있습니다';
-    soSub.textContent='검색 결과를 분석하여 종합 답변 작성 중...';
-    soBar.style.width='85%';
-  },12000);
-  function clearSoTimers(){clearTimeout(soTimer1);clearTimeout(soTimer2);clearTimeout(soTimer3);clearTimeout(soTimer4)}
-  
+  _soStart();
   try {
     const token = await currentUser.getIdToken();
     const resp = await fetch(API_BASE_URL + '/api/search', {
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({question:q})
+      body:JSON.stringify({question:q, async:true})
     });
-    
-    if(resp.status===429){
-      clearSoTimers();ov.classList.remove('active');_setSearching(false);
-      const d=await resp.json();
-      showToast('월간 검색 한도('+d.limit+'회)를 초과했습니다. 포인트를 충전해주세요.');
-      return;
+    let d = {};
+    try { d = await resp.json(); } catch(e) {}
+    if(resp.status===409 && d.jobId){
+      showToast('진행 중인 검색이 있어 그 결과를 이어서 불러옵니다.');
+      return _pollSearchJob(d.jobId, d.question || q);
     }
-    if(resp.status===401){
-      clearSoTimers();ov.classList.remove('active');_setSearching(false);
-      openModal('login');
-      showToast('로그인이 만료되었습니다. 다시 로그인해주세요.');
-      return;
-    }
-    
-    const data = await resp.json();
-    clearSoTimers();soBar.style.width='100%';ov.classList.remove('active');_setSearching(false);
-    
-    if(data.success && data.searchResults && data.searchResults.length > 0){
-      showRealResults(q, data);
-      return;
-    }
-    // 검색 결과 0건 안내
-    showToast('검색 결과가 없습니다. 다른 키워드로 다시 시도해 보세요.');
+    if(!resp.ok){ _soEnd(); _showSearchError(resp.status, d); return; }
+    if(!d.jobId){ _soEnd(); showToast('검색 접수에 실패했습니다. 잠시 후 다시 시도해주세요.'); return; }
+    return _pollSearchJob(d.jobId, q);
   } catch(apiErr) {
-
-    clearSoTimers();ov.classList.remove('active');_setSearching(false);
-    showToast('검색 서비스에 일시적 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    _soEnd();
+    showToast('서버에 연결하지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도해주세요.');
   }
+}
+
+// ─── 검색 진행 화면 (실제 진행 상황 표시) ───
+const _SO_SHORT={taxlaw:'국세법령',courtCase:'법고을',taxTribunal:'조세심판원',fssLaw:'금융감독원',lawGoKr:'법령센터',hometaxQA:'국세상담',courtPortal:'사법정보'};
+function _sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function _soStart(){
+  const ov=document.getElementById('searchingOverlay');
+  if(!ov.classList.contains('active')){
+    ov.classList.add('active');
+    setTimeout(()=>{ov.scrollIntoView({behavior:'smooth',block:'center'})},300);
+  }
+  _setSearching(true);
+  _soRender({stage:'queued',sites:{}});
+}
+function _soEnd(){
+  document.getElementById('searchingOverlay').classList.remove('active');
+  const pa=document.getElementById('soPartial');
+  if(pa){pa.style.display='none';pa.textContent='';}
+  _setSearching(false);
+}
+function _soRender(d){
+  const st=document.getElementById('searchingStatus'),soSub=document.getElementById('searchingSub');
+  const si=document.getElementById('searchingSites'),soBar=document.getElementById('soBar');
+  const s1=document.getElementById('soStep1'),s2=document.getElementById('soStep2'),s3=document.getElementById('soStep3');
+  const l1=document.getElementById('soLine1'),l2=document.getElementById('soLine2');
+  const stage=d.stage||d.status||'queued';
+  const sites=d.sites||{};
+  const keys=Object.keys(SITES);
+  const doneCnt=keys.filter(k=>sites[k]&&(sites[k].status==='done'||sites[k].status==='error')).length;
+  const partial=d.partialAnswer||'';
+  if(stage==='queued'||stage==='analyze'||stage==='running'){
+    s1.className='so-step active';s2.className='so-step';s3.className='so-step';l1.className='so-step-line';l2.className='so-step-line';
+    st.textContent='AI가 질문을 분석하고 있습니다';
+    soSub.textContent=stage==='queued'?'검색을 접수했습니다. 곧 시작합니다...':'최적의 검색 전략을 수립하고 있습니다...';
+    soBar.style.width='10%';
+  } else if(stage==='search'||stage==='site'){
+    s1.className='so-step done';l1.className='so-step-line done';s2.className='so-step active';s3.className='so-step';l2.className='so-step-line';
+    st.textContent=keys.length+'개 사이트를 동시에 검색하고 있습니다';
+    soSub.textContent=doneCnt+' / '+keys.length+'곳 완료';
+    soBar.style.width=(15+Math.round(65*doneCnt/keys.length))+'%';
+  } else if(stage==='answer'){
+    s1.className='so-step done';l1.className='so-step-line done';s2.className='so-step done';l2.className='so-step-line done';s3.className='so-step active';
+    st.textContent='AI가 답변을 생성하고 있습니다';
+    soSub.textContent=partial?'답변을 작성하는 중입니다 (실시간 표시)':'검색 결과를 분석하여 종합 답변 작성 중...';
+    soBar.style.width=Math.min(98,85+Math.floor(partial.length/400))+'%';
+  }
+  si.innerHTML=keys.map(k=>{
+    const v=sites[k];
+    const cls=v?(v.status==='searching'?' searching':(v.status==='done'?' done':(v.status==='error'?' error':''))):'';
+    const cnt=(v&&v.status==='done'&&v.count!=null)?' '+v.count+'건':((v&&v.status==='error')?' 실패':'');
+    return '<span class="site-progress'+cls+'"><span class="sp-dot"></span>'+(_SO_SHORT[k]||k)+cnt+'</span>';
+  }).join('');
+  const pa=document.getElementById('soPartial');
+  if(pa){
+    if(partial){pa.style.display='block';pa.textContent=partial;pa.scrollTop=pa.scrollHeight;}
+    else{pa.style.display='none';}
+  }
+}
+function _showSearchError(status,d){
+  d=d||{};
+  if(status===401){
+    openModal('login');
+    showToast('로그인이 만료되었습니다. 다시 로그인해주세요.');
+  } else if(status===429){
+    if(d.dailyLimit) showToast('오늘 검색 횟수를 모두 사용했습니다. (1일 '+d.dailyLimit+'회)');
+    else if(d.limit) showToast('월간 검색 한도('+d.limit+'회)를 초과했습니다. 포인트를 충전해주세요.');
+    else showToast(d.error||'검색 한도를 초과했습니다.');
+  } else if(status===403){
+    showToast(d.error||'이 계정은 현재 검색을 이용할 수 없습니다. 관리자에게 문의하세요.');
+  } else {
+    showToast(d.error?('검색 중 오류가 발생했습니다: '+d.error):'검색 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  }
+}
+function _setActiveSearch(jobId,q){try{sessionStorage.setItem('taxnavi_activeJob',JSON.stringify({jobId:jobId,q:q,at:Date.now()}))}catch(e){}}
+function _clearActiveSearch(){try{sessionStorage.removeItem('taxnavi_activeJob')}catch(e){}}
+let _pollingJobId=null;
+async function _pollSearchJob(jobId,q){
+  if(_pollingJobId===jobId) return;
+  _pollingJobId=jobId;
+  _setActiveSearch(jobId,q);
+  _soStart();
+  const started=Date.now();
+  let fails=0;
+  try{
+    while(Date.now()-started<6*60*1000){
+      let d=null;
+      try{
+        if(!currentUser){_soEnd();openModal('login');showToast('로그인이 만료되었습니다. 다시 로그인해주세요.');return;}
+        const token=await currentUser.getIdToken();
+        const r=await fetch(API_BASE_URL+'/api/search/'+encodeURIComponent(jobId),{headers:{'Authorization':'Bearer '+token}});
+        if(r.status===404){_clearActiveSearch();_soEnd();showToast('검색 정보를 찾을 수 없습니다. 다시 검색해주세요.');return;}
+        if(r.status===401){_soEnd();openModal('login');showToast('로그인이 만료되었습니다. 다시 로그인해주세요.');return;}
+        d=await r.json();
+        fails=0;
+      }catch(e){
+        // 앱 전환·화면 꺼짐·일시적 끊김 → 잠시 후 다시 확인 (검색은 서버에서 계속 진행됨)
+        fails++;
+        if(fails>=30){_soEnd();showToast('서버 연결이 계속 끊깁니다. 연결을 확인한 뒤 새로고침하면 결과를 이어서 불러옵니다.');return;}
+        await _sleep(2000);
+        continue;
+      }
+      if(d.status==='done'&&d.result){
+        _clearActiveSearch();
+        _soEnd();
+        document.getElementById('soBar').style.width='100%';
+        const data=Object.assign({success:true},d.result);
+        if(data.searchResults&&data.searchResults.length>0){showRealResults(q,data);}
+        else{showToast('검색 결과가 없습니다. 다른 키워드로 다시 시도해 보세요.');}
+        return;
+      }
+      if(d.status==='error'){
+        _clearActiveSearch();
+        _soEnd();
+        showToast(d.error||'검색 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        return;
+      }
+      _soRender(d);
+      await _sleep(document.hidden?4000:1500);
+    }
+    _soEnd();
+    showToast('검색이 지연되고 있습니다. 잠시 후 새로고침하면 결과를 이어서 불러옵니다.');
+  } finally {
+    _pollingJobId=null;
+  }
+}
+// 새로고침·재접속 시 진행 중이던 검색 이어받기
+function _resumeActiveSearch(){
+  try{
+    const s=sessionStorage.getItem('taxnavi_activeJob');
+    if(!s||!currentUser||_isSearchingNow) return;
+    const a=JSON.parse(s);
+    if(!a||!a.jobId||Date.now()-(a.at||0)>6*60*1000){_clearActiveSearch();return;}
+    _pollSearchJob(a.jobId,a.q||'');
+  }catch(e){}
 }
 function quickSearch(el){document.getElementById('searchInput').value=el.textContent+' 관련 판례와 세법해석';handleSearch();window.scrollTo({top:0,behavior:'smooth'})}
 
