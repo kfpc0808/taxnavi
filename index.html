@@ -1636,7 +1636,7 @@ function showRealResults(query, data){
   // Individual results
   data.searchResults.forEach((r,i)=>{
     const siteInfo=SITES[r.site]||{name:r.source||r.site,color:'#666',badge:'badge-taxlaw',url:''};
-    const siteUrl=r.url||siteInfo.url||'';
+    const siteUrl=r.url||''; // ★ 상세 주소가 없으면 사이트 메인으로 보내지 않고 원문 버튼을 숨김 (2026-11-25)
     const d=document.createElement('div');d.className='result-card';d.style.animationDelay=(i*.06)+'s';
     d.setAttribute('data-site',r.site);
     d.setAttribute('id','result-'+i);
