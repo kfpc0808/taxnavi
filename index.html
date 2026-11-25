@@ -1493,7 +1493,7 @@ function _soRender(d){
     soBar.style.width='10%';
   } else if(stage==='search'||stage==='site'){
     s1.className='so-step done';l1.className='so-step-line done';s2.className='so-step active';s3.className='so-step';l2.className='so-step-line';
-    st.textContent=keys.length+'개 사이트를 동시에 검색하고 있습니다';
+    st.textContent=keys.length+'개 사이트를 검색하고 있습니다';
     soSub.textContent=doneCnt+' / '+keys.length+'곳 완료';
     soBar.style.width=(15+Math.round(65*doneCnt/keys.length))+'%';
   } else if(stage==='answer'){
